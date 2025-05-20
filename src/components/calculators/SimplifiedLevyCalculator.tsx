@@ -28,6 +28,7 @@ const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString())
 const BUSINESS_LEVY_RATE = 0.006; // 0.6%
 const GREEN_FUND_LEVY_RATE = 0.003; // 0.3%
 const BUSINESS_LEVY_EXEMPTION_YEARS = 3;
+// const BUSINESS_LEVY_ANNUAL_THRESHOLD = 360000; // No longer used as per latest guide
 
 export function SimplifiedLevyCalculator() {
   // const { toast } = useToast(); // Uncomment if toasts are desired
@@ -38,7 +39,7 @@ export function SimplifiedLevyCalculator() {
   const [month3Income, setMonth3Income] = useState<string>("50000");
   const [quarterlyIncome, setQuarterlyIncome] = useState<string>("");
   const [annualDirectIncome, setAnnualDirectIncome] = useState<string>("");
-  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(Math.max(...years.map(Number)).toString()); // Default to most recent year available
+  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(Math.max(...years.map(Number)).toString());
 
   const [calculationResults, setCalculationResults] = useState({
     annualizedGrossIncome: "0.00",
@@ -69,14 +70,17 @@ export function SimplifiedLevyCalculator() {
     const gfl = agi * GREEN_FUND_LEVY_RATE;
 
     let bl = 0;
-    const incorpYear = parseInt(yearOfIncorporation, 10);
+    const incorpYearNum = parseInt(yearOfIncorporation, 10);
     const currentYr = new Date().getFullYear();
 
-    if (currentYr >= incorpYear + BUSINESS_LEVY_EXEMPTION_YEARS) {
-      // Not exempt by 3-year rule
+    // Business Levy is exempt for the first 3 years from registration
+    const isExempt = currentYr < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
+
+    if (!isExempt) {
+      // No threshold mentioned in the latest guide for rate application, applies to total AGI
       bl = agi * BUSINESS_LEVY_RATE;
     }
-    // If within 3 years, bl remains 0 (exempt)
+    // If exempt, bl remains 0
 
     const totalLevies = bl + gfl;
 
@@ -106,13 +110,12 @@ export function SimplifiedLevyCalculator() {
 
   const handleClearFields = () => {
     setIncomePeriod("monthly");
-    setMonth1Income("50000");
-    setMonth2Income("500000");
-    setMonth3Income("50000");
+    setMonth1Income(""); 
+    setMonth2Income(""); 
+    setMonth3Income(""); 
     setQuarterlyIncome("");
     setAnnualDirectIncome("");
     setYearOfIncorporation(Math.max(...years.map(Number)).toString());
-    handleCalculateLevies(); // Recalculate with cleared/default fields
     // toast({ title: "Fields Cleared" });
   };
 
@@ -226,10 +229,10 @@ export function SimplifiedLevyCalculator() {
             </div>
             <Separator className="my-1" />
             <div className="flex justify-between">
-              <span>Business Levy (0.6%):</span><strong>${calculationResults.businessLevy}</strong>
+              <span>Business Levy:</span><strong>${calculationResults.businessLevy}</strong>
             </div>
             <div className="flex justify-between">
-              <span>Green Fund Levy (0.3%):</span> <strong>${calculationResults.greenFundLevy}</strong>
+              <span>Green Fund Levy (0.3% of Gross):</span> <strong>${calculationResults.greenFundLevy}</strong>
             </div>
             <Separator className="my-1" />
             <div className="flex justify-between font-semibold text-sm">
@@ -248,10 +251,9 @@ export function SimplifiedLevyCalculator() {
         </div>
         
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Note: Business Levy is exempt for companies within their first 3 years of registration. If not exempt, Business Levy applies at 0.6% on the total annualized gross income. Green Fund Levy applies at 0.3% on the total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
+          Note: Business Levy exemption for new companies (first 3 years from registration) is automatically applied if 'Year of Incorporation' qualifies. Otherwise, Business Levy applies at 0.6% on total annualized gross income. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
         </p>
       </div>
     </div>
   );
 }
-

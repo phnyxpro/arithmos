@@ -1,180 +1,230 @@
+
 "use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Users } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Users, CalendarDays, DollarSign, CircleCheckBig, Briefcase, Copy, Trash2 } from 'lucide-react';
+// import { useToast } from "@/hooks/use-toast"; // Uncomment if toasts are desired
 
-// Constants based on typical TT values (examples, always verify with IRD)
-const NIS_RATE_EMPLOYEE = 0.056; // 5.6% for employee portion, example
-const NIS_MAX_EARNINGS_MONTHLY = 13600; // Example maximum insurable earnings
-
-// Health Surcharge thresholds (example weekly amounts)
-const HS_THRESHOLD_1 = 110; // Up to $110/week: $4.13 HS
-const HS_THRESHOLD_2 = Infinity; // Over $110/week: $8.25 HS
-const HS_AMOUNT_1 = 4.13;
-const HS_AMOUNT_2 = 8.25;
-
-// PAYE Personal Allowance (example annual)
-const PERSONAL_ALLOWANCE_ANNUAL = 90000;
-// PAYE Tax Brackets (example annual chargeable income)
-const PAYE_BRACKET_1_LIMIT = 72000; // First $72,000 of chargeable income @ 25%
-const PAYE_RATE_1 = 0.25;
-const PAYE_RATE_2 = 0.30; // Income over $72,000 @ 30%
+const months = [
+  { value: "1", label: "January" }, { value: "2", label: "February" }, { value: "3", label: "March" },
+  { value: "4", label: "April" }, { value: "5", label: "May" }, { value: "6", label: "June" },
+  { value: "7", label: "July" }, { value: "8", label: "August" }, { value: "9", label: "September" },
+  { value: "10", label: "October" }, { value: "11", label: "November" }, { value: "12", label: "December" },
+];
 
 export function SimplifiedPayrollCalculator() {
-  const [grossMonthlyIncome, setGrossMonthlyIncome] = useState<number | ''>('');
-  const [payFrequency, setPayFrequency] = useState<'weekly' | 'monthly'>('monthly');
-  const [calculation, setCalculation] = useState<{
-    gross: number;
-    nis: number;
-    healthSurcharge: number;
-    paye: number;
-    netPay: number;
-    notes: string[];
-  } | null>(null);
+  // const { toast } = useToast(); // Uncomment if toasts are desired
+  const [selectedMonth, setSelectedMonth] = useState<string>("5"); // May
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [grossMonthlyIncome, setGrossMonthlyIncome] = useState<string>("8000");
 
-  const calculateDeductions = () => {
-    if (grossMonthlyIncome === '' || grossMonthlyIncome <= 0) {
-      setCalculation(null);
-      alert("Please enter a valid gross monthly income.");
-      return;
-    }
+  // Placeholder for calculation results based on HTML
+  const [calculationResults, setCalculationResults] = useState({
+    grossMonthlyIncomeDisplay: "8,000.00",
+    estAnnualIncome: "96,000.00",
+    mondaysInMonth: "4",
+    nisClass: "XI",
+    estWeeklyNISEmployee: "89.10",
+    estWeeklyNISEmployer: "178.20",
+    payeMonthly: "125.00",
+    nisMonthlyEmployee: "356.40",
+    healthSurchargeMonthly: "33.00",
+    totalMonthlyDeductions: "514.40",
+    netTakeHomePay: "7,485.60",
+    employerNISMonthly: "712.80",
+    monthName: "May",
+    yearDisplay: "2025",
+  });
 
-    const gross = Number(grossMonthlyIncome);
-    let notes: string[] = [];
-
-    // NIS Calculation
-    const nisApplicableIncome = Math.min(gross, NIS_MAX_EARNINGS_MONTHLY);
-    const nisContribution = nisApplicableIncome * NIS_RATE_EMPLOYEE;
-    notes.push(`NIS calculated at ${NIS_RATE_EMPLOYEE*100}% on income up to $${NIS_MAX_EARNINGS_MONTHLY.toLocaleString()}/month.`);
-
-    // Health Surcharge Calculation
-    const grossWeeklyEquivalent = payFrequency === 'weekly' ? gross : gross / (30/7); // Approx weeks in month
-    let healthSurchargeMonthly = 0;
-    let hsWeekly = 0;
-
-    if (grossWeeklyEquivalent <= HS_THRESHOLD_1) {
-      hsWeekly = HS_AMOUNT_1;
-    } else {
-      hsWeekly = HS_AMOUNT_2;
-    }
-    healthSurchargeMonthly = hsWeekly * (30/7); // Convert weekly HS to monthly
-    notes.push(`Health Surcharge based on weekly equivalent income of $${grossWeeklyEquivalent.toFixed(2)}. Monthly HS: $${healthSurchargeMonthly.toFixed(2)}.`);
-    
-    // PAYE Calculation
-    // Annualize income and deductions for PAYE calculation
-    const annualGrossIncome = gross * 12;
-    const annualNis = nisContribution * 12;
-    // Annual Health Surcharge - This can be complex as it's often flat weekly. For PAYE, it's usually considered.
-    // Let's use the monthly calculated one * 12 for PAYE purposes.
-    const annualHealthSurcharge = healthSurchargeMonthly * 12; 
-
-    const totalAnnualDeductionsForPaye = annualNis + annualHealthSurcharge; // Other deductions could be added here
-    notes.push(`Annual NIS for PAYE calc: $${annualNis.toFixed(2)}`);
-    notes.push(`Annual HS for PAYE calc: $${annualHealthSurcharge.toFixed(2)} (estimated).`);
+  // Dummy calculate function - replace with actual logic
+  const handleCalculate = () => {
+    const monthLabel = months.find(m => m.value === selectedMonth)?.label || "";
+    // In a real app, you'd perform calculations here based on inputs
+    // For now, we'll just update the display based on current state or keep placeholders
+    setCalculationResults(prev => ({
+      ...prev, // Keep placeholders for now, or derive simply
+      grossMonthlyIncomeDisplay: parseFloat(grossMonthlyIncome || "0").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      estAnnualIncome: (parseFloat(grossMonthlyIncome || "0") * 12).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      monthName: monthLabel,
+      yearDisplay: selectedYear,
+      // Other fields would be recalculated here
+    }));
+    // toast({ title: "Calculation Updated (Placeholder)" });
+  };
+  
+  useEffect(() => {
+    // Trigger calculation when inputs change
+    handleCalculate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMonth, selectedYear, grossMonthlyIncome]);
 
 
-    const chargeableIncomeAnnual = Math.max(0, annualGrossIncome - PERSONAL_ALLOWANCE_ANNUAL - totalAnnualDeductionsForPaye);
-    notes.push(`Annual Personal Allowance: $${PERSONAL_ALLOWANCE_ANNUAL.toLocaleString()}.`);
-    notes.push(`Total Annual Deductions (NIS, HS) for PAYE: $${totalAnnualDeductionsForPaye.toFixed(2)}.`);
-    notes.push(`Annual Chargeable Income: $${chargeableIncomeAnnual.toFixed(2)}.`);
-
-    let annualPaye = 0;
-    if (chargeableIncomeAnnual <= PAYE_BRACKET_1_LIMIT) {
-      annualPaye = chargeableIncomeAnnual * PAYE_RATE_1;
-      notes.push(`PAYE calculated at ${PAYE_RATE_1*100}% on $${chargeableIncomeAnnual.toFixed(2)}.`);
-    } else {
-      annualPaye = (PAYE_BRACKET_1_LIMIT * PAYE_RATE_1) + 
-                   ((chargeableIncomeAnnual - PAYE_BRACKET_1_LIMIT) * PAYE_RATE_2);
-      notes.push(`PAYE: ($${PAYE_BRACKET_1_LIMIT.toFixed(2)} * ${PAYE_RATE_1*100}%) + ($${(chargeableIncomeAnnual - PAYE_BRACKET_1_LIMIT).toFixed(2)} * ${PAYE_RATE_2*100}%).`);
-    }
-    const monthlyPaye = annualPaye / 12;
-
-    // Net Pay
-    const totalMonthlyDeductions = nisContribution + healthSurchargeMonthly + monthlyPaye;
-    const netPay = gross - totalMonthlyDeductions;
-
-    setCalculation({
-      gross,
-      nis: nisContribution,
-      healthSurcharge: healthSurchargeMonthly,
-      paye: monthlyPaye,
-      netPay,
-      notes
-    });
+  const handleCopyResults = () => {
+    // Logic to format and copy results to clipboard
+    const resultsText = `
+    Gross Monthly Income: $${calculationResults.grossMonthlyIncomeDisplay}
+    PAYE: $${calculationResults.payeMonthly}
+    NIS (Employee): $${calculationResults.nisMonthlyEmployee}
+    Health Surcharge: $${calculationResults.healthSurchargeMonthly}
+    Total Deductions: $${calculationResults.totalMonthlyDeductions}
+    Net Pay: $${calculationResults.netTakeHomePay}
+    Employer NIS: $${calculationResults.employerNISMonthly}
+    `;
+    navigator.clipboard.writeText(resultsText.trim());
+    // toast({ title: "Results Copied!" });
   };
 
+  const handleClearFields = () => {
+    setSelectedMonth("5");
+    setSelectedYear("2025");
+    setGrossMonthlyIncome("8000");
+    // Reset calculationResults to initial/default state if needed
+    // toast({ title: "Fields Cleared" });
+  };
+
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center"><Users className="mr-2 h-5 w-5 text-primary" /> PAYE, NIS & HS Calculator</CardTitle>
-        <CardDescription>Estimate monthly statutory deductions for an employee.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="gross-monthly-income">Gross Monthly Income (TTD)</Label>
-          <Input 
-            id="gross-monthly-income" 
-            type="number" 
-            placeholder="e.g., 10000" 
+    <div className="py-4">
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+          <div className="space-y-1">
+            <Label htmlFor="selectedMonthSimplePayroll" className="flex items-center text-sm">
+              <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+              Month
+            </Label>
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger id="selectedMonthSimplePayroll" className="h-9 text-sm">
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map(month => (
+                  <SelectItem key={month.value} value={month.value}>{month.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="selectedYearSimplePayroll" className="flex items-center text-sm">
+              <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+              Year
+            </Label>
+            <Input
+              id="selectedYearSimplePayroll"
+              type="number"
+              placeholder="e.g., 2024"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+              className="h-9 text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <Label htmlFor="gmiSimplePayrollPopup" className="flex items-center text-sm">
+            <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />
+            Gross Monthly Income (TT$)
+          </Label>
+          <Input
+            id="gmiSimplePayrollPopup"
+            type="number"
+            step="0.01"
+            placeholder="e.g., 8000.00"
             value={grossMonthlyIncome}
-            onChange={(e) => setGrossMonthlyIncome(e.target.value === '' ? '' : parseFloat(e.target.value))} 
+            onChange={(e) => setGrossMonthlyIncome(e.target.value)}
+            className="h-9 text-sm"
           />
         </div>
-         {/* Pay Frequency Selector - Kept simple, affects HS weekly equivalent */}
-        {/* <div className="space-y-2">
-          <Label htmlFor="pay-frequency">Pay Frequency (for HS reference)</Label>
-          <Select 
-            value={payFrequency} 
-            onValueChange={(value: 'weekly' | 'monthly') => setPayFrequency(value)}
-          >
-            <SelectTrigger id="pay-frequency">
-              <SelectValue placeholder="Select frequency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="weekly">Weekly (for HS reference if paid weekly)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div> */}
 
-        <Button onClick={calculateDeductions} className="w-full">Calculate Deductions</Button>
+        <Card className="mt-4">
+          <CardHeader className="p-4">
+            <CardTitle className="text-lg text-primary flex items-center">
+              <CircleCheckBig className="mr-2 h-5 w-5" />
+              Estimated Monthly Deductions for {calculationResults.monthName} {calculationResults.yearDisplay}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 space-y-1.5 text-xs">
+            <div className="flex justify-between">
+              <span>Gross Monthly Income:</span> <strong>${calculationResults.grossMonthlyIncomeDisplay}</strong>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Est. Annual Income:</span> <span>${calculationResults.estAnnualIncome}</span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Mondays in selected month:</span> <span>{calculationResults.mondaysInMonth}</span>
+            </div>
+            
+            <Separator className="my-1" />
+            <div className="text-muted-foreground">NIS Details:</div>
+            <div className="flex justify-between pl-2">
+              <span>NIS Class:</span> <span>{calculationResults.nisClass}</span>
+            </div>
+            <div className="flex justify-between pl-2">
+              <span>Est. Weekly NIS (Employee):</span> <span>${calculationResults.estWeeklyNISEmployee}</span>
+            </div>
+            <div className="flex justify-between pl-2">
+              <span>Est. Weekly NIS (Employer):</span> <span>${calculationResults.estWeeklyNISEmployer}</span>
+            </div>
 
-        {calculation && (
-          <Alert className="mt-4">
-            <AlertTitle className="font-semibold">Estimated Monthly Deductions & Net Pay</AlertTitle>
-            <AlertDescription>
-              <div className="space-y-1 mt-2 text-sm">
-                <p><strong>Gross Income:</strong> ${calculation.gross.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                <p><strong>NIS Contribution:</strong> ${calculation.nis.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                <p><strong>Health Surcharge:</strong> ${calculation.healthSurcharge.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                <p><strong>PAYE (Income Tax):</strong> ${calculation.paye.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                <hr className="my-2"/>
-                <p className="font-semibold"><strong>Estimated Net Pay:</strong> ${calculation.netPay.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-              </div>
-            </AlertDescription>
-             <AlertTitle className="font-semibold mt-4 text-xs">Calculation Notes:</AlertTitle>
-             <AlertDescription className="text-xs mt-1">
-                <ul className="list-disc pl-4 space-y-0.5">
-                    {calculation.notes.map((note, index) => (
-                        <li key={index}>{note}</li>
-                    ))}
-                </ul>
-             </AlertDescription>
-          </Alert>
-        )}
-         <Alert variant="default" className="mt-4 text-xs">
-            <AlertTitle className="font-semibold">Disclaimer</AlertTitle>
-            <AlertDescription>
-              This calculator provides an estimate for illustrative purposes only, based on simplified assumptions for Trinidad & Tobago. Rates (NIS: 5.6% employee on max $13,600/mo earnings; HS: $4.13/wk up to $110/wk income, $8.25/wk above; PAYE: $90k personal allowance, 25% on first $72k chargeable, 30% thereafter) are examples and may not be current. Always consult official IRD guidelines and a qualified professional for accurate calculations and financial advice. No other deductions (e.g., pension, loan payments) are included.
-            </AlertDescription>
-          </Alert>
-      </CardContent>
-    </Card>
+            <Separator className="my-1" />
+            <div className="text-muted-foreground">Employee Deductions (Monthly):</div>
+            <div className="flex justify-between pl-2">
+              <span>PAYE:</span> <span>${calculationResults.payeMonthly}</span>
+            </div>
+            <div className="flex justify-between pl-2">
+              <span>NIS (Employee):</span> <span>${calculationResults.nisMonthlyEmployee}</span>
+            </div>
+            <div className="flex justify-between pl-2">
+              <span>Health Surcharge:</span> <span>${calculationResults.healthSurchargeMonthly}</span>
+            </div>
+
+            <Separator className="my-1" />
+            <div className="flex justify-between font-semibold">
+              <span>Total Monthly Deductions:</span><span>${calculationResults.totalMonthlyDeductions}</span>
+            </div>
+            <div className="flex justify-between text-base font-bold text-primary mt-1">
+              <span>Net Take-Home Pay:</span><span>${calculationResults.netTakeHomePay}</span>
+            </div>
+
+            <Separator className="my-2" />
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground flex items-center">
+                <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
+                Employer's NIS Contribution (Monthly):
+              </span>
+              <strong className="text-muted-foreground">${calculationResults.employerNISMonthly}</strong>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col sm:flex-row gap-2 mt-4">
+          <Button variant="outline" onClick={handleCopyResults} className="w-full text-sm h-9 flex-1">
+            <Copy className="mr-2 h-4 w-4" /> Copy Results
+          </Button>
+          <Button variant="outline" onClick={handleClearFields} className="w-full text-sm h-9 flex-1">
+            <Trash2 className="mr-2 h-4 w-4" /> Clear Fields
+          </Button>
+        </div>
+        
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          Note: Calculations are estimates. PAYE is based on annual income. NIS is calculated based on NIBTT Earnings Classes for the selected month/year. Health Surcharge is estimated based on the number of Mondays in the selected month and gross monthly income. Employer's NIS is an additional cost to the employer. Always consult official IRD & NIBTT guidelines.
+        </p>
+      </div>
+    </div>
   );
 }
+
+    

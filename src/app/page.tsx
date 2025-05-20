@@ -33,13 +33,13 @@ import {
   BookOpen,
   Linkedin,
   Facebook,
-  Bell,
-  FileText,
+  FileHeart, // Added for Voluntary NIS
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
+import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator'; // Added
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
 
@@ -60,7 +60,7 @@ const heroContentData: HeroContent = {
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
-  backgroundImageUrl: "https://firebasestorage.googleapis.com/v0/b/wage-wiz.firebasestorage.app/o/hero-taxes.webp?alt=media&token=37c7b6ac-f45e-4c1c-b33f-7381fb55244d",
+  backgroundImageUrl: "https://images.unsplash.com/photo-1564939558297-fc396f18e5c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhY2NvdW50aW5nfGVufDB8fHx8MTc0NzM2MTg0MHww&ixlib=rb-4.1.0&q=80&w=1080",
 };
 
 interface CalculatorCardData {
@@ -141,27 +141,35 @@ interface CalculatorInfo {
 const calculatorInfoList: CalculatorInfo[] = [
   { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers." },
   { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds." },
-  { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income that exceeds the TT$360,000 exemption threshold. Considers exemptions for new companies (first 3 years)." },
+  { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years)." },
   { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly." },
   { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied." },
   { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets." },
   { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction)." },
   { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker." },
+  { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts." },
 ];
 
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
-  const [levyCalcKey, setLevyCalcKey] = React.useState(0); // Key for resetting Levy Calculator
+  const [levyCalcKey, setLevyCalcKey] = React.useState(0);
+  const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false); // Added
+  const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0); // Added
   const { toast } = useToast();
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
   const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
   
   const handleOpenLevyCalc = React.useCallback(() => {
-    setLevyCalcKey(prevKey => prevKey + 1); // Increment key to force remount
+    setLevyCalcKey(prevKey => prevKey + 1); 
     setIsLevyCalcOpen(true);
+  }, []);
+
+  const handleOpenVoluntaryNisCalc = React.useCallback(() => { // Added
+    setVoluntaryNisCalcKey(prevKey => prevKey + 1);
+    setIsVoluntaryNisCalcOpen(true);
   }, []);
 
 
@@ -181,7 +189,14 @@ export default function LandingPage() {
       onClick: handleOpenPayrollCalc,
     },
     {
-      icon: DollarSign, // Changed from BarChart3 to match previous structure if BarChart3 isn't desired here
+      icon: FileHeart, // Added for Voluntary NIS
+      title: "Voluntary NIS Contribution",
+      description: "Estimate your NIS contributions as a self-employed individual.",
+      ctaText: "Estimate Voluntary NIS",
+      onClick: handleOpenVoluntaryNisCalc,
+    },
+    {
+      icon: DollarSign, 
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
@@ -246,7 +261,7 @@ export default function LandingPage() {
           className="absolute inset-0 grayscale opacity-20"
           style={{ backgroundImage: `url('${heroContentData.backgroundImageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
           aria-label="Background image of tax preparation scene"
-          data-ai-hint="taxes finance planning"
+          data-ai-hint="taxes planning"
         ></div>
         <div className="absolute inset-0 bg-black/60"></div> 
         
@@ -321,7 +336,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-primary mb-2">{benefit.title}</h3>
-                  <p className="text-muted-foreground">{benefit.description}</p> {/* Changed text-primary-foreground to text-muted-foreground for better contrast on light bg */}
+                  <p className="text-muted-foreground">{benefit.description}</p>
                 </div>
               </div>
             ))}
@@ -374,7 +389,9 @@ export default function LandingPage() {
                       onClick={() => handleAddToCalendar(item)}
                       disabled={item.status === "Completed"}
                     >
-                      <Bell className="mr-1.5 h-3 w-3"/> Set Reminder
+                       {/* Using a generic Bell icon from lucide-react */}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 h-3 w-3 lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                       Set Reminder
                     </Button>
                   </CardFooter>
                 </Card>
@@ -401,7 +418,7 @@ export default function LandingPage() {
             {resourceGuides.map((resource) => (
               <Card key={resource.id} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
                 <CardHeader>
-                  <FileText className="h-8 w-8 text-accent mb-3" />
+                  <BookOpen className="h-8 w-8 text-accent mb-3" />
                   <CardTitle className="text-lg text-primary">{resource.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-grow">
@@ -435,7 +452,7 @@ export default function LandingPage() {
                 <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
                   {calc.name}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed pl-10"> {/* Added pl-10 for better indent */}
+                <AccordionContent className="text-muted-foreground leading-relaxed pl-10">
                   {calc.description}
                 </AccordionContent>
               </AccordionItem>
@@ -517,6 +534,18 @@ export default function LandingPage() {
             <DialogTitle className="text-2xl text-primary flex items-center"><DollarSign className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
+           <DialogClose asChild>
+             <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={setIsVoluntaryNisCalcOpen}> {/* Added */}
+        <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-primary flex items-center"><FileHeart className="mr-2 h-6 w-6"/>Voluntary NIS Calculator</DialogTitle>
+          </DialogHeader>
+          <VoluntaryNisCalculator key={voluntaryNisCalcKey} />
            <DialogClose asChild>
              <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
           </DialogClose>

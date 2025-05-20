@@ -251,7 +251,7 @@ export default function LandingPage() {
   const HeroIcon = heroContentData.icon;
 
   return (
-    <div className="flex flex-col bg-background">
+    <div className="flex flex-col"> {/* Removed bg-background */}
       {/* Hero Section */}
       <section 
         id="hero" 
@@ -288,7 +288,7 @@ export default function LandingPage() {
       </section>
 
       {/* Quick Access Calculators */}
-      <section id="popular-calculators" className="py-16 lg:py-24 bg-muted/30">
+      <section id="popular-calculators" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
@@ -323,14 +323,14 @@ export default function LandingPage() {
       </section>
 
        {/* Why Choose Tax TT */}
-       <section id="why-tax-tt" className="py-16 lg:py-24 bg-background">
+       <section id="why-tax-tt" className="py-16 lg:py-24"> {/* Removed bg-background */}
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Why Choose Tax TT?
           </h2>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2">
             {benefitsData.map((benefit) => (
-              <div key={benefit.title} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left p-6 rounded-lg hover:shadow-md transition-shadow bg-muted/30">
+              <div key={benefit.title} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left p-6 rounded-lg hover:shadow-md transition-shadow"> {/* Removed bg-muted/30 */}
                 <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                   <benefit.icon className="h-12 w-12 text-accent" />
                 </div>
@@ -345,7 +345,7 @@ export default function LandingPage() {
       </section>
 
       {/* Upcoming Deadlines */}
-      <section id="deadlines-compliance" className="py-16 lg:py-24 bg-muted/30">
+      <section id="deadlines-compliance" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary mb-3">Stay Ahead with Compliance</h2>
@@ -409,7 +409,7 @@ export default function LandingPage() {
       </section>
 
       {/* Resources & Guides */}
-      <section id="resources-guides" className="py-16 lg:py-24 bg-background">
+      <section id="resources-guides" className="py-16 lg:py-24"> {/* Removed bg-background */}
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Resources & Guides
@@ -441,7 +441,7 @@ export default function LandingPage() {
       </section>
 
       {/* Learn About Our Calculators */}
-      <section id="learn-calculators" className="py-16 lg:py-24 bg-muted/30">
+      <section id="learn-calculators" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Learn About Our Calculators
@@ -462,7 +462,7 @@ export default function LandingPage() {
       </section>
 
       {/* Get Started / Contact */}
-      <section id="get-started" className="py-16 lg:py-24 bg-background text-center">
+      <section id="get-started" className="py-16 lg:py-24 text-center"> {/* Removed bg-background */}
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-primary mb-4">
             Ready to Simplify Your Taxes?
@@ -555,4 +555,3 @@ export default function LandingPage() {
   );
 }
 
-    

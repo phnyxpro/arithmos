@@ -35,6 +35,14 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+import {
   Briefcase,
   User,
   DollarSign,
@@ -43,7 +51,9 @@ import {
   Percent,
   CircleCheckBig,
   Copy,
-  Trash2
+  Trash2,
+  Save,
+  ListChecks
 } from "lucide-react";
 
 const currentYear = new Date().getFullYear();
@@ -108,6 +118,16 @@ const nisClassesData: NisClass[] = [
     { class: "XVI", weeklyEarnings: { min: 3138.00, max: null }, monthlyEarnings: { min: 13600.00, max: null }, assumedAverageWeekly: 3138.00, employeeWeekly: 138.10, employerWeekly: 276.20, totalWeekly: 414.30, classZWeekly: 20.72 },
 ];
 
+interface SavedPayrollEntry {
+  id: string;
+  employeeName: string;
+  period: string;
+  grossMonthlyIncome: string;
+  totalDeductions: string;
+  netPay: string;
+  timestamp: string;
+}
+
 const initialCalculationResults = {
     grossMonthlyIncomeDisplay: "0.00",
     estAnnualIncome: "0.00",
@@ -128,6 +148,7 @@ const initialCalculationResults = {
 export default function PayrollPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
+  const [savedCalculations, setSavedCalculations] = React.useState<SavedPayrollEntry[]>([]);
 
   const form = useForm<PayrollFormData>({
     resolver: zodResolver(payrollFormSchema),
@@ -184,10 +205,9 @@ export default function PayrollPage() {
       employerNISMonthly = foundNisClass.employerWeekly * mondaysInMonth;
     }
 
-    // Simplified PAYE
     const annualGrossIncome = gmi * 12;
     const personalAllowance = 90000;
-    const annualNisEmployee = nisMonthlyEmployee * 12; // Use calculated monthly NIS
+    const annualNisEmployee = nisMonthlyEmployee * 12; 
     const chargeableIncome = Math.max(0, annualGrossIncome - personalAllowance - annualNisEmployee);
     
     let annualPAYE = 0;
@@ -198,8 +218,7 @@ export default function PayrollPage() {
     }
     const payeMonthly = annualPAYE / 12;
 
-    // Simplified Health Surcharge
-    const weeklyGrossIncome = gmi / 4.3333; // Approximate weeks
+    const weeklyGrossIncome = gmi / 4.3333; 
     let weeklyHS = 0;
     if (weeklyGrossIncome <= 110) {
       weeklyHS = 4.13;
@@ -239,7 +258,7 @@ export default function PayrollPage() {
 Payroll Calculation Summary
 ---------------------------------
 Employee Name: ${employeeName || 'N/A'}
-Gross Monthly Income: TT$ ${grossMonthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+Gross Monthly Income: TT$ ${calculationResults.grossMonthlyIncomeDisplay}
 Payment Frequency: ${paymentFrequency}
 Period: ${monthLabel} ${selectedYear}
 ---------------------------------
@@ -275,6 +294,29 @@ Note: These are estimates. Consult official guidelines.
     });
     setCalculationResults(initialCalculationResults);
     toast({ title: "Fields Cleared", description: "Payroll calculator inputs have been reset." });
+  };
+
+  const handleSaveCalculation = () => {
+    if (!calculationResults.monthName) {
+      toast({ title: "No Calculation to Save", description: "Please calculate payroll first.", variant: "destructive" });
+      return;
+    }
+    const newEntry: SavedPayrollEntry = {
+      id: crypto.randomUUID(),
+      employeeName: form.getValues("employeeName") || "N/A",
+      period: `${calculationResults.monthName} ${calculationResults.yearDisplay}`,
+      grossMonthlyIncome: calculationResults.grossMonthlyIncomeDisplay,
+      totalDeductions: calculationResults.totalMonthlyDeductions,
+      netPay: calculationResults.netTakeHomePay,
+      timestamp: new Date().toLocaleString(),
+    };
+    setSavedCalculations(prev => [newEntry, ...prev]);
+    toast({ title: "Calculation Saved", description: "The payroll summary has been added to the table below." });
+  };
+
+  const handleRemoveCalculation = (id: string) => {
+    setSavedCalculations(prev => prev.filter(calc => calc.id !== id));
+    toast({ title: "Calculation Removed", description: "The entry has been removed from the table." });
   };
 
 
@@ -565,7 +607,52 @@ Note: These are estimates. Consult official guidelines.
                 <Button variant="outline" onClick={handleClearFields} className="w-full text-sm h-9 flex-1">
                     <Trash2 className="mr-2 h-4 w-4" /> Clear Fields
                 </Button>
+                 <Button variant="outline" onClick={handleSaveCalculation} className="w-full text-sm h-9 flex-1">
+                    <Save className="mr-2 h-4 w-4" /> Save Calculation
+                </Button>
               </CardFooter>
+            </Card>
+          )}
+
+          {savedCalculations.length > 0 && (
+            <Card className="w-full shadow-lg rounded-xl mt-8">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-primary flex items-center">
+                  <ListChecks className="mr-2 h-6 w-6" /> Saved Payroll Summaries
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Employee</TableHead>
+                      <TableHead>Period</TableHead>
+                      <TableHead className="text-right">Gross (TT$)</TableHead>
+                      <TableHead className="text-right">Deductions (TT$)</TableHead>
+                      <TableHead className="text-right">Net Pay (TT$)</TableHead>
+                      <TableHead>Saved At</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {savedCalculations.map((calc) => (
+                      <TableRow key={calc.id}>
+                        <TableCell>{calc.employeeName}</TableCell>
+                        <TableCell>{calc.period}</TableCell>
+                        <TableCell className="text-right">{calc.grossMonthlyIncome}</TableCell>
+                        <TableCell className="text-right">{calc.totalDeductions}</TableCell>
+                        <TableCell className="text-right">{calc.netPay}</TableCell>
+                        <TableCell>{calc.timestamp}</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
             </Card>
           )}
 

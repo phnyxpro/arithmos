@@ -2,21 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global body styles for the light theme gradient */
+/* Global body styles for the light theme */
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
-  /* Fallback solid color & lightest part of the gradient */
-  background-color: #BDFFF3; 
-  /* Gradient for light theme */
-  background-image: linear-gradient(to right, #BDFFF3, #4AC29A);
-  background-attachment: fixed; /* Ensure gradient covers viewport and stays */
+  background-color: hsl(var(--background)); /* Updated to use the new --background color */
+  /* background-image: linear-gradient(to bottom, hsl(var(--header-background)), hsl(169, 47%, 48%)); */ /* Removed gradient */
+  background-attachment: fixed; /* Kept for consistency, less impactful for solid color */
 }
 
 @layer base {
   :root {
-    /* Set --background to the lightest color of the gradient for light theme components */
-    --background: 169 100% 87%; /* #BDFFF3 */
+    --background: 150 43% 94%; /* #e7f6f0 - Very Light Greenish Blue */
     --foreground: 210 20% 25%; /* Dark Slate Grey */
 
     --card: 0 0% 100%; /* White */
@@ -25,7 +22,8 @@ body {
     --popover: 0 0% 100%; /* White */
     --popover-foreground: 210 20% 25%; /* Dark Slate Grey */
 
-    --primary: 190 50% 60%; /* Moderate Sky Blue */
+    /* Primary color changed to Dark Teal for titles */
+    --primary: 180 75% 15%; /* Dark Teal (#093637) */
     --primary-foreground: 0 0% 100%; /* White */
 
     --secondary: 120 50% 88%; /* Lighter Accent Green */
@@ -40,11 +38,12 @@ body {
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 140 25% 88%; /* Light Minty Grey */
-    --input: 140 25% 88%; /* Light Minty Grey */
-    --ring: 190 50% 60%; /* Moderate Sky Blue */
+    /* Input adjusted for 5% grey background */
+    --border: 210 10% 80%; /* Lighter grey for border to be visible on light grey input */
+    --input: 0 0% 95%; /* Approx 5% grey */
+    --ring: 180 75% 15%; /* Dark Teal for ring */
 
-    --chart-1: 190 50% 60%; /* Primary */
+    --chart-1: 180 75% 15%; /* Primary */
     --chart-2: 120 50% 65%; /* Accent */
     --chart-3: 170 50% 60%; /* Teal */
     --chart-4: 200 40% 75%; /* Light Desaturated Blue */
@@ -52,61 +51,73 @@ body {
 
     --radius: 0.5rem;
 
+    /* Header specific colors */
+    --header-background: 180 75% 15%; /* Dark Teal (#093637) */
+    --header-foreground: 0 0% 100%; /* White */
+
     /* Sidebar specific colors */
     --sidebar-background: 140 30% 93%; /* Muted Light Mint */
     --sidebar-foreground: 210 20% 25%; /* Dark Slate Grey */
-    --sidebar-primary: 190 50% 60%; /* Moderate Sky Blue */
+    --sidebar-primary: 180 75% 15%; /* Dark Teal */
     --sidebar-primary-foreground: 0 0% 100%; /* White */
     --sidebar-accent: 120 50% 65%; /* Moderate Light Green */
     --sidebar-accent-foreground: 0 0% 100%; /* White */
     --sidebar-border: 140 25% 85%; /* Slightly darker Minty Grey */
-    --sidebar-ring: 190 50% 60%; /* Moderate Sky Blue */
+    --sidebar-ring: 180 75% 15%; /* Dark Teal */
   }
 
   .dark {
-    --background: 200 15% 12%; /* Dark Blue-Grey */
+    /* --background: 200 15% 12%; */ /* Dark Blue-Grey */
+    /* Let's try a darker teal/green for dark mode background too */
+    --background: 180 30% 8%; /* Very Dark Teal */
     --foreground: 140 25% 85%; /* Light Minty Grey */
 
-    --card: 200 15% 15%; 
+    --card: 180 25% 12%;
     --card-foreground: 140 25% 85%;
 
-    --popover: 200 15% 15%;
+    --popover: 180 25% 12%;
     --popover-foreground: 140 25% 85%;
 
-    --primary: 190 55% 70%; /* Lighter Primary Blue for dark mode */
-    --primary-foreground: 190 50% 10%; /* Very Dark Blue */
+    /* Adjusted primary for dark mode to be lighter than the page background */
+    --primary: 169 47% 48%; /* Light Teal for titles/accents in dark mode */
+    --primary-foreground: 180 75% 10%; /* Very Dark Teal for text on primary buttons */
+
 
     --secondary: 120 40% 25%; /* Darker Green */
     --secondary-foreground: 120 50% 80%; /* Light Green */
 
-    --muted: 200 15% 20%;
+    --muted: 180 20% 15%;
     --muted-foreground: 140 20% 65%;
 
-    --accent: 120 55% 70%; /* Lighter Accent Green for dark mode */
-    --accent-foreground: 120 50% 15%; /* Very Dark Green */
+    --accent: 160 50% 60%; /* Lighter Teal/Green Accent for dark mode */
+    --accent-foreground: 180 50% 10%; /* Very Dark Teal/Green */
 
     --destructive: 0 60% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 200 15% 30%;
-    --input: 200 15% 30%;
-    --ring: 190 55% 70%;
+    --border: 180 15% 25%;
+    --input: 0 0% 10%; /* Darker grey input for dark mode, close to #1a1a1a */
+    --ring: 169 47% 48%; /* Light Teal for ring in dark mode */
 
-    --chart-1: 190 55% 70%;
-    --chart-2: 120 55% 70%;
+    --chart-1: 169 47% 48%;
+    --chart-2: 160 50% 60%;
     --chart-3: 170 55% 70%;
     --chart-4: 200 45% 80%;
     --chart-5: 100 45% 80%;
-    
+
+    /* Dark Header specific colors */
+    --header-background: 180 75% 10%; /* Even Darker Teal for Dark Header */
+    --header-foreground: 0 0% 95%; /* Off-White */
+
     /* Dark Sidebar specific colors */
-    --sidebar-background: 200 15% 10%; 
-    --sidebar-foreground: 140 25% 80%; 
-    --sidebar-primary: 190 55% 70%; 
-    --sidebar-primary-foreground: 190 50% 10%; 
-    --sidebar-accent: 120 55% 70%; 
-    --sidebar-accent-foreground: 120 50% 15%; 
-    --sidebar-border: 200 15% 25%; 
-    --sidebar-ring: 190 55% 70%; 
+    --sidebar-background: 180 20% 7%;
+    --sidebar-foreground: 140 25% 80%;
+    --sidebar-primary: 169 47% 48%;
+    --sidebar-primary-foreground: 180 75% 10%;
+    --sidebar-accent: 160 50% 60%;
+    --sidebar-accent-foreground: 180 50% 10%;
+    --sidebar-border: 180 15% 20%;
+    --sidebar-ring: 169 47% 48%;
   }
 }
 

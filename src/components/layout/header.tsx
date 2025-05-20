@@ -15,30 +15,31 @@ import {
 import {
   Clock,
   Users,
-  Banknote, // Kept for consistency if other calculators use it
+  Banknote, 
   Leaf,
   Building,
-  FileText as FileTextIcon, // Renamed, used for Accounting
+  FileText as FileTextIcon, 
   House,
-  ReceiptText, // Used for VAT
+  ReceiptText, 
   ChevronDown,
-  CloudUpload, // For Accounting
-  Landmark,    // For Accounting
-  BarChart3,   // For Accounting
-  User as UserIcon, // Renamed to avoid conflict
+  CloudUpload, 
+  Landmark,    
+  BarChart3,   
+  User as UserIcon, 
   Settings,
   CreditCard,
   LogIn,
+  Library, // Added for Knowledge Base main item
+  Factory // Added for Aid to Industry
 } from 'lucide-react';
 
-// Define calculator items for the dropdown
 const calculatorNavItems = [
   { href: "/calculators/time-calculator", label: "Time Calculator", Icon: Clock },
   { href: "/calculators/payroll", label: "PAYE, NIS & HS (Payroll)", Icon: Users },
   { href: "/calculators/business-levy", label: "Business Levy", Icon: Banknote },
   { href: "/calculators/green-fund-levy", label: "Green Fund Levy", Icon: Leaf },
   { href: "/calculators/corporation-tax", label: "Corporation Tax", Icon: Building },
-  { href: "/calculators/income-tax", label: "Income Tax", Icon: FileTextIcon }, // Using FileTextIcon for consistency
+  { href: "/calculators/income-tax", label: "Income Tax", Icon: FileTextIcon }, 
   { href: "/calculators/property-tax", label: "Property Tax", Icon: House },
   { href: "/calculators/vat", label: "VAT Calculator", Icon: ReceiptText },
 ];
@@ -50,11 +51,18 @@ const accountingNavItems = [
   { href: "/invoices/reports", label: "Financial Reporting", Icon: BarChart3 },
 ];
 
+const knowledgeBaseNavItems = [
+  { href: "/knowledge-base/property-tax", label: "Property Tax Act", Icon: House },
+  { href: "/knowledge-base/vat", label: "VAT Act", Icon: ReceiptText },
+  { href: "/knowledge-base/income-corporation-tax", label: "Income & Corp. Tax Act", Icon: Building },
+  { href: "/knowledge-base/aid-to-industry", label: "Aid to Industry Act", Icon: Factory },
+];
+
 const userNavItems = [
     { type: "label" as const, label: "My Account" },
     { type: "separator" as const },
     { type: "item" as const, href: "/profile", label: "Profile Settings", Icon: Settings },
-    { type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true }, // Special handling
+    { type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true }, 
     { type: "separator" as const },
     { type: "item" as const, href: "/auth/login", label: "Login", Icon: LogIn },
 ];
@@ -62,8 +70,6 @@ const userNavItems = [
 export default function Header() {
   const mainNavItems = [
     { href: "/dashboard", label: "Dashboard" },
-    // Calculators & Accounting are DropdownMenus
-    // Knowledge Base is now the last direct link before user menu
   ];
 
   return (
@@ -128,12 +134,34 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Link
-            href="/knowledge-base"
-            className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-md md:px-3"
-          >
-            Knowledge Base
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/10 transition-colors px-2 py-1 rounded-md md:px-3"
+              >
+                Knowledge Base
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
+               <DropdownMenuItem asChild>
+                  <Link href="/knowledge-base" className="flex items-center w-full">
+                    <Library className="mr-2 h-4 w-4" />
+                    <span>All Articles</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator/>
+              {knowledgeBaseNavItems.map((item) => (
+                <DropdownMenuItem key={item.label} asChild>
+                  <Link href={item.href} className="flex items-center w-full">
+                    <item.Icon className="mr-2 h-4 w-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -156,14 +184,12 @@ export default function Header() {
                 }
                 if (item.type === "item" && item.nonInteractive) {
                   return (
-                    // Render as a non-interactive item, perhaps with different styling or just not as a link
                     <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
                        {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
                        <span>{item.label}</span>
                     </DropdownMenuItem>
                   );
                 }
-                // Regular item with a link
                 return (
                   <DropdownMenuItem key={`user-item-${index}`} asChild>
                     <Link href={item.href || "#"} className="flex items-center w-full">
@@ -180,3 +206,5 @@ export default function Header() {
     </header>
   );
 }
+
+    

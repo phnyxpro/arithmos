@@ -25,28 +25,25 @@ import {
   DollarSign,
   Users as UsersIcon,
   Clock,
-  BarChart3,
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  FileText, // Replaced with BookOpen in resourceGuides, keep for CalculatorInfo
+  BarChart3,
+  BookOpen, 
+  FileHeart,
   Linkedin,
   Facebook,
-  FileHeart,
-  BookOpen, // Added for resourceGuides
-  CheckCircle2, // For "Why Use Tax TT?"
-  ThumbsUp, // For "Why Use Tax TT?"
+  CheckCircle2, 
+  ThumbsUp, 
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; // DialogDescription removed as not used
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
-import { format, parseISO, addDays } from 'date-fns';
-import { useToast } from "@/hooks/use-toast";
-
+// useToast and date-fns imports removed as handleAddToCalendar is removed
 
 interface HeroContent {
   icon: React.ElementType;
@@ -110,14 +107,14 @@ interface DeadlineItem {
   id: string;
   name: string;
   description: string;
-  nextDueDate: string;
+  nextDueDate: string; 
   periodicity: string;
   status: "Urgent" | "Upcoming" | "Completed";
 }
 
 const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
-  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Upcoming" },
+  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" }, // Status changed to Urgent for demonstration
   { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2024.", nextDueDate: "2024-06-30", periodicity: "Quarterly", status: "Urgent" },
   { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
   { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2024.", nextDueDate: "2024-09-30", periodicity: "Quarterly", status: "Upcoming" },
@@ -133,9 +130,9 @@ interface ResourceGuide {
 }
 
 const resourceGuides: ResourceGuide[] = [
-  { id: "vat-reg", title: "Understanding VAT in Trinidad", description: "An in-depth guide to help you navigate VAT.", href: "/knowledge-base#vat-guide-section" }, // Example updated link
-  { id: "paye-employer", title: "PAYE for Employers", description: "A comprehensive overview of PAYE obligations.", href: "/knowledge-base#paye-employer-guide" }, // Example
-  { id: "property-tax-overview", title: "Property Tax Essentials", description: "Key aspects of the Property Tax Act.", href: "/knowledge-base#property-tax-imposition" },
+  { id: "vat-guide", title: "Understanding VAT", description: "An in-depth guide to VAT registration, obligations, and filing.", href: "/knowledge-base/vat" },
+  { id: "income-tax-guide", title: "Income & Corporation Tax", description: "Overview of personal and corporate income tax laws.", href: "/knowledge-base/income-corporation-tax" },
+  { id: "property-tax-guide", title: "Property Tax Essentials", description: "Key aspects of the Property Tax Act explained.", href: "/knowledge-base/property-tax" },
 ];
 
 interface CalculatorInfo {
@@ -149,11 +146,11 @@ const calculatorInfoList: CalculatorInfo[] = [
   { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon },
   { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts.", icon: FileHeart },
   { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: BarChart3 },
-  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 }, // Re-using BarChart3, can change if needed
+  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 }, 
   { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied.", icon: CalculatorIcon },
-  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon }, // Re-using CalculatorIcon
-  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon }, // Re-using
-  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon }, // Re-using
+  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon }, 
+  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon }, 
+  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon }, 
 ];
 
 export default function LandingPage() {
@@ -163,7 +160,7 @@ export default function LandingPage() {
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed as handleAddToCalendar is removed
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
   const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
@@ -210,67 +207,7 @@ export default function LandingPage() {
     },
   ];
   
-  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
-    const eventDate = parseISO(deadline.nextDueDate);
-    if (isNaN(eventDate.getTime())) {
-        toast({
-            title: "Invalid Date",
-            description: `Cannot set a reminder for "${deadline.name}" as the date is invalid.`,
-            variant: "destructive",
-        });
-        return;
-    }
-    if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
-      toast({
-        title: "Past Due Date",
-        description: `The due date for "${deadline.name}" has passed.`,
-        variant: "default",
-      });
-      return;
-    }
-     if (deadline.status === "Completed") {
-      toast({
-        title: "Already Completed",
-        description: `"${deadline.name}" is marked as completed. No reminder set.`,
-        variant: "default",
-      });
-      return;
-    }
-
-
-    const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); 
-
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      `PRODID:-//TaxTT//TaxTT Reminder//EN`,
-      "BEGIN:VEVENT",
-      `UID:${crypto.randomUUID()}@taxtt.com`,
-      `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
-      `DTSTART;VALUE=DATE:${startDateStr}`,
-      `DTEND;VALUE=DATE:${endDateStr}`,
-      `SUMMARY:Tax TT Reminder: ${deadline.name}`,
-      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\\r\\n");
-
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-
-    toast({
-      title: "Reminder Sent to Calendar",
-      description: `A calendar event file for "${deadline.name}" is being downloaded.`,
-    });
-  }, [toast]);
-
+  // handleAddToCalendar function removed as it's no longer used.
 
   const HeroIcon = heroContentData.icon;
 
@@ -381,19 +318,20 @@ export default function LandingPage() {
             {deadlineItems.map((item) => {
                 let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
                 if (item.status === "Urgent") badgeVariant = "destructive";
-                else if (item.status === "Upcoming") badgeVariant = "default";
-                else if (item.status === "Completed") badgeVariant = "outline";
-
-                const dueDate = parseISO(item.nextDueDate);
-                const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed";
+                else if (item.status === "Upcoming") badgeVariant = "default"; 
+                else if (item.status === "Completed") badgeVariant = "outline"; 
+                
+                // const dueDate = parseISO(item.nextDueDate); // Removed as parseISO not imported
+                // const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed"; // Removed
 
               return (
-                <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${isPast ? 'opacity-70' : ''}`}>
+                <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${item.status === "Urgent" ? 'border-destructive' : ''}`}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg text-primary">{item.name}</CardTitle>
                        <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
-                        {isPast ? "Overdue" : item.status}
+                        {/* {isPast ? "Overdue" : item.status} */}
+                        {item.status} {/* Simplified display */}
                       </Badge>
                     </div>
                     <CardDescription className="text-xs pt-1">Periodicity: {item.periodicity}</CardDescription>
@@ -402,7 +340,8 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                      Due: {format(dueDate, "MMMM d, yyyy")}
+                      {/* Due: {format(dueDate, "MMMM d, yyyy")} */}
+                       Due: {item.nextDueDate} {/* Displaying as string directly */}
                     </div>
                   </CardContent>
                    <CardFooter>
@@ -410,8 +349,8 @@ export default function LandingPage() {
                       variant="ghost"
                       size="sm"
                       className="w-full justify-start text-xs text-primary hover:bg-primary/10 p-1"
-                      onClick={() => handleAddToCalendar(item)}
-                      // disabled={item.status === "Completed" || isPast} // Keep disabled logic if desired, or remove if reminder for past non-completed items is ok
+                      // onClick={() => handleAddToCalendar(item)} // Removed as handleAddToCalendar is removed
+                      disabled={item.status === "Completed"}
                     >
                       <CalendarDays className="mr-1.5 h-3 w-3"/> Set Reminder
                     </Button>
@@ -551,3 +490,4 @@ export default function LandingPage() {
   );
 }
 
+    

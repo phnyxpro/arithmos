@@ -97,7 +97,7 @@ export function SimplifiedLevyCalculator() {
 
     let bl = 0;
     const incorpYearNum = parseInt(yearOfIncorporation, 10);
-    const paymentYearNum = parseInt(paymentYear, 10) || appCurrentYear;
+    const paymentYearNum = parseInt(paymentYear, 10) || appCurrentYear; // Use appCurrentYear if paymentYear is somehow invalid
     const isExempt = paymentYearNum < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
 
     if (!isExempt) {
@@ -362,7 +362,7 @@ export function SimplifiedLevyCalculator() {
             </div>
             <Separator className="my-1" />
             <p className="text-xs text-muted-foreground pt-2">
-              <strong>Interest Note:</strong> Failure to pay at least 90% of the quarterly levy liability by the end of the quarter results in interest at 15% per annum on the shortfall.
+              <strong>Interest Note:</strong> Failure to pay at least 90% of the quarterly business levy liability by the end of the quarter results in interest at 15% per annum on the shortfall.
             </p>
           </CardContent>
         </Card>
@@ -377,10 +377,9 @@ export function SimplifiedLevyCalculator() {
         </div>
         
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Note: Business Levy exemption for new companies (first 3 years from registration, based on selected Payment Year) is automatically applied if applicable. Otherwise, Business Levy applies at 0.6% on total annualized gross income. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
+          Note: Business Levy exemption for new companies (first 3 years from registration, based on selected Payment Year) is automatically applied if applicable. Otherwise, Business Levy applies at 0.6% on total annualized gross income. Green Fund Levy applies at 0.3% on total annualized gross income (even exempt income) and cannot be offset against other taxes. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization. Levies are typically paid quarterly.
         </p>
       </div>
     </div>
   );
 }
-

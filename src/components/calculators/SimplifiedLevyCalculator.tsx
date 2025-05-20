@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { BarChart3, CalendarDays, DollarSign, Building, Copy, Trash2 } from 'lucide-react';
+import { BarChart3, CalendarDays, DollarSign, Building, Copy, Trash2, AlertCircle } from 'lucide-react';
 // import { useToast } from "@/hooks/use-toast"; // Uncomment if toasts are desired
 
 const appCurrentYear = new Date().getFullYear();
@@ -34,6 +35,7 @@ const quarters = ["Q1", "Q2", "Q3", "Q4"];
 const BUSINESS_LEVY_RATE = 0.006; // 0.6%
 const GREEN_FUND_LEVY_RATE = 0.003; // 0.3%
 const BUSINESS_LEVY_EXEMPTION_YEARS = 3;
+const INTEREST_RATE_ON_SHORTFALL = 0.15; // 15%
 
 export function SimplifiedLevyCalculator() {
   // const { toast } = useToast(); // Uncomment if toasts are desired
@@ -45,11 +47,12 @@ export function SimplifiedLevyCalculator() {
   const [quarterlyIncome, setQuarterlyIncome] = useState<string>("");
   const [annualDirectIncome, setAnnualDirectIncome] = useState<string>("");
   const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(
-    incorporationYears.includes(appCurrentYear.toString()) ? appCurrentYear.toString() : Math.max(...incorporationYears.map(Number)).toString()
+    incorporationYears.includes((appCurrentYear - 2).toString()) ? (appCurrentYear - 2).toString() : Math.max(...incorporationYears.map(Number)).toString()
   );
   
   const [paymentYear, setPaymentYear] = useState<string>(appCurrentYear.toString());
   const [paymentQuarter, setPaymentQuarter] = useState<string>("Q1");
+  const [amountPaidForQuarter, setAmountPaidForQuarter] = useState<string>("");
   const [currentDateOnMount, setCurrentDateOnMount] = useState<string>("");
 
   useEffect(() => {
@@ -62,9 +65,16 @@ export function SimplifiedLevyCalculator() {
     businessLevy: "0.00",
     greenFundLevy: "0.00",
     totalEstimatedLevies: "0.00",
+    quarterlyLevyDueDisplay: "0.00",
+    minimumPaymentThresholdDisplay: "0.00",
+    amountPaidDisplay: "0.00",
+    actualShortfallDisplay: "0.00",
+    estimatedAnnualInterestDisplay: "0.00",
   });
 
   const parseNum = (val: string) => parseFloat(val) || 0;
+
+  const formatCurrency = (num: number) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const handleCalculateLevies = React.useCallback(() => {
     let agi = 0;
@@ -87,28 +97,41 @@ export function SimplifiedLevyCalculator() {
 
     let bl = 0;
     const incorpYearNum = parseInt(yearOfIncorporation, 10);
-    // const currentYrForExemption = new Date().getFullYear(); // Or use selected paymentYear if exemption is based on payment period year
-
-    // Business Levy is exempt for the first 3 years from registration date
-    // Assuming 'currentYrForExemption' should be the year for which the levy is being calculated, i.e., paymentYear
-    const effectiveExemptionCheckYear = parseInt(paymentYear, 10) || appCurrentYear;
-    const isExempt = effectiveExemptionCheckYear < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
+    const paymentYearNum = parseInt(paymentYear, 10) || appCurrentYear;
+    const isExempt = paymentYearNum < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
 
     if (!isExempt) {
       bl = agi * BUSINESS_LEVY_RATE;
     }
 
-    const totalLevies = bl + gfl;
+    const totalAnnualLevies = bl + gfl;
+
+    // Interest Calculation
+    const quarterlyLevyDue = totalAnnualLevies / 4;
+    const minimumPaymentThreshold = quarterlyLevyDue * 0.90;
+    const amountPaidForQuarterNum = parseNum(amountPaidForQuarter);
+    const actualShortfall = Math.max(0, quarterlyLevyDue - amountPaidForQuarterNum);
+    
+    let interestApplicableShortfall = 0;
+    if (amountPaidForQuarterNum < minimumPaymentThreshold && actualShortfall > 0) {
+      interestApplicableShortfall = actualShortfall;
+    }
+    const estimatedAnnualInterest = interestApplicableShortfall * INTEREST_RATE_ON_SHORTFALL;
 
     setCalculationResults({
-      annualizedGrossIncome: agi.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      businessLevy: bl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      greenFundLevy: gfl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      totalEstimatedLevies: totalLevies.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      annualizedGrossIncome: formatCurrency(agi),
+      businessLevy: formatCurrency(bl),
+      greenFundLevy: formatCurrency(gfl),
+      totalEstimatedLevies: formatCurrency(totalAnnualLevies),
+      quarterlyLevyDueDisplay: formatCurrency(quarterlyLevyDue),
+      minimumPaymentThresholdDisplay: formatCurrency(minimumPaymentThreshold),
+      amountPaidDisplay: formatCurrency(amountPaidForQuarterNum),
+      actualShortfallDisplay: formatCurrency(actualShortfall),
+      estimatedAnnualInterestDisplay: formatCurrency(estimatedAnnualInterest),
     });
     // toast({ title: "Calculation Updated" });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation, paymentYear]); // Added paymentYear for exemption check context
+  }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation, paymentYear, amountPaidForQuarter]);
 
   useEffect(() => {
     handleCalculateLevies();
@@ -116,11 +139,17 @@ export function SimplifiedLevyCalculator() {
 
   const handleCopyResults = () => {
     const resultsText = `
+    Payment Period: ${paymentYear} ${paymentQuarter}
     Annualized Gross Income: $${calculationResults.annualizedGrossIncome}
     Business Levy: $${calculationResults.businessLevy}
     Green Fund Levy: $${calculationResults.greenFundLevy}
-    Total Estimated Levies: $${calculationResults.totalEstimatedLevies}
-    Payment Period: ${paymentYear} ${paymentQuarter}
+    Total Estimated Annual Levies: $${calculationResults.totalEstimatedLevies}
+    ---
+    Quarterly Levy Due: $${calculationResults.quarterlyLevyDueDisplay}
+    Minimum 90% Payment: $${calculationResults.minimumPaymentThresholdDisplay}
+    Amount Paid This Quarter: $${calculationResults.amountPaidDisplay}
+    Shortfall for Quarter: $${calculationResults.actualShortfallDisplay}
+    Estimated Annual Interest on Shortfall (if applicable): $${calculationResults.estimatedAnnualInterestDisplay}
     (Calculated on: ${currentDateOnMount})
     `;
     navigator.clipboard.writeText(resultsText.trim());
@@ -135,10 +164,11 @@ export function SimplifiedLevyCalculator() {
     setQuarterlyIncome("");
     setAnnualDirectIncome("");
     setYearOfIncorporation(
-      incorporationYears.includes(appCurrentYear.toString()) ? appCurrentYear.toString() : Math.max(...incorporationYears.map(Number)).toString()
+      incorporationYears.includes((appCurrentYear - 2).toString()) ? (appCurrentYear -2).toString() : Math.max(...incorporationYears.map(Number)).toString()
     );
     setPaymentYear(appCurrentYear.toString());
     setPaymentQuarter("Q1");
+    setAmountPaidForQuarter("");
     // toast({ title: "Fields Cleared" });
   };
 
@@ -149,7 +179,7 @@ export function SimplifiedLevyCalculator() {
           <div className="space-y-1">
             <Label htmlFor="incomePeriodLevySimple" className="flex items-center text-sm">
               <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-              Income Period
+              Income Period for Annualization
             </Label>
             <Select value={incomePeriod} onValueChange={(value: "monthly" | "quarterly" | "annual") => setIncomePeriod(value)}>
               <SelectTrigger id="incomePeriodLevySimple" className="h-9 text-sm">
@@ -272,6 +302,21 @@ export function SimplifiedLevyCalculator() {
               </Select>
             </div>
           </div>
+
+           <div className="space-y-1 pt-2">
+              <Label htmlFor="amountPaidForQuarter" className="flex items-center text-sm">
+                <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" /> Amount Paid for {paymentQuarter} {paymentYear} (TT$)
+              </Label>
+              <Input
+                id="amountPaidForQuarter"
+                type="number"
+                step="0.01"
+                placeholder="e.g., 10000"
+                value={amountPaidForQuarter}
+                onChange={(e) => setAmountPaidForQuarter(e.target.value)}
+                className="h-9 text-sm mt-1"
+              />
+            </div>
         </div>
 
         <Card className="mt-4">
@@ -286,18 +331,38 @@ export function SimplifiedLevyCalculator() {
             </div>
             <Separator className="my-1" />
             <div className="flex justify-between">
-              <span>Business Levy:</span><strong>${calculationResults.businessLevy}</strong>
+              <span>Business Levy (Annual):</span><strong>${calculationResults.businessLevy}</strong>
             </div>
             <div className="flex justify-between">
-              <span>Green Fund Levy (0.3% of Gross):</span> <strong>${calculationResults.greenFundLevy}</strong>
+              <span>Green Fund Levy (Annual):</span> <strong>${calculationResults.greenFundLevy}</strong>
             </div>
             <Separator className="my-1" />
-            <div className="flex justify-between font-semibold text-sm">
-              <span>Total Estimated Levies:</span> <strong className="text-primary">${calculationResults.totalEstimatedLevies}</strong>
+            <div className="flex justify-between font-semibold">
+              <span>Total Estimated Annual Levies:</span> <strong className="text-primary">${calculationResults.totalEstimatedLevies}</strong>
+            </div>
+            <Separator className="my-2 border-dashed" />
+             <div className="text-xs font-semibold text-foreground mb-1">Quarterly Payment & Interest Estimate:</div>
+            <div className="flex justify-between">
+              <span>Quarterly Levy Due (Total / 4):</span> <strong>${calculationResults.quarterlyLevyDueDisplay}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Minimum 90% Payment Required:</span> <strong>${calculationResults.minimumPaymentThresholdDisplay}</strong>
+            </div>
+             <div className="flex justify-between">
+              <span>Amount Paid This Quarter:</span> <strong>${calculationResults.amountPaidDisplay}</strong>
+            </div>
+            <div className="flex justify-between">
+              <span>Shortfall for Quarter:</span> <strong>${calculationResults.actualShortfallDisplay}</strong>
+            </div>
+            <div className="flex justify-between items-center text-destructive">
+              <span className="flex items-center">
+                <AlertCircle className="mr-1 h-3 w-3"/> Estimated Annual Interest on Shortfall:
+              </span> 
+              <strong>${calculationResults.estimatedAnnualInterestDisplay}</strong>
             </div>
             <Separator className="my-1" />
             <p className="text-xs text-muted-foreground pt-2">
-              <strong>Interest Note:</strong> Failure to pay at least 90% of the levy liability by the end of the quarter results in interest at 15% per annum on the shortfall.
+              <strong>Interest Note:</strong> Failure to pay at least 90% of the quarterly levy liability by the end of the quarter results in interest at 15% per annum on the shortfall.
             </p>
           </CardContent>
         </Card>

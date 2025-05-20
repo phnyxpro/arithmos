@@ -8,6 +8,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -23,6 +25,10 @@ import {
   CloudUpload,
   Landmark,
   BarChart3, // Renamed from chart-column for lucide
+  User,
+  Settings,
+  CreditCard,
+  LogIn,
 } from 'lucide-react';
 
 // Define calculator items for the dropdown
@@ -44,11 +50,20 @@ const accountingNavItems = [
   { href: "/invoices/reports", label: "Financial Reporting", Icon: BarChart3 },
 ];
 
+const userNavItems = [
+    { type: "label", label: "My Account" },
+    { type: "separator" },
+    { href: "/profile", label: "Profile Settings", Icon: Settings },
+    { type: "item", label: "Subscription", Icon: CreditCard, nonInteractive: true }, // Special handling for non-link item
+    { type: "separator" },
+    { href: "/auth/login", label: "Login", Icon: LogIn },
+];
+
 export default function Header() {
   const mainNavItems = [
     { href: "/dashboard", label: "Dashboard" },
     // Calculators & Accounting will be handled by DropdownMenu
-    { href: "/knowledge-base", label: "Knowledge Base" },
+    // Knowledge Base will be added after dropdowns
   ];
 
   return (
@@ -113,6 +128,52 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           
+          <Link
+            href="/knowledge-base"
+            className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors px-2 py-1 rounded-md md:px-3"
+          >
+            Knowledge Base
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9 rounded-full p-0 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+              >
+                <User className="h-5 w-5" />
+                <span className="sr-only">Open user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-popover text-popover-foreground">
+              {userNavItems.map((item, index) => {
+                if (item.type === "label") {
+                  return <DropdownMenuLabel key={`user-item-${index}`}>{item.label}</DropdownMenuLabel>;
+                }
+                if (item.type === "separator") {
+                  return <DropdownMenuSeparator key={`user-item-${index}`} />;
+                }
+                if (item.type === "item" && item.nonInteractive) {
+                  return (
+                    <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
+                       {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
+                       <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  );
+                }
+                return (
+                  <DropdownMenuItem key={`user-item-${index}`} asChild>
+                    <Link href={item.href || "#"} className="flex items-center w-full">
+                      {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
+                      <span>{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
         </nav>
       </div>
     </header>

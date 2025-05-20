@@ -1,13 +1,12 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { BarChart3, CalendarDays, DollarSign, Building, Copy, Trash2, AlertCircle } from 'lucide-react';
-// import { useToast } from "@/hooks/use-toast"; // Uncomment if toasts are desired
+import { useToast } from "@/hooks/use-toast";
 
 const appCurrentYear = new Date().getFullYear();
 const incorporationYears = Array.from({ length: 30 }, (_, i) => (appCurrentYear - i).toString());
@@ -38,7 +37,7 @@ const BUSINESS_LEVY_EXEMPTION_YEARS = 3;
 const INTEREST_RATE_ON_SHORTFALL = 0.15; // 15%
 
 export function SimplifiedLevyCalculator() {
-  // const { toast } = useToast(); // Uncomment if toasts are desired
+  const { toast } = useToast();
 
   const [incomePeriod, setIncomePeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
   const [month1Income, setMonth1Income] = useState<string>("50000");
@@ -46,9 +45,11 @@ export function SimplifiedLevyCalculator() {
   const [month3Income, setMonth3Income] = useState<string>("50000");
   const [quarterlyIncome, setQuarterlyIncome] = useState<string>("");
   const [annualDirectIncome, setAnnualDirectIncome] = useState<string>("");
-  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(
-    incorporationYears.includes((appCurrentYear - 2).toString()) ? (appCurrentYear - 2).toString() : Math.max(...incorporationYears.map(Number)).toString()
-  );
+  
+  const defaultIncorpYear = incorporationYears.includes((appCurrentYear - 2).toString()) 
+    ? (appCurrentYear - 2).toString() 
+    : Math.max(...incorporationYears.map(Number)).toString();
+  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(defaultIncorpYear);
   
   const [paymentYear, setPaymentYear] = useState<string>(appCurrentYear.toString());
   const [paymentQuarter, setPaymentQuarter] = useState<string>("Q1");
@@ -56,11 +57,10 @@ export function SimplifiedLevyCalculator() {
   const [currentDateOnMount, setCurrentDateOnMount] = useState<string>("");
 
   useEffect(() => {
-    setCurrentDateOnMount(new Date().toISOString());
+    setCurrentDateOnMount(new Date().toLocaleDateString()); // Using a more readable date format
   }, []);
 
-
-  const [calculationResults, setCalculationResults] = useState({
+  const initialCalculationResults = {
     annualizedGrossIncome: "0.00",
     businessLevy: "0.00",
     greenFundLevy: "0.00",
@@ -70,13 +70,14 @@ export function SimplifiedLevyCalculator() {
     amountPaidDisplay: "0.00",
     actualShortfallDisplay: "0.00",
     estimatedAnnualInterestDisplay: "0.00",
-  });
+  };
+  const [calculationResults, setCalculationResults] = useState(initialCalculationResults);
 
   const parseNum = (val: string) => parseFloat(val) || 0;
 
   const formatCurrency = (num: number) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  const handleCalculateLevies = React.useCallback(() => {
+  const handleCalculateLevies = useCallback(() => {
     let agi = 0;
     const m1 = parseNum(month1Income);
     const m2 = parseNum(month2Income);
@@ -97,7 +98,7 @@ export function SimplifiedLevyCalculator() {
 
     let bl = 0;
     const incorpYearNum = parseInt(yearOfIncorporation, 10);
-    const paymentYearNum = parseInt(paymentYear, 10) || appCurrentYear; // Use appCurrentYear if paymentYear is somehow invalid
+    const paymentYearNum = parseInt(paymentYear, 10);
     const isExempt = paymentYearNum < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
 
     if (!isExempt) {
@@ -105,8 +106,6 @@ export function SimplifiedLevyCalculator() {
     }
 
     const totalAnnualLevies = bl + gfl;
-
-    // Interest Calculation
     const quarterlyLevyDue = totalAnnualLevies / 4;
     const minimumPaymentThreshold = quarterlyLevyDue * 0.90;
     const amountPaidForQuarterNum = parseNum(amountPaidForQuarter);
@@ -129,8 +128,6 @@ export function SimplifiedLevyCalculator() {
       actualShortfallDisplay: formatCurrency(actualShortfall),
       estimatedAnnualInterestDisplay: formatCurrency(estimatedAnnualInterest),
     });
-    // toast({ title: "Calculation Updated" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation, paymentYear, amountPaidForQuarter]);
 
   useEffect(() => {
@@ -138,22 +135,45 @@ export function SimplifiedLevyCalculator() {
   }, [handleCalculateLevies]);
 
   const handleCopyResults = () => {
+    let incomeDetails = `Income Period: ${incomePeriod.charAt(0).toUpperCase() + incomePeriod.slice(1)}\n`;
+    if (incomePeriod === "monthly") {
+      incomeDetails += `Month 1 Income: $${formatCurrency(parseNum(month1Income))}\n`;
+      incomeDetails += `Month 2 Income: $${formatCurrency(parseNum(month2Income))}\n`;
+      incomeDetails += `Month 3 Income: $${formatCurrency(parseNum(month3Income))}\n`;
+    } else if (incomePeriod === "quarterly") {
+      incomeDetails += `Quarterly Income: $${formatCurrency(parseNum(quarterlyIncome))}\n`;
+    } else if (incomePeriod === "annual") {
+      incomeDetails += `Annual Income: $${formatCurrency(parseNum(annualDirectIncome))}\n`;
+    }
+
     const resultsText = `
-    Payment Period: ${paymentYear} ${paymentQuarter}
-    Annualized Gross Income: $${calculationResults.annualizedGrossIncome}
-    Business Levy: $${calculationResults.businessLevy}
-    Green Fund Levy: $${calculationResults.greenFundLevy}
-    Total Estimated Annual Levies: $${calculationResults.totalEstimatedLevies}
-    ---
-    Quarterly Levy Due: $${calculationResults.quarterlyLevyDueDisplay}
-    Minimum 90% Payment: $${calculationResults.minimumPaymentThresholdDisplay}
-    Amount Paid This Quarter: $${calculationResults.amountPaidDisplay}
-    Shortfall for Quarter: $${calculationResults.actualShortfallDisplay}
-    Estimated Annual Interest on Shortfall (if applicable): $${calculationResults.estimatedAnnualInterestDisplay}
-    (Calculated on: ${currentDateOnMount})
+LEVY CALCULATOR RESULTS
+---------------------------------
+Inputs:
+${incomeDetails}
+Year of Incorporation: ${yearOfIncorporation}
+Payment Year: ${paymentYear}
+Payment Quarter: ${paymentQuarter}
+Amount Paid for ${paymentQuarter} ${paymentYear}: $${formatCurrency(parseNum(amountPaidForQuarter))}
+---------------------------------
+Calculated Annual Levies:
+Annualized Gross Income: $${calculationResults.annualizedGrossIncome}
+Business Levy (Annual): $${calculationResults.businessLevy}
+Green Fund Levy (Annual): $${calculationResults.greenFundLevy}
+Total Estimated Annual Levies: $${calculationResults.totalEstimatedLevies}
+---------------------------------
+Quarterly Payment & Interest Estimate for ${paymentQuarter} ${paymentYear}:
+Quarterly Levy Due (Total / 4): $${calculationResults.quarterlyLevyDueDisplay}
+Minimum 90% Payment Required: $${calculationResults.minimumPaymentThresholdDisplay}
+Amount Paid This Quarter: $${calculationResults.amountPaidDisplay}
+Shortfall for Quarter: $${calculationResults.actualShortfallDisplay}
+Estimated Annual Interest on Shortfall (if applicable): $${calculationResults.estimatedAnnualInterestDisplay}
+---------------------------------
+Calculation Date: ${currentDateOnMount}
+Disclaimer: This calculator provides an estimate for illustrative purposes only. Always consult official IRD guidelines and a qualified professional.
     `;
     navigator.clipboard.writeText(resultsText.trim());
-    // toast({ title: "Results Copied!" });
+    toast({ title: "Results Copied!", description: "Calculation details copied to clipboard." });
   };
 
   const handleClearFields = () => {
@@ -163,13 +183,12 @@ export function SimplifiedLevyCalculator() {
     setMonth3Income(""); 
     setQuarterlyIncome("");
     setAnnualDirectIncome("");
-    setYearOfIncorporation(
-      incorporationYears.includes((appCurrentYear - 2).toString()) ? (appCurrentYear -2).toString() : Math.max(...incorporationYears.map(Number)).toString()
-    );
+    setYearOfIncorporation(defaultIncorpYear);
     setPaymentYear(appCurrentYear.toString());
     setPaymentQuarter("Q1");
     setAmountPaidForQuarter("");
-    // toast({ title: "Fields Cleared" });
+    setCalculationResults(initialCalculationResults); // Reset results too
+    toast({ title: "Fields Cleared", description: "Calculator inputs and results have been reset." });
   };
 
   return (
@@ -383,3 +402,5 @@ export function SimplifiedLevyCalculator() {
     </div>
   );
 }
+
+    

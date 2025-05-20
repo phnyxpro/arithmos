@@ -33,14 +33,16 @@ import {
   BookOpen,
   Linkedin,
   Facebook,
-  FileHeart, // Added for Voluntary NIS
+  FileHeart,
+  BarChart3,
+  CheckCircle2,
+  ThumbsUp,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
-import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator'; // Added
-import { useToast } from "@/hooks/use-toast";
+import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
 import { format, parseISO, addDays } from 'date-fns';
 
 interface HeroContent {
@@ -105,7 +107,7 @@ interface DeadlineItem {
   id: string;
   name: string;
   description: string;
-  nextDueDate: string; 
+  nextDueDate: string;
   periodicity: string;
   status: "Urgent" | "Upcoming" | "Completed";
 }
@@ -137,17 +139,18 @@ interface CalculatorInfo {
   id: string;
   name: string;
   description: string;
+  icon?: React.ElementType; // Added icon property
 }
 const calculatorInfoList: CalculatorInfo[] = [
-  { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers." },
-  { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds." },
-  { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years)." },
-  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly." },
-  { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied." },
-  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets." },
-  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction)." },
-  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker." },
-  { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts." },
+  { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock },
+  { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon },
+  { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts.", icon: FileHeart },
+  { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income that exceeds the TT$360,000 exemption threshold. Considers exemptions for new companies (first 3 years).", icon: BarChart3 },
+  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 }, // Potentially use a Leaf icon here if available and desired
+  { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied.", icon: CalculatorIcon }, // Placeholder icon
+  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon }, // Placeholder icon
+  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon }, // Placeholder icon
+  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon }, // Placeholder icon
 ];
 
 export default function LandingPage() {
@@ -155,19 +158,18 @@ export default function LandingPage() {
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
-  const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false); // Added
-  const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0); // Added
-  const { toast } = useToast();
+  const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
+  const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
   const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
-  
+
   const handleOpenLevyCalc = React.useCallback(() => {
-    setLevyCalcKey(prevKey => prevKey + 1); 
+    setLevyCalcKey(prevKey => prevKey + 1);
     setIsLevyCalcOpen(true);
   }, []);
 
-  const handleOpenVoluntaryNisCalc = React.useCallback(() => { // Added
+  const handleOpenVoluntaryNisCalc = React.useCallback(() => {
     setVoluntaryNisCalcKey(prevKey => prevKey + 1);
     setIsVoluntaryNisCalcOpen(true);
   }, []);
@@ -189,14 +191,14 @@ export default function LandingPage() {
       onClick: handleOpenPayrollCalc,
     },
     {
-      icon: FileHeart, // Added for Voluntary NIS
+      icon: FileHeart,
       title: "Voluntary NIS Contribution",
       description: "Estimate your NIS contributions as a self-employed individual.",
       ctaText: "Estimate Voluntary NIS",
       onClick: handleOpenVoluntaryNisCalc,
     },
     {
-      icon: DollarSign, 
+      icon: BarChart3,
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
@@ -204,67 +206,23 @@ export default function LandingPage() {
     },
   ];
 
-  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
-    const eventDate = parseISO(deadline.nextDueDate);
-    if (isNaN(eventDate.getTime()) || eventDate < new Date(new Date().setHours(0,0,0,0))) {
-      toast({
-        title: "Invalid or Past Date",
-        description: `Cannot set a reminder for "${deadline.name}" as the date is invalid or in the past.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); 
-
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      `PRODID:-//TaxTT//TaxTT Reminder//EN`,
-      "BEGIN:VEVENT",
-      `UID:${crypto.randomUUID()}@taxtt.com`,
-      `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
-      `DTSTART;VALUE=DATE:${startDateStr}`,
-      `DTEND;VALUE=DATE:${endDateStr}`,
-      `SUMMARY:Tax TT Reminder: ${deadline.name}`,
-      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
-
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-
-    toast({
-      title: "Reminder Sent to Calendar",
-      description: `A calendar event file for "${deadline.name}" is being downloaded.`,
-    });
-  }, [toast]);
-
   const HeroIcon = heroContentData.icon;
 
   return (
-    <div className="flex flex-col"> {/* Removed bg-background */}
+    <div className="flex flex-col">
       {/* Hero Section */}
-      <section 
-        id="hero" 
+      <section
+        id="hero"
         className="relative w-full bg-cover bg-center py-24 md:py-32"
       >
-        <div 
+        <div
           className="absolute inset-0 grayscale opacity-20"
           style={{ backgroundImage: `url('${heroContentData.backgroundImageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
           aria-label="Background image of tax preparation scene"
           data-ai-hint="taxes planning"
         ></div>
-        <div className="absolute inset-0 bg-black/60"></div> 
-        
+        <div className="absolute inset-0 bg-black/60"></div>
+
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary" />
           <h1 className="text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl mb-4">
@@ -288,7 +246,7 @@ export default function LandingPage() {
       </section>
 
       {/* Quick Access Calculators */}
-      <section id="popular-calculators" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
+      <section id="popular-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
@@ -323,14 +281,14 @@ export default function LandingPage() {
       </section>
 
        {/* Why Choose Tax TT */}
-       <section id="why-tax-tt" className="py-16 lg:py-24"> {/* Removed bg-background */}
+       <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Why Choose Tax TT?
           </h2>
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2">
             {benefitsData.map((benefit) => (
-              <div key={benefit.title} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left p-6 rounded-lg hover:shadow-md transition-shadow"> {/* Removed bg-muted/30 */}
+              <div key={benefit.title} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left p-6 rounded-lg hover:shadow-md transition-shadow">
                 <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                   <benefit.icon className="h-12 w-12 text-accent" />
                 </div>
@@ -345,7 +303,7 @@ export default function LandingPage() {
       </section>
 
       {/* Upcoming Deadlines */}
-      <section id="deadlines-compliance" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
+      <section id="deadlines-compliance" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary mb-3">Stay Ahead with Compliance</h2>
@@ -357,9 +315,9 @@ export default function LandingPage() {
             {deadlineItems.map((item) => {
                 let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
                 if (item.status === "Urgent") badgeVariant = "destructive";
-                else if (item.status === "Upcoming") badgeVariant = "default"; 
-                else if (item.status === "Completed") badgeVariant = "outline"; 
-                
+                else if (item.status === "Upcoming") badgeVariant = "default";
+                else if (item.status === "Completed") badgeVariant = "outline";
+
                 const dueDate = parseISO(item.nextDueDate);
                 const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed";
 
@@ -382,17 +340,6 @@ export default function LandingPage() {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs text-primary hover:bg-primary/10 p-1"
-                      onClick={() => handleAddToCalendar(item)}
-                      disabled={item.status === "Completed"}
-                    >
-                       {/* Using a generic Bell icon from lucide-react */}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 h-3 w-3 lucide lucide-bell"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                       Set Reminder
-                    </Button>
                   </CardFooter>
                 </Card>
               );
@@ -409,7 +356,7 @@ export default function LandingPage() {
       </section>
 
       {/* Resources & Guides */}
-      <section id="resources-guides" className="py-16 lg:py-24"> {/* Removed bg-background */}
+      <section id="resources-guides" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Resources & Guides
@@ -441,7 +388,7 @@ export default function LandingPage() {
       </section>
 
       {/* Learn About Our Calculators */}
-      <section id="learn-calculators" className="py-16 lg:py-24"> {/* Removed bg-muted/30 */}
+      <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Learn About Our Calculators
@@ -450,6 +397,7 @@ export default function LandingPage() {
             {calculatorInfoList.map((calc) => (
               <AccordionItem value={calc.id} key={calc.id}>
                 <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
+                   {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-primary/80" />}
                   {calc.name}
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground leading-relaxed pl-10">
@@ -462,7 +410,7 @@ export default function LandingPage() {
       </section>
 
       {/* Get Started / Contact */}
-      <section id="get-started" className="py-16 lg:py-24 text-center"> {/* Removed bg-background */}
+      <section id="get-started" className="py-16 lg:py-24 text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-primary mb-4">
             Ready to Simplify Your Taxes?
@@ -473,9 +421,6 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Link href="#popular-calculators">Use a Calculator Now</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="text-primary border-primary hover:bg-primary/10">
-              <Link href="/auth/signup">Create Free Account</Link>
             </Button>
           </div>
           <div className="mt-12">
@@ -503,7 +448,7 @@ export default function LandingPage() {
             </p>
         </div>
       </footer>
-      
+
       <Dialog open={isBasicTimeCalcOpen} onOpenChange={setIsBasicTimeCalcOpen}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -531,7 +476,7 @@ export default function LandingPage() {
       <Dialog open={isLevyCalcOpen} onOpenChange={setIsLevyCalcOpen}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><DollarSign className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><BarChart3 className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
            <DialogClose asChild>
@@ -540,7 +485,7 @@ export default function LandingPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={setIsVoluntaryNisCalcOpen}> {/* Added */}
+      <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={setIsVoluntaryNisCalcOpen}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><FileHeart className="mr-2 h-6 w-6"/>Voluntary NIS Calculator</DialogTitle>

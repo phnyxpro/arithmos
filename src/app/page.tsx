@@ -139,18 +139,18 @@ interface CalculatorInfo {
   id: string;
   name: string;
   description: string;
-  icon?: React.ElementType; // Added icon property
+  icon?: React.ElementType;
 }
 const calculatorInfoList: CalculatorInfo[] = [
   { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock },
   { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon },
   { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts.", icon: FileHeart },
   { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income that exceeds the TT$360,000 exemption threshold. Considers exemptions for new companies (first 3 years).", icon: BarChart3 },
-  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 }, // Potentially use a Leaf icon here if available and desired
-  { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied.", icon: CalculatorIcon }, // Placeholder icon
-  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon }, // Placeholder icon
-  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon }, // Placeholder icon
-  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon }, // Placeholder icon
+  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 },
+  { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied.", icon: CalculatorIcon },
+  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon },
+  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon },
+  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon },
 ];
 
 export default function LandingPage() {
@@ -409,30 +409,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Get Started / Contact */}
-      <section id="get-started" className="py-16 lg:py-24 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-primary mb-4">
-            Ready to Simplify Your Taxes?
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-            Access all our calculators and features by creating a free account or logging in.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-             <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href="#popular-calculators">Use a Calculator Now</Link>
-            </Button>
-          </div>
-          <div className="mt-12">
-            <p className="text-sm text-muted-foreground mb-2">Connect with us (Conceptual)</p>
-            <div className="flex justify-center space-x-4">
-              <Link href="#" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary"><Linkedin size={24} /></Link>
-              <Link href="#" aria-label="Facebook" className="text-muted-foreground hover:text-primary"><Facebook size={24} /></Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
             <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
@@ -499,4 +475,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

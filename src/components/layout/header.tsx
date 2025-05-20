@@ -20,6 +20,9 @@ import {
   House,
   ReceiptText,
   ChevronDown,
+  CloudUpload,
+  Landmark,
+  BarChart3, // Renamed from chart-column for lucide
 } from 'lucide-react';
 
 // Define calculator items for the dropdown
@@ -34,11 +37,17 @@ const calculatorNavItems = [
   { href: "/calculators/vat", label: "VAT Calculator", Icon: ReceiptText },
 ];
 
+const accountingNavItems = [
+  { href: "/invoices/billing", label: "Invoicing & Billing", Icon: FileTextIcon },
+  { href: "/invoices/expenses", label: "Expense Tracking", Icon: CloudUpload },
+  { href: "/invoices/reconciliation", label: "Bank Reconciliation", Icon: Landmark },
+  { href: "/invoices/reports", label: "Financial Reporting", Icon: BarChart3 },
+];
+
 export default function Header() {
   const mainNavItems = [
     { href: "/dashboard", label: "Dashboard" },
-    // Calculators will be handled by DropdownMenu
-    { href: "/accounting", label: "Accounting" },
+    // Calculators & Accounting will be handled by DropdownMenu
     { href: "/knowledge-base", label: "Knowledge Base" },
   ];
 
@@ -81,12 +90,29 @@ export default function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+              >
+                Accounting
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
+              {accountingNavItems.map((item) => (
+                <DropdownMenuItem key={item.label} asChild>
+                  <Link href={item.href} className="flex items-center w-full">
+                    <item.Icon className="mr-2 h-4 w-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           
-          {/* Example of a CTA button in the nav if needed later
-          <Button variant="secondary" size="sm" asChild className="ml-2 hidden sm:inline-flex">
-            <Link href="/auth/login">Login</Link>
-          </Button>
-          */}
         </nav>
       </div>
     </header>

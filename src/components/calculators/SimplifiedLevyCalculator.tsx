@@ -7,8 +7,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription, // Added for consistency if needed
-  CardFooter
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +19,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // For disclaimer
 import { BarChart3, CalendarDays, DollarSign, Building, Copy, Trash2 } from 'lucide-react';
 // import { useToast } from "@/hooks/use-toast"; // Uncomment if toasts are desired
 
@@ -31,10 +28,11 @@ const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString())
 export function SimplifiedLevyCalculator() {
   // const { toast } = useToast(); // Uncomment if toasts are desired
 
-  const [incomePeriod, setIncomePeriod] = useState<"monthly" | "annual">("monthly");
+  const [incomePeriod, setIncomePeriod] = useState<"monthly" | "annual" | "quarterly">("monthly");
   const [month1Income, setMonth1Income] = useState<string>("50000");
   const [month2Income, setMonth2Income] = useState<string>("500000"); // As per user HTML
   const [month3Income, setMonth3Income] = useState<string>("50000");
+  const [quarterlyIncome, setQuarterlyIncome] = useState<string>(""); // For 'quarterly' period
   const [annualDirectIncome, setAnnualDirectIncome] = useState<string>(""); // For 'annual' period
   const [yearOfIncorporation, setYearOfIncorporation] = useState<string>("2022");
 
@@ -54,6 +52,7 @@ export function SimplifiedLevyCalculator() {
       month1Income,
       month2Income,
       month3Income,
+      quarterlyIncome,
       annualDirectIncome,
       yearOfIncorporation,
     });
@@ -65,7 +64,7 @@ export function SimplifiedLevyCalculator() {
     // Trigger calculation when relevant inputs change
     handleCalculateLevies();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [incomePeriod, month1Income, month2Income, month3Income, annualDirectIncome, yearOfIncorporation]);
+  }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation]);
 
   const handleCopyResults = () => {
     const resultsText = `
@@ -83,6 +82,7 @@ export function SimplifiedLevyCalculator() {
     setMonth1Income("50000");
     setMonth2Income("500000");
     setMonth3Income("50000");
+    setQuarterlyIncome("");
     setAnnualDirectIncome("");
     setYearOfIncorporation("2022");
     // Reset calculationResults to initial/default if needed
@@ -98,12 +98,13 @@ export function SimplifiedLevyCalculator() {
               <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
               Income Period
             </Label>
-            <Select value={incomePeriod} onValueChange={(value: "monthly" | "annual") => setIncomePeriod(value)}>
+            <Select value={incomePeriod} onValueChange={(value: "monthly" | "annual" | "quarterly") => setIncomePeriod(value)}>
               <SelectTrigger id="incomePeriodLevySimple" className="h-9 text-sm">
                 <SelectValue placeholder="Select income period" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="monthly">Monthly (Enter 3 Months)</SelectItem>
+                <SelectItem value="quarterly">Quarterly</SelectItem>
                 <SelectItem value="annual">Annual</SelectItem>
               </SelectContent>
             </Select>
@@ -131,6 +132,23 @@ export function SimplifiedLevyCalculator() {
                   />
                 </div>
               ))}
+            </div>
+          )}
+
+          {incomePeriod === "quarterly" && (
+            <div className="space-y-1">
+              <Label htmlFor="quarterlyIncome" className="flex items-center text-sm">
+                <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" /> Quarterly Gross Income (TT$)
+              </Label>
+              <Input
+                id="quarterlyIncome"
+                type="number"
+                step="0.01"
+                placeholder="e.g., 150000"
+                value={quarterlyIncome}
+                onChange={(e) => setQuarterlyIncome(e.target.value)}
+                className="h-9 text-sm mt-1"
+              />
             </div>
           )}
 
@@ -203,11 +221,9 @@ export function SimplifiedLevyCalculator() {
         </div>
         
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Note: Business Levy exemption for new companies (first 3 years from registration) is automatically applied if 'Year of Incorporation' qualifies. Otherwise, Business Levy applies at 0.6% on annualized gross income exceeding TT$360,000. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization.
+          Note: Business Levy exemption for new companies (first 3 years from registration) is automatically applied if 'Year of Incorporation' qualifies. Otherwise, Business Levy applies at 0.6% on annualized gross income exceeding TT$360,000. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
         </p>
       </div>
     </div>
   );
 }
-
-    

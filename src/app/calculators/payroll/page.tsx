@@ -35,6 +35,20 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Briefcase,
   User,
   DollarSign,
@@ -47,16 +61,9 @@ import {
   Save,
   ListChecks,
   Download,
-  Mail
+  Mail,
+  Eye
 } from "lucide-react";
-import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
 
 
 const currentYear = new Date().getFullYear();
@@ -121,17 +128,8 @@ const nisClassesData: NisClass[] = [
     { class: "XVI", weeklyEarnings: { min: 3138.00, max: null }, monthlyEarnings: { min: 13600.00, max: null }, assumedAverageWeekly: 3138.00, employeeWeekly: 138.10, employerWeekly: 276.20, totalWeekly: 414.30, classZWeekly: 20.72 },
 ];
 
-interface SavedPayrollEntry {
-  id: string;
-  employeeName: string;
-  period: string;
-  grossMonthlyIncome: string;
-  totalDeductions: string;
-  netPay: string;
-  timestamp: string;
-}
-
 const initialCalculationResults = {
+    employeeNameDisplay: "N/A", // Added for modal and export consistency
     grossMonthlyIncomeDisplay: "0.00",
     estAnnualIncome: "0.00",
     mondaysInMonth: "0",
@@ -146,12 +144,22 @@ const initialCalculationResults = {
     employerNISMonthly: "0.00",
     monthName: "",
     yearDisplay: "",
-  };
+};
+
+type CalculationResults = typeof initialCalculationResults;
+
+interface SavedPayrollEntry extends CalculationResults {
+  id: string;
+  timestamp: string;
+}
+
 
 export default function PayrollPage() {
   const { toast } = useToast();
-  const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
+  const [calculationResults, setCalculationResults] = React.useState<CalculationResults>(initialCalculationResults);
   const [savedCalculations, setSavedCalculations] = React.useState<SavedPayrollEntry[]>([]);
+  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+  const [viewModalData, setViewModalData] = React.useState<SavedPayrollEntry | null>(null);
 
   const form = useForm<PayrollFormData>({
     resolver: zodResolver(payrollFormSchema),
@@ -234,6 +242,7 @@ export default function PayrollPage() {
     const netTakeHomePay = gmi - totalMonthlyDeductions;
 
     setCalculationResults({
+      employeeNameDisplay: data.employeeName || "N/A",
       grossMonthlyIncomeDisplay: gmi.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       estAnnualIncome: annualGrossIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
       mondaysInMonth: mondaysInMonth.toString(),
@@ -254,18 +263,13 @@ export default function PayrollPage() {
   };
 
   const handleCopyResults = () => {
-    const { employeeName, grossMonthlyIncome, selectedMonth, selectedYear, paymentFrequency } = form.getValues();
-    const monthLabel = months.find(m => m.value === selectedMonth)?.label || selectedMonth;
-
     const textToCopy = `
-Payroll Calculation Summary
+Payroll Calculation Summary for ${calculationResults.employeeNameDisplay}
+Period: ${calculationResults.monthName} ${calculationResults.yearDisplay}
 ---------------------------------
-Employee Name: ${employeeName || 'N/A'}
 Gross Monthly Income: TT$ ${calculationResults.grossMonthlyIncomeDisplay}
-Payment Frequency: ${paymentFrequency}
-Period: ${monthLabel} ${selectedYear}
----------------------------------
-Mondays in ${monthLabel} ${selectedYear}: ${calculationResults.mondaysInMonth}
+Est. Annual Income: TT$ ${calculationResults.estAnnualIncome}
+Mondays in Month: ${calculationResults.mondaysInMonth}
 NIS Class: ${calculationResults.nisClass}
 Est. Weekly NIS (Employee): TT$ ${calculationResults.estWeeklyNISEmployee}
 Est. Weekly NIS (Employer): TT$ ${calculationResults.estWeeklyNISEmployer}
@@ -274,7 +278,7 @@ Monthly Deductions:
 PAYE: TT$ ${calculationResults.payeMonthly}
 NIS (Employee): TT$ ${calculationResults.nisMonthlyEmployee}
 Health Surcharge: TT$ ${calculationResults.healthSurchargeMonthly}
-Total Deductions: TT$ ${calculationResults.totalMonthlyDeductions}
+Total Monthly Deductions: TT$ ${calculationResults.totalMonthlyDeductions}
 Net Take-Home Pay: TT$ ${calculationResults.netTakeHomePay}
 ---------------------------------
 Employer's NIS Contribution (Monthly): TT$ ${calculationResults.employerNISMonthly}
@@ -306,14 +310,10 @@ Note: These are estimates. Consult official guidelines.
     }
     const newEntry: SavedPayrollEntry = {
       id: crypto.randomUUID(),
-      employeeName: form.getValues("employeeName") || "N/A",
-      period: `${calculationResults.monthName} ${calculationResults.yearDisplay}`,
-      grossMonthlyIncome: calculationResults.grossMonthlyIncomeDisplay,
-      totalDeductions: calculationResults.totalMonthlyDeductions,
-      netPay: calculationResults.netTakeHomePay,
+      ...calculationResults, // Spread all current calculation results
       timestamp: new Date().toLocaleString(),
     };
-    setSavedCalculations(prev => [newEntry, ...prev]);
+    setSavedCalculations(prev => [newEntry, ...prev.slice(0, 9)]); // Keep max 10 saved
     toast({ title: "Calculation Saved", description: "The payroll summary has been added to the list below." });
   };
 
@@ -322,16 +322,79 @@ Note: These are estimates. Consult official guidelines.
     toast({ title: "Calculation Removed", description: "The entry has been removed." });
   };
 
-  const handleExportData = () => {
-    // Placeholder for CSV/PDF export logic
-    console.log("Exporting data:", savedCalculations);
-    toast({ title: "Export Triggered (Placeholder)", description: "Data export functionality to be implemented." });
+  const handleViewCalculation = (calc: SavedPayrollEntry) => {
+    setViewModalData(calc);
+    setIsViewModalOpen(true);
+  };
+
+  const handleExportCSV = () => {
+    if (savedCalculations.length === 0) {
+      toast({ title: "No Data to Export", description: "Please save some calculations first.", variant: "default" });
+      return;
+    }
+    const headers = [
+      "ID", "Employee Name", "Period", "Timestamp",
+      "Gross Monthly Income (TT$)", "Est. Annual Income (TT$)", "Mondays in Month",
+      "NIS Class", "Est. Weekly NIS Employee (TT$)", "Est. Weekly NIS Employer (TT$)",
+      "PAYE Monthly (TT$)", "NIS Monthly Employee (TT$)", "Health Surcharge Monthly (TT$)",
+      "Total Monthly Deductions (TT$)", "Net Take-Home Pay (TT$)", "Employer NIS Monthly (TT$)"
+    ];
+    const rows = savedCalculations.map(calc => [
+      `"${calc.id}"`,
+      `"${calc.employeeNameDisplay}"`,
+      `"${calc.monthName} ${calc.yearDisplay}"`,
+      `"${calc.timestamp}"`,
+      `"${calc.grossMonthlyIncomeDisplay}"`,
+      `"${calc.estAnnualIncome}"`,
+      `"${calc.mondaysInMonth}"`,
+      `"${calc.nisClass}"`,
+      `"${calc.estWeeklyNISEmployee}"`,
+      `"${calc.estWeeklyNISEmployer}"`,
+      `"${calc.payeMonthly}"`,
+      `"${calc.nisMonthlyEmployee}"`,
+      `"${calc.healthSurchargeMonthly}"`,
+      `"${calc.totalMonthlyDeductions}"`,
+      `"${calc.netTakeHomePay}"`,
+      `"${calc.employerNISMonthly}"`,
+    ].join(","));
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `payroll_summaries_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({ title: "CSV Exported", description: "Payroll summaries downloaded as CSV." });
+  };
+
+  const handleExportXLSX = () => {
+     toast({ title: "XLSX Export (Coming Soon)", description: "This feature will be implemented in a future update." });
+  };
+
+  const handleExportPDF = () => {
+     toast({ title: "PDF Export (Coming Soon)", description: "This feature will be implemented in a future update." });
   };
 
   const handleShareViaEmail = () => {
-    // Placeholder for email sharing logic
-    console.log("Sharing data via email:", savedCalculations);
-    toast({ title: "Share Triggered (Placeholder)", description: "Email sharing functionality to be implemented." });
+    if (savedCalculations.length === 0) {
+      toast({ title: "No Data to Share", description: "Please save some calculations first.", variant: "default" });
+      return;
+    }
+    let emailBody = "Payroll Summaries:\n\n";
+    savedCalculations.forEach((calc, index) => {
+      emailBody += `Calculation ${index + 1}:\n`;
+      emailBody += `Employee: ${calc.employeeNameDisplay}\n`;
+      emailBody += `Period: ${calc.monthName} ${calc.yearDisplay}\n`;
+      emailBody += `Gross Income: TT$ ${calc.grossMonthlyIncomeDisplay}\n`;
+      emailBody += `Total Deductions: TT$ ${calc.totalMonthlyDeductions}\n`;
+      emailBody += `Net Pay: TT$ ${calc.netTakeHomePay}\n`;
+      emailBody += `Timestamp: ${calc.timestamp}\n\n`;
+    });
+    const mailtoLink = `mailto:?subject=Payroll Calculation Summaries&body=${encodeURIComponent(emailBody)}`;
+    window.location.href = mailtoLink;
+    toast({ title: "Sharing via Email", description: "Opening your email client..." });
   };
 
   const handleClearAllCalculations = () => {
@@ -561,7 +624,7 @@ Note: These are estimates. Consult official guidelines.
             <Card className="w-full shadow-lg rounded-xl mt-8">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-primary flex items-center">
-                  <CircleCheckBig className="mr-2 h-6 w-6" /> Estimated Deductions for {calculationResults.monthName} {calculationResults.yearDisplay}
+                  <CircleCheckBig className="mr-2 h-6 w-6" /> Estimated Deductions for {calculationResults.employeeNameDisplay} ({calculationResults.monthName} {calculationResults.yearDisplay})
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
@@ -656,30 +719,44 @@ Note: These are estimates. Consult official guidelines.
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base flex justify-between items-start">
                       <div>
-                        <p className="font-semibold">{calc.employeeName}</p>
-                        <p className="text-xs text-muted-foreground">{calc.period}</p>
+                        <p className="font-semibold">{calc.employeeNameDisplay}</p>
+                        <p className="text-xs text-muted-foreground">{calc.monthName} {calc.yearDisplay}</p>
                       </div>
-                      <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex items-center">
+                        <Button variant="ghost" size="icon" onClick={() => handleViewCalculation(calc)} className="h-7 w-7 mr-1">
+                          <Eye className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </CardTitle>
                     <CardDescription className="text-xs pt-1">
                       Saved: {calc.timestamp}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="text-xs space-y-1 pt-0">
-                    <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncome}</span></div>
-                    <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalDeductions}</span></div>
-                    <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netPay}</strong></div>
+                    <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncomeDisplay}</span></div>
+                    <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalMonthlyDeductions}</span></div>
+                    <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netTakeHomePay}</strong></div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
-            <Button variant="outline" onClick={handleExportData} className="w-full text-sm h-9 flex-1">
-              <Download className="mr-2 h-4 w-4" /> Export Data
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full text-sm h-9 flex-1">
+                  <Download className="mr-2 h-4 w-4" /> Export Data <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={handleExportCSV}>Export as CSV</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportXLSX}>Export as XLSX (Coming Soon)</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportPDF}>Export as PDF (Coming Soon)</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" onClick={handleShareViaEmail} className="w-full text-sm h-9 flex-1">
               <Mail className="mr-2 h-4 w-4" /> Share via Email
             </Button>
@@ -688,6 +765,51 @@ Note: These are estimates. Consult official guidelines.
             </Button>
           </CardFooter>
         </Card>
+      )}
+
+      {viewModalData && (
+        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-primary flex items-center">
+                <CircleCheckBig className="mr-2 h-6 w-6" /> Payroll Details for {viewModalData.employeeNameDisplay}
+              </DialogTitle>
+              <DialogDescription>
+                Calculation from {viewModalData.monthName} {viewModalData.yearDisplay} (Saved: {viewModalData.timestamp})
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2 text-sm py-4 max-h-[60vh] overflow-y-auto">
+              <div className="flex justify-between"><span>Gross Monthly Income:</span> <strong className="text-foreground">TT$ {viewModalData.grossMonthlyIncomeDisplay}</strong></div>
+              <div className="flex justify-between text-muted-foreground"><span>Est. Annual Income:</span> <span>TT$ {viewModalData.estAnnualIncome}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Mondays in selected month:</span> <span>{viewModalData.mondaysInMonth}</span></div>
+              <Separator className="my-2" />
+              <p className="font-medium text-foreground">NIS Details:</p>
+              <div className="pl-4 space-y-1">
+                <div className="flex justify-between"><span>NIS Class:</span> <span className="text-foreground">{viewModalData.nisClass}</span></div>
+                <div className="flex justify-between"><span>Est. Weekly NIS (Employee):</span> <span className="text-foreground">TT$ {viewModalData.estWeeklyNISEmployee}</span></div>
+                <div className="flex justify-between"><span>Est. Weekly NIS (Employer):</span> <span className="text-foreground">TT$ {viewModalData.estWeeklyNISEmployer}</span></div>
+              </div>
+              <Separator className="my-2" />
+              <p className="font-medium text-foreground">Employee Deductions (Monthly):</p>
+              <div className="pl-4 space-y-1">
+                <div className="flex justify-between"><span>PAYE:</span> <span className="text-foreground">TT$ {viewModalData.payeMonthly}</span></div>
+                <div className="flex justify-between"><span>NIS (Employee):</span> <span className="text-foreground">TT$ {viewModalData.nisMonthlyEmployee}</span></div>
+                <div className="flex justify-between"><span>Health Surcharge:</span> <span className="text-foreground">TT$ {viewModalData.healthSurchargeMonthly}</span></div>
+              </div>
+              <Separator className="my-2" />
+              <div className="flex justify-between font-semibold"><span>Total Monthly Deductions:</span><strong className="text-destructive">TT$ {viewModalData.totalMonthlyDeductions}</strong></div>
+              <div className="flex justify-between text-lg font-bold text-primary mt-1"><span>Net Take-Home Pay:</span><span>TT$ {viewModalData.netTakeHomePay}</span></div>
+              <Separator className="my-2" />
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground flex items-center"><Briefcase className="mr-2 h-4 w-4" />Employer's NIS Contribution (Monthly):</span>
+                <strong className="text-muted-foreground">TT$ {viewModalData.employerNISMonthly}</strong>
+              </div>
+            </div>
+            <DialogClose asChild>
+              <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );

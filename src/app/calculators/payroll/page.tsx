@@ -49,6 +49,15 @@ import {
   Download,
   Mail
 } from "lucide-react";
+import {
+  Table,
+  TableHeader,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 10 }, (_, i) => (currentYear + 5 - i).toString()).reverse();
@@ -624,64 +633,63 @@ Note: These are estimates. Consult official guidelines.
               </CardFooter>
             </Card>
           )}
-
-          {savedCalculations.length > 0 && (
-            <Card className="w-full shadow-lg rounded-xl mt-8">
-              <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-primary flex items-center">
-                  <ListChecks className="mr-2 h-6 w-6" /> Saved Payroll Summaries
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {savedCalculations.map((calc) => (
-                    <Card key={calc.id} className="w-full">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold">{calc.employeeName}</p>
-                            <p className="text-xs text-muted-foreground">{calc.period}</p>
-                          </div>
-                          <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </CardTitle>
-                        <CardDescription className="text-xs pt-1">
-                          Saved: {calc.timestamp}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="text-xs space-y-1 pt-0">
-                        <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncome}</span></div>
-                        <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalDeductions}</span></div>
-                        <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netPay}</strong></div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
-                <Button variant="outline" onClick={handleExportData} className="w-full text-sm h-9 flex-1">
-                  <Download className="mr-2 h-4 w-4" /> Export Data
-                </Button>
-                <Button variant="outline" onClick={handleShareViaEmail} className="w-full text-sm h-9 flex-1">
-                  <Mail className="mr-2 h-4 w-4" /> Share via Email
-                </Button>
-                <Button variant="destructive" onClick={handleClearAllCalculations} className="w-full text-sm h-9 flex-1">
-                  <Trash2 className="mr-2 h-4 w-4" /> Clear All Saved
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
-
         </CardContent>
-        <CardFooter>
-          <p className="text-xs text-muted-foreground text-center w-full">
-            This calculator provides estimates based on current general tax
-            rules for Trinidad &amp; Tobago. Always consult with a qualified
-            tax professional for definitive advice. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on NIBTT Earnings Classes. Health Surcharge based on weekly income (TT$4.13/wk up to TT$110/wk, TT$8.25/wk above) &amp; Mondays in month.
-          </p>
-        </CardFooter>
       </Card>
+        
+      <p className="text-xs text-muted-foreground text-center w-full max-w-3xl mx-auto my-6">
+        This calculator provides estimates based on current general tax
+        rules for Trinidad &amp; Tobago. Always consult with a qualified
+        tax professional for definitive advice. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on NIBTT Earnings Classes. Health Surcharge based on weekly income (TT$4.13/wk up to TT$110/wk, TT$8.25/wk above) &amp; Mondays in month.
+      </p>
+
+      {savedCalculations.length > 0 && (
+        <Card className="w-full max-w-3xl shadow-lg rounded-xl mt-8">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-primary flex items-center">
+              <ListChecks className="mr-2 h-6 w-6" /> Saved Payroll Summaries
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {savedCalculations.map((calc) => (
+                <Card key={calc.id} className="w-full">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold">{calc.employeeName}</p>
+                        <p className="text-xs text-muted-foreground">{calc.period}</p>
+                      </div>
+                      <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </CardTitle>
+                    <CardDescription className="text-xs pt-1">
+                      Saved: {calc.timestamp}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-xs space-y-1 pt-0">
+                    <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncome}</span></div>
+                    <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalDeductions}</span></div>
+                    <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netPay}</strong></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
+            <Button variant="outline" onClick={handleExportData} className="w-full text-sm h-9 flex-1">
+              <Download className="mr-2 h-4 w-4" /> Export Data
+            </Button>
+            <Button variant="outline" onClick={handleShareViaEmail} className="w-full text-sm h-9 flex-1">
+              <Mail className="mr-2 h-4 w-4" /> Share via Email
+            </Button>
+            <Button variant="destructive" onClick={handleClearAllCalculations} className="w-full text-sm h-9 flex-1">
+              <Trash2 className="mr-2 h-4 w-4" /> Clear All Saved
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
     </div>
   );
 }
+

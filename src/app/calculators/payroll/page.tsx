@@ -35,14 +35,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableHeader,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
-import {
   Briefcase,
   User,
   DollarSign,
@@ -53,7 +45,9 @@ import {
   Copy,
   Trash2,
   Save,
-  ListChecks
+  ListChecks,
+  Download,
+  Mail
 } from "lucide-react";
 
 const currentYear = new Date().getFullYear();
@@ -311,12 +305,29 @@ Note: These are estimates. Consult official guidelines.
       timestamp: new Date().toLocaleString(),
     };
     setSavedCalculations(prev => [newEntry, ...prev]);
-    toast({ title: "Calculation Saved", description: "The payroll summary has been added to the table below." });
+    toast({ title: "Calculation Saved", description: "The payroll summary has been added to the list below." });
   };
 
   const handleRemoveCalculation = (id: string) => {
     setSavedCalculations(prev => prev.filter(calc => calc.id !== id));
-    toast({ title: "Calculation Removed", description: "The entry has been removed from the table." });
+    toast({ title: "Calculation Removed", description: "The entry has been removed." });
+  };
+
+  const handleExportData = () => {
+    // Placeholder for CSV/PDF export logic
+    console.log("Exporting data:", savedCalculations);
+    toast({ title: "Export Triggered (Placeholder)", description: "Data export functionality to be implemented." });
+  };
+
+  const handleShareViaEmail = () => {
+    // Placeholder for email sharing logic
+    console.log("Sharing data via email:", savedCalculations);
+    toast({ title: "Share Triggered (Placeholder)", description: "Email sharing functionality to be implemented." });
+  };
+
+  const handleClearAllCalculations = () => {
+    setSavedCalculations([]);
+    toast({ title: "All Saved Cleared", description: "All saved payroll summaries have been removed." });
   };
 
 
@@ -621,38 +632,44 @@ Note: These are estimates. Consult official guidelines.
                   <ListChecks className="mr-2 h-6 w-6" /> Saved Payroll Summaries
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee</TableHead>
-                      <TableHead>Period</TableHead>
-                      <TableHead className="text-right">Gross (TT$)</TableHead>
-                      <TableHead className="text-right">Deductions (TT$)</TableHead>
-                      <TableHead className="text-right">Net Pay (TT$)</TableHead>
-                      <TableHead>Saved At</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {savedCalculations.map((calc) => (
-                      <TableRow key={calc.id}>
-                        <TableCell>{calc.employeeName}</TableCell>
-                        <TableCell>{calc.period}</TableCell>
-                        <TableCell className="text-right">{calc.grossMonthlyIncome}</TableCell>
-                        <TableCell className="text-right">{calc.totalDeductions}</TableCell>
-                        <TableCell className="text-right">{calc.netPay}</TableCell>
-                        <TableCell>{calc.timestamp}</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)}>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {savedCalculations.map((calc) => (
+                    <Card key={calc.id} className="w-full">
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold">{calc.employeeName}</p>
+                            <p className="text-xs text-muted-foreground">{calc.period}</p>
+                          </div>
+                          <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        </CardTitle>
+                        <CardDescription className="text-xs pt-1">
+                          Saved: {calc.timestamp}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="text-xs space-y-1 pt-0">
+                        <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncome}</span></div>
+                        <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalDeductions}</span></div>
+                        <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netPay}</strong></div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </CardContent>
+              <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
+                <Button variant="outline" onClick={handleExportData} className="w-full text-sm h-9 flex-1">
+                  <Download className="mr-2 h-4 w-4" /> Export Data
+                </Button>
+                <Button variant="outline" onClick={handleShareViaEmail} className="w-full text-sm h-9 flex-1">
+                  <Mail className="mr-2 h-4 w-4" /> Share via Email
+                </Button>
+                <Button variant="destructive" onClick={handleClearAllCalculations} className="w-full text-sm h-9 flex-1">
+                  <Trash2 className="mr-2 h-4 w-4" /> Clear All Saved
+                </Button>
+              </CardFooter>
             </Card>
           )}
 
@@ -668,5 +685,3 @@ Note: These are estimates. Consult official guidelines.
     </div>
   );
 }
-
-    

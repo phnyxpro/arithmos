@@ -15,17 +15,17 @@ import {
 import {
   Clock,
   Users,
-  Banknote,
+  Banknote, // Kept for consistency if other calculators use it
   Leaf,
   Building,
-  FileText as FileTextIcon,
+  FileText as FileTextIcon, // Renamed, used for Accounting
   House,
-  ReceiptText,
+  ReceiptText, // Used for VAT
   ChevronDown,
-  CloudUpload,
-  Landmark,
-  BarChart3, // Renamed from chart-column for lucide
-  User,
+  CloudUpload, // For Accounting
+  Landmark,    // For Accounting
+  BarChart3,   // For Accounting
+  User as UserIcon, // Renamed to avoid conflict
   Settings,
   CreditCard,
   LogIn,
@@ -38,7 +38,7 @@ const calculatorNavItems = [
   { href: "/calculators/business-levy", label: "Business Levy", Icon: Banknote },
   { href: "/calculators/green-fund-levy", label: "Green Fund Levy", Icon: Leaf },
   { href: "/calculators/corporation-tax", label: "Corporation Tax", Icon: Building },
-  { href: "/calculators/income-tax", label: "Income Tax", Icon: FileTextIcon },
+  { href: "/calculators/income-tax", label: "Income Tax", Icon: FileTextIcon }, // Using FileTextIcon for consistency
   { href: "/calculators/property-tax", label: "Property Tax", Icon: House },
   { href: "/calculators/vat", label: "VAT Calculator", Icon: ReceiptText },
 ];
@@ -51,34 +51,34 @@ const accountingNavItems = [
 ];
 
 const userNavItems = [
-    { type: "label", label: "My Account" },
-    { type: "separator" },
-    { href: "/profile", label: "Profile Settings", Icon: Settings },
-    { type: "item", label: "Subscription", Icon: CreditCard, nonInteractive: true }, // Special handling for non-link item
-    { type: "separator" },
-    { href: "/auth/login", label: "Login", Icon: LogIn },
+    { type: "label" as const, label: "My Account" },
+    { type: "separator" as const },
+    { type: "item" as const, href: "/profile", label: "Profile Settings", Icon: Settings },
+    { type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true }, // Special handling
+    { type: "separator" as const },
+    { type: "item" as const, href: "/auth/login", label: "Login", Icon: LogIn },
 ];
 
 export default function Header() {
   const mainNavItems = [
     { href: "/dashboard", label: "Dashboard" },
-    // Calculators & Accounting will be handled by DropdownMenu
-    // Knowledge Base will be added after dropdowns
+    // Calculators & Accounting are DropdownMenus
+    // Knowledge Base is now the last direct link before user menu
   ];
 
   return (
-    <header className="bg-primary text-primary-foreground shadow-md">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <AppLogo className="h-8 w-8 text-primary-foreground" />
-          <h1 className="text-2xl font-semibold tracking-tight">TaxTT</h1>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center">
+        <Link href="/" className="mr-6 flex items-center space-x-2">
+          <AppLogo className="h-8 w-8 text-primary" />
+          <span className="font-bold text-xl text-primary sm:inline-block">TaxTT</span>
         </Link>
-        <nav className="flex items-center space-x-1 md:space-x-2">
+        <nav className="ml-auto flex items-center space-x-1 md:space-x-2">
           {mainNavItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors px-2 py-1 rounded-md md:px-3"
+              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-md md:px-3"
             >
               {item.label}
             </Link>
@@ -88,7 +88,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/10 transition-colors px-2 py-1 rounded-md md:px-3"
               >
                 Calculators
                 <ChevronDown className="ml-1 h-4 w-4" />
@@ -110,7 +110,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+                className="text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-accent/10 transition-colors px-2 py-1 rounded-md md:px-3"
               >
                 Accounting
                 <ChevronDown className="ml-1 h-4 w-4" />
@@ -130,7 +130,7 @@ export default function Header() {
           
           <Link
             href="/knowledge-base"
-            className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors px-2 py-1 rounded-md md:px-3"
+            className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors px-2 py-1 rounded-md md:px-3"
           >
             Knowledge Base
           </Link>
@@ -140,9 +140,9 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 rounded-full p-0 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                className="relative h-9 w-9 rounded-full p-0 text-foreground/80 hover:text-foreground hover:bg-accent/10"
               >
-                <User className="h-5 w-5" />
+                <UserIcon className="h-5 w-5" />
                 <span className="sr-only">Open user menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -156,12 +156,14 @@ export default function Header() {
                 }
                 if (item.type === "item" && item.nonInteractive) {
                   return (
+                    // Render as a non-interactive item, perhaps with different styling or just not as a link
                     <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
                        {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
                        <span>{item.label}</span>
                     </DropdownMenuItem>
                   );
                 }
+                // Regular item with a link
                 return (
                   <DropdownMenuItem key={`user-item-${index}`} asChild>
                     <Link href={item.href || "#"} className="flex items-center w-full">
@@ -173,7 +175,6 @@ export default function Header() {
               })}
             </DropdownMenuContent>
           </DropdownMenu>
-
         </nav>
       </div>
     </header>

@@ -22,13 +22,18 @@ import { Separator } from '@/components/ui/separator';
 import { BarChart3, CalendarDays, DollarSign, Building, Copy, Trash2 } from 'lucide-react';
 // import { useToast } from "@/hooks/use-toast"; // Uncomment if toasts are desired
 
-const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 30 }, (_, i) => (currentYear - i).toString());
+const appCurrentYear = new Date().getFullYear();
+const incorporationYears = Array.from({ length: 30 }, (_, i) => (appCurrentYear - i).toString());
+const paymentYears = [
+  (appCurrentYear - 1).toString(),
+  appCurrentYear.toString(),
+  (appCurrentYear + 1).toString(),
+];
+const quarters = ["Q1", "Q2", "Q3", "Q4"];
 
 const BUSINESS_LEVY_RATE = 0.006; // 0.6%
 const GREEN_FUND_LEVY_RATE = 0.003; // 0.3%
 const BUSINESS_LEVY_EXEMPTION_YEARS = 3;
-// const BUSINESS_LEVY_ANNUAL_THRESHOLD = 360000; // No longer used as per latest guide
 
 export function SimplifiedLevyCalculator() {
   // const { toast } = useToast(); // Uncomment if toasts are desired
@@ -39,7 +44,18 @@ export function SimplifiedLevyCalculator() {
   const [month3Income, setMonth3Income] = useState<string>("50000");
   const [quarterlyIncome, setQuarterlyIncome] = useState<string>("");
   const [annualDirectIncome, setAnnualDirectIncome] = useState<string>("");
-  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(Math.max(...years.map(Number)).toString());
+  const [yearOfIncorporation, setYearOfIncorporation] = useState<string>(
+    incorporationYears.includes(appCurrentYear.toString()) ? appCurrentYear.toString() : Math.max(...incorporationYears.map(Number)).toString()
+  );
+  
+  const [paymentYear, setPaymentYear] = useState<string>(appCurrentYear.toString());
+  const [paymentQuarter, setPaymentQuarter] = useState<string>("Q1");
+  const [currentDateOnMount, setCurrentDateOnMount] = useState<string>("");
+
+  useEffect(() => {
+    setCurrentDateOnMount(new Date().toISOString());
+  }, []);
+
 
   const [calculationResults, setCalculationResults] = useState({
     annualizedGrossIncome: "0.00",
@@ -71,16 +87,16 @@ export function SimplifiedLevyCalculator() {
 
     let bl = 0;
     const incorpYearNum = parseInt(yearOfIncorporation, 10);
-    const currentYr = new Date().getFullYear();
+    // const currentYrForExemption = new Date().getFullYear(); // Or use selected paymentYear if exemption is based on payment period year
 
-    // Business Levy is exempt for the first 3 years from registration
-    const isExempt = currentYr < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
+    // Business Levy is exempt for the first 3 years from registration date
+    // Assuming 'currentYrForExemption' should be the year for which the levy is being calculated, i.e., paymentYear
+    const effectiveExemptionCheckYear = parseInt(paymentYear, 10) || appCurrentYear;
+    const isExempt = effectiveExemptionCheckYear < incorpYearNum + BUSINESS_LEVY_EXEMPTION_YEARS;
 
     if (!isExempt) {
-      // No threshold mentioned in the latest guide for rate application, applies to total AGI
       bl = agi * BUSINESS_LEVY_RATE;
     }
-    // If exempt, bl remains 0
 
     const totalLevies = bl + gfl;
 
@@ -91,7 +107,8 @@ export function SimplifiedLevyCalculator() {
       totalEstimatedLevies: totalLevies.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     });
     // toast({ title: "Calculation Updated" });
-  }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [incomePeriod, month1Income, month2Income, month3Income, quarterlyIncome, annualDirectIncome, yearOfIncorporation, paymentYear]); // Added paymentYear for exemption check context
 
   useEffect(() => {
     handleCalculateLevies();
@@ -103,6 +120,8 @@ export function SimplifiedLevyCalculator() {
     Business Levy: $${calculationResults.businessLevy}
     Green Fund Levy: $${calculationResults.greenFundLevy}
     Total Estimated Levies: $${calculationResults.totalEstimatedLevies}
+    Payment Period: ${paymentYear} ${paymentQuarter}
+    (Calculated on: ${currentDateOnMount})
     `;
     navigator.clipboard.writeText(resultsText.trim());
     // toast({ title: "Results Copied!" });
@@ -115,7 +134,11 @@ export function SimplifiedLevyCalculator() {
     setMonth3Income(""); 
     setQuarterlyIncome("");
     setAnnualDirectIncome("");
-    setYearOfIncorporation(Math.max(...years.map(Number)).toString());
+    setYearOfIncorporation(
+      incorporationYears.includes(appCurrentYear.toString()) ? appCurrentYear.toString() : Math.max(...incorporationYears.map(Number)).toString()
+    );
+    setPaymentYear(appCurrentYear.toString());
+    setPaymentQuarter("Q1");
     // toast({ title: "Fields Cleared" });
   };
 
@@ -198,29 +221,63 @@ export function SimplifiedLevyCalculator() {
               />
             </div>
           )}
-
-          <div className="space-y-1">
-            <Label htmlFor="yearOfIncorporation" className="flex items-center text-sm">
-              <Building className="mr-2 h-4 w-4 text-muted-foreground" />
-              Year of Incorporation
-            </Label>
-            <Select value={yearOfIncorporation} onValueChange={setYearOfIncorporation}>
-              <SelectTrigger id="yearOfIncorporation" className="h-9 text-sm">
-                <SelectValue placeholder="Select year" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map(year => (
-                  <SelectItem key={year} value={year}>{year}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <div className="space-y-1">
+              <Label htmlFor="yearOfIncorporation" className="flex items-center text-sm">
+                <Building className="mr-2 h-4 w-4 text-muted-foreground" />
+                Year of Incorporation
+              </Label>
+              <Select value={yearOfIncorporation} onValueChange={setYearOfIncorporation}>
+                <SelectTrigger id="yearOfIncorporation" className="h-9 text-sm">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {incorporationYears.map(year => (
+                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="paymentYear" className="flex items-center text-sm">
+                <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                Payment Year
+              </Label>
+              <Select value={paymentYear} onValueChange={setPaymentYear}>
+                <SelectTrigger id="paymentYear" className="h-9 text-sm">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentYears.map(year => (
+                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="paymentQuarter" className="flex items-center text-sm">
+                <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                Payment Quarter
+              </Label>
+              <Select value={paymentQuarter} onValueChange={setPaymentQuarter}>
+                <SelectTrigger id="paymentQuarter" className="h-9 text-sm">
+                  <SelectValue placeholder="Select quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quarters.map(q => (
+                    <SelectItem key={q} value={q}>{q}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
         <Card className="mt-4">
           <CardHeader className="p-4">
             <CardTitle className="text-lg text-primary flex items-center">
-              <BarChart3 className="mr-2 h-5 w-5" /> Estimated Levies
+              <BarChart3 className="mr-2 h-5 w-5" /> Estimated Levies for {paymentYear} {paymentQuarter}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 space-y-1.5 text-xs">
@@ -238,6 +295,10 @@ export function SimplifiedLevyCalculator() {
             <div className="flex justify-between font-semibold text-sm">
               <span>Total Estimated Levies:</span> <strong className="text-primary">${calculationResults.totalEstimatedLevies}</strong>
             </div>
+            <Separator className="my-1" />
+            <p className="text-xs text-muted-foreground pt-2">
+              <strong>Interest Note:</strong> Failure to pay at least 90% of the levy liability by the end of the quarter results in interest at 15% per annum on the shortfall.
+            </p>
           </CardContent>
         </Card>
 
@@ -251,9 +312,10 @@ export function SimplifiedLevyCalculator() {
         </div>
         
         <p className="text-xs text-muted-foreground text-center mt-2">
-          Note: Business Levy exemption for new companies (first 3 years from registration) is automatically applied if 'Year of Incorporation' qualifies. Otherwise, Business Levy applies at 0.6% on total annualized gross income. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
+          Note: Business Levy exemption for new companies (first 3 years from registration, based on selected Payment Year) is automatically applied if applicable. Otherwise, Business Levy applies at 0.6% on total annualized gross income. Green Fund Levy applies at 0.3% on total annualized gross income. These are estimates. If 'Monthly' is selected, provide income for 3 consecutive months; the sum will be treated as quarterly income for annualization. If 'Quarterly' is selected, provide income for one quarter; it will be multiplied by 4 for annualization.
         </p>
       </div>
     </div>
   );
 }
+

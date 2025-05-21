@@ -1,6 +1,7 @@
 
 "use client";
 
+import * as React from 'react';
 import Link from 'next/link';
 import { AppLogo } from '@/components/icons/app-logo';
 import { Button } from '@/components/ui/button';
@@ -30,8 +31,11 @@ import {
   CreditCard,
   LogIn,
   Library,
-  Factory
+  Factory,
+  Sun,
+  Moon,
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 const calculatorNavItems = [
   { href: "/calculators/time-calculator", label: "Time Calculator", Icon: Clock },
@@ -58,16 +62,32 @@ const knowledgeBaseNavItems = [
     { href: "/knowledge-base/aid-to-industry", label: "Aid to Industry Act", Icon: Factory },
 ];
 
-const userNavItems = [
+type UserNavItem =
+  | { type: "label"; label: string }
+  | { type: "separator" }
+  | { type: "item"; href?: string; label: string; Icon: React.ElementType; nonInteractive?: boolean }
+  | { type: "themeToggle"; label?: string; Icon?: React.ElementType };
+
+
+const userNavItems: UserNavItem[] = [
     { type: "label" as const, label: "My Account" },
     { type: "separator" as const },
     { type: "item" as const, href: "/profile", label: "Profile Settings", Icon: Settings },
     { type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true },
+    { type: "themeToggle" as const },
     { type: "separator" as const },
     { type: "item" as const, href: "/auth/login", label: "Login", Icon: LogIn },
 ];
 
+
 export default function Header() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const mainNavItems = [
     { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
@@ -183,7 +203,27 @@ export default function Header() {
                 if (item.type === "separator") {
                   return <DropdownMenuSeparator key={`user-item-${index}`} />;
                 }
-                if (item.type === "item" && item.nonInteractive) {
+                if (item.type === "themeToggle") {
+                  if (!mounted) {
+                    // Render a placeholder or null to avoid hydration mismatch
+                    return (
+                      <DropdownMenuItem key={`user-item-${index}`} disabled>
+                        <Sun className="mr-2 h-4 w-4" /> 
+                        <span>Loading theme...</span>
+                      </DropdownMenuItem>
+                    );
+                  }
+                  const CurrentIcon = resolvedTheme === 'dark' ? Sun : Moon;
+                  const currentLabel = resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                  return (
+                    <DropdownMenuItem key={`user-item-${index}`} onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+                      <CurrentIcon className="mr-2 h-4 w-4" />
+                      <span>{currentLabel}</span>
+                    </DropdownMenuItem>
+                  );
+                }
+                // Default is "item" type
+                if (item.nonInteractive) {
                   return (
                     <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
                        {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}

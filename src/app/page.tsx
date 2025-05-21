@@ -4,8 +4,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-// Image import is no longer needed for the hero section itself
-// import Image from "next/image"; 
+// import Image from "next/image"; // No longer needed for hero image directly
 import {
   Accordion,
   AccordionContent,
@@ -43,8 +42,9 @@ import {
   ReceiptText,
   Linkedin,
   Facebook,
+  BarChart3, // Added from previous request, but not explicitly in new HTML. Keeping for now.
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"; 
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
@@ -59,6 +59,7 @@ interface HeroContent {
   secondarySubheadline: string;
   primaryCtaText: string;
   primaryCtaLink: string;
+  // backgroundImageUrl: string; // Removed as hero image is removed
 }
 
 const heroContentData: HeroContent = {
@@ -68,6 +69,7 @@ const heroContentData: HeroContent = {
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
+  // backgroundImageUrl: "https://firebasestorage.googleapis.com/v0/b/wage-wiz.firebasestorage.app/o/hero-taxes.webp?alt=media&token=37c7b6ac-f45e-4c1c-b33f-7381fb55244d",
 };
 
 interface CalculatorCardData {
@@ -119,7 +121,7 @@ interface DeadlineItem {
 
 const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
-  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" },
+  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" }, // Changed from Upcoming to Urgent to match previous state
   { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2024.", nextDueDate: "2024-06-30", periodicity: "Quarterly", status: "Urgent" },
   { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
   { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2024.", nextDueDate: "2024-09-30", periodicity: "Quarterly", status: "Upcoming" },
@@ -144,6 +146,7 @@ const resourceGuides: ResourceGuide[] = [
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
+  const [payrollCalcKey, setPayrollCalcKey] = React.useState(0); // Key for Payroll Calc
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
@@ -151,7 +154,11 @@ export default function LandingPage() {
   const { toast } = useToast();
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
-  const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
+  
+  const handleOpenPayrollCalc = React.useCallback(() => {
+    setPayrollCalcKey(prevKey => prevKey + 1); // Increment key to reset
+    setIsPayrollCalcOpen(true);
+  }, []);
 
   const handleOpenLevyCalc = React.useCallback(() => {
     setLevyCalcKey(prevKey => prevKey + 1);
@@ -266,7 +273,7 @@ export default function LandingPage() {
       >
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center text-center"> 
-            <div className="md:w-full max-w-3xl"> 
+            <div className="w-full max-w-3xl"> 
               <div className="flex items-center justify-center mb-6"> 
                 <HeroIcon className="h-12 w-12 text-primary" />
               </div>
@@ -298,7 +305,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -343,7 +350,7 @@ export default function LandingPage() {
                       {calc.name}
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                   <AccordionContent className="text-muted-foreground leading-relaxed">
                     <p className="mb-3">{calc.description}</p>
                     {calc.onClick ? (
                         <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
@@ -367,7 +374,7 @@ export default function LandingPage() {
                       {calc.name}
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                   <AccordionContent className="text-muted-foreground leading-relaxed">
                     <p className="mb-3">{calc.description}</p>
                     {calc.onClick ? (
                         <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
@@ -536,7 +543,7 @@ export default function LandingPage() {
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><UsersIcon className="mr-2 h-6 w-6"/>PAYE, NIS & HS Calculator</DialogTitle>
           </DialogHeader>
-          <SimplifiedPayrollCalculator />
+          <SimplifiedPayrollCalculator key={payrollCalcKey} /> {/* Added key here */}
           <DialogClose asChild>
              <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
           </DialogClose>
@@ -569,4 +576,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
 

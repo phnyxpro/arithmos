@@ -43,7 +43,7 @@ import {
   Linkedin,
   Facebook,
   Bell,
-  BarChart3, // Kept in case it's used elsewhere or for consistency
+  // BarChart3, // Kept in case it's used elsewhere or for consistency
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -121,12 +121,12 @@ interface DeadlineItem {
 }
 
 const deadlineItems: DeadlineItem[] = [
-  { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
-  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" },
-  { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2024.", nextDueDate: "2024-06-30", periodicity: "Quarterly", status: "Urgent" },
-  { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
-  { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2024.", nextDueDate: "2024-09-30", periodicity: "Quarterly", status: "Upcoming" },
-  { id: "income-tax-return", name: "Individual Income Tax Return", description: "For income year 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
+  { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2025-06-15", periodicity: "Monthly", status: "Upcoming" },
+  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2025.", nextDueDate: "2025-07-25", periodicity: "Bi-Monthly", status: "Upcoming" },
+  { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2025.", nextDueDate: "2025-06-30", periodicity: "Quarterly", status: "Upcoming" },
+  { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2024.", nextDueDate: "2025-04-30", periodicity: "Annually", status: "Upcoming" },
+  { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2025.", nextDueDate: "2025-09-30", periodicity: "Quarterly", status: "Upcoming" },
+  { id: "income-tax-return", name: "Individual Income Tax Return", description: "For income year 2024.", nextDueDate: "2025-04-30", periodicity: "Annually", status: "Upcoming" },
 ];
 
 
@@ -634,5 +634,3 @@ export default function LandingPage() {
   );
 }
 
-
-    

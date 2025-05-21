@@ -42,7 +42,7 @@ import {
   ReceiptText,
   Linkedin,
   Facebook,
-  Bell, // Added Bell icon for ticker
+  Bell,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -308,7 +308,7 @@ export default function LandingPage() {
 
       {/* Upcoming Compliance Ticker */}
       {upcomingTickerItems.length > 0 && (
-        <section id="compliance-ticker" className="py-4 bg-secondary/70">
+        <section id="compliance-ticker" className="py-4 bg-primary">
           <div className="container mx-auto px-4">
             <div className="relative flex overflow-x-hidden">
               <div className="py-2 animate-marquee-scroll whitespace-nowrap flex">
@@ -335,7 +335,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed lg:grid-cols-4 to lg:grid-cols-2 */}
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>

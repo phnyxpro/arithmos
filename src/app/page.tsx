@@ -43,13 +43,14 @@ import {
   Linkedin,
   Facebook,
   Bell,
+  BarChart3, // Kept in case it's used elsewhere or for consistency
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
-import { StarReviewDialog } from '@/components/ui/star-review-dialog'; // Import the new component
+import { StarReviewDialog } from '@/components/ui/star-review-dialog';
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
 
@@ -78,7 +79,7 @@ interface CalculatorCardData {
   ctaText: string;
   ctaLink?: string;
   onClick?: () => void;
-  calculatorIdentifier: string; // To identify which calculator was used
+  calculatorIdentifier: string;
 }
 
 interface BenefitItem {
@@ -158,9 +159,11 @@ export default function LandingPage() {
 
   const openCalculatorDialog = (
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    setKey: React.Dispatch<React.SetStateAction<number>>
+    setKey?: React.Dispatch<React.SetStateAction<number>> // Make setKey optional
   ) => {
-    setKey(prevKey => prevKey + 1);
+    if (setKey) {
+      setKey(prevKey => prevKey + 1);
+    }
     setIsOpen(true);
   };
 
@@ -169,8 +172,6 @@ export default function LandingPage() {
     currentOpenState: boolean,
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
-    // This function is called when onOpenChange is triggered
-    // `currentOpenState` is the new value of 'open' passed by the Dialog
     if (!currentOpenState && 
         (calculatorName === "Basic Time Calculator" && isBasicTimeCalcOpen ||
          calculatorName === "PAYE, NIS & HS Calculator" && isPayrollCalcOpen ||
@@ -178,11 +179,10 @@ export default function LandingPage() {
          calculatorName === "Levy Calculator" && isLevyCalcOpen
         )
       ) {
-      // If dialog is closing and it was the one that was open
       setCalculatorToReview(calculatorName);
       setIsReviewModalOpen(true);
     }
-    setOpenState(currentOpenState); // Update the specific dialog's open state
+    setOpenState(currentOpenState);
   };
 
 
@@ -192,7 +192,7 @@ export default function LandingPage() {
       title: "Basic Time Calculator",
       description: "For daily-paid workers to track work hours & pay.",
       ctaText: "Track Hours & Earnings",
-      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, () => {}), // No key needed for basic static content
+      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen), 
       calculatorIdentifier: "Basic Time Calculator",
     },
     {
@@ -224,7 +224,7 @@ export default function LandingPage() {
   const HeroIcon = heroContentData.icon;
 
   const detailedCalculatorList = [
-    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, () => {}), ctaText: "Open Calculator" },
+    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen), ctaText: "Open Calculator" },
     { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator" },
     { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator" },
     { id: "business-levy-page", name: "Business Levy Calculator", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
@@ -240,17 +240,27 @@ export default function LandingPage() {
 
   const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
     const eventDate = parseISO(deadline.nextDueDate);
-    if (isNaN(eventDate.getTime()) || eventDate < new Date(new Date().setHours(0,0,0,0))) {
+    // Check if the date is past and the event is not already completed
+    if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
       toast({
-        title: "Invalid or Past Date",
-        description: `Cannot set a reminder for "${deadline.name}" as the date is invalid or in the past.`,
+        title: "Past Due Date",
+        description: `Cannot set a reminder for "${deadline.name}" as the date is in the past.`,
+        variant: "default", // Use default or warning variant
+      });
+      return;
+    }
+     if (isNaN(eventDate.getTime())) {
+      toast({
+        title: "Invalid Date",
+        description: `Cannot set a reminder for "${deadline.name}" due to an invalid date.`,
         variant: "destructive",
       });
       return;
     }
 
+
     const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd");
+    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); // All-day event
 
     const icsContent = [
       "BEGIN:VCALENDAR",
@@ -262,7 +272,7 @@ export default function LandingPage() {
       `DTSTART;VALUE=DATE:${startDateStr}`,
       `DTEND;VALUE=DATE:${endDateStr}`,
       `SUMMARY:Tax TT Reminder: ${deadline.name}`,
-      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
+      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`,
       "END:VEVENT",
       "END:VCALENDAR",
     ].join("\r\n");
@@ -270,15 +280,15 @@ export default function LandingPage() {
     const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
+    link.download = `Tax_TT_Reminder_${deadline.name.replace(/[\s&/]+/g, '_')}.ics`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
 
     toast({
-      title: "Reminder Sent to Calendar",
-      description: `A calendar event file for "${deadline.name}" is being downloaded.`,
+      title: "Calendar Reminder Created",
+      description: `An event file for "${deadline.name}" is downloading. Please import it into your calendar.`,
     });
   }, [toast]);
 
@@ -295,7 +305,7 @@ export default function LandingPage() {
       title: "Thank You!",
       description: `You rated the ${calculatorName} ${rating} star(s).`,
     });
-    setCalculatorToReview(null); // Clear for next review
+    setCalculatorToReview(null);
   };
 
 
@@ -363,7 +373,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -519,7 +529,7 @@ export default function LandingPage() {
                       onClick={() => handleAddToCalendar(item)}
                       disabled={item.status === "Completed"}
                     >
-                      <CalendarDays className="mr-1.5 h-3 w-3"/> Set Reminder
+                      <Bell className="mr-1.5 h-3 w-3"/> Set Reminder
                     </Button>
                   </CardFooter>
                 </Card>
@@ -584,7 +594,6 @@ export default function LandingPage() {
             <DialogTitle className="text-2xl text-primary flex items-center"><Clock className="mr-2 h-6 w-6"/>Basic Time Calculator</DialogTitle>
           </DialogHeader>
           <BasicTimeCalculator />
-          {/* Close button is part of DialogContent by default */}
         </DialogContent>
       </Dialog>
 
@@ -624,3 +633,6 @@ export default function LandingPage() {
     </div>
   );
 }
+
+
+    

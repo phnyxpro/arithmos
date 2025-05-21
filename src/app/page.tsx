@@ -26,33 +26,29 @@ import {
   DollarSign,
   Users as UsersIcon,
   Clock,
-  BarChart3, 
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  // FileText, // No longer used on this page directly, BookOpen is used instead
-  // Bell, // No longer used on this page
-  // Users, // Duplicate of UsersIcon
-  Linkedin,
-  Facebook,
-  // Heart, // No longer used
-  // ShieldHalf, // No longer used
-  // TrendingUp, // No longer used
-  // FileSpreadsheet, // No longer used
-  // ListChecks, // No longer used
-  FileHeart,
   BookOpen, 
   CheckCircle2, 
   ThumbsUp,
+  FileHeart,
+  Banknote,
+  Leaf,
+  Building,
+  User,
+  House,
+  ReceiptText,
+  Linkedin,
+  Facebook,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; // DialogDescription removed as not used
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; 
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
-// useToast and date-fns imports removed as handleAddToCalendar is removed
 
 interface HeroContent {
   icon: React.ElementType;
@@ -145,23 +141,6 @@ const resourceGuides: ResourceGuide[] = [
   { id: "property-tax-guide", title: "Property Tax Essentials", description: "Key aspects of the Property Tax Act explained.", href: "/knowledge-base/property-tax" },
 ];
 
-interface CalculatorInfo {
-  id: string;
-  name: string;
-  description: string;
-  icon?: React.ElementType;
-}
-const calculatorInfoList: CalculatorInfo[] = [
-  { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock },
-  { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon },
-  { id: "voluntary-nis", name: "Voluntary NIS Contribution (Self-Employed)", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes. Shows weekly, monthly, and quarterly voluntary contribution amounts.", icon: FileHeart },
-  { id: "business-levy", name: "Business Levy", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: BarChart3 },
-  { id: "green-fund", name: "Green Fund Levy", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: BarChart3 }, 
-  { id: "corp-tax", name: "Corporation Tax", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits. Standard rate of 30% applied.", icon: CalculatorIcon },
-  { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: CalculatorIcon }, 
-  { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: CalculatorIcon }, 
-  { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: CalculatorIcon }, 
-];
 
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
@@ -208,7 +187,7 @@ export default function LandingPage() {
       onClick: handleOpenVoluntaryNisCalc,
     },
     {
-      icon: BarChart3,
+      icon: Banknote, // Changed from BarChart3 for Levy Calculator
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
@@ -218,6 +197,19 @@ export default function LandingPage() {
   
   const HeroIcon = heroContentData.icon;
 
+  const detailedCalculatorList = [
+    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: handleOpenBasicTimeCalc, ctaText: "Open Calculator" },
+    { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: handleOpenPayrollCalc, ctaText: "Open Calculator" },
+    { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: handleOpenVoluntaryNisCalc, ctaText: "Open Calculator" },
+    { id: "business-levy", name: "Business Levy Calculator", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
+    { id: "green-fund", name: "Green Fund Levy Calculator", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page" },
+    { id: "corp-tax", name: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page" },
+    { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: User, href: "/calculators/income-tax", ctaText: "View Page" },
+    { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: House, href: "/calculators/property-tax", ctaText: "View Page" },
+    { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page" },
+  ];
+
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -226,9 +218,9 @@ export default function LandingPage() {
         className="py-24 md:py-32 bg-gradient-to-br from-primary/10 via-background to-background"
       >
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center"> {/* Centering the content */}
-            <div className="md:w-full max-w-3xl"> {/* Max width for text content, was md:w-2/5 */}
-              <div className="flex items-center justify-center mb-6"> {/* Centered icon */}
+          <div className="flex flex-col items-center text-center"> 
+            <div className="md:w-full max-w-3xl"> 
+              <div className="flex items-center justify-center mb-6"> 
                 <HeroIcon className="h-12 w-12 text-primary" />
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
@@ -249,7 +241,6 @@ export default function LandingPage() {
                 </Button>
               </div>
             </div>
-            {/* Image div has been removed */}
           </div>
         </div>
       </section>
@@ -260,7 +251,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"> {/* Changed to lg:grid-cols-4 */}
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -280,6 +271,45 @@ export default function LandingPage() {
                   ) : (
                      <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
                       <Link href={calc.ctaLink || "#"}>{calc.ctaText}</Link>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Learn About Our Calculators - New Position and Layout */}
+      <section id="learn-calculators" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Explore All Our Calculators
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {detailedCalculatorList.map((calc) => (
+              <Card key={calc.id} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
+                <CardHeader>
+                  <div className="flex items-start space-x-3">
+                    {calc.icon && <calc.icon className="h-8 w-8 text-accent flex-shrink-0 mt-1" />}
+                    <CardTitle className="text-lg text-primary">{calc.name}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow pt-0">
+                  <p className="text-sm text-muted-foreground">{calc.description}</p>
+                </CardContent>
+                <CardFooter>
+                  {calc.onClick ? (
+                    <Button onClick={calc.onClick} variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
+                      {calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  ) : calc.href ? (
+                    <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
+                      <Link href={calc.href}>{calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    </Button>
+                  ) : (
+                    <Button variant="outline" className="w-full text-primary border-primary hover:bg-primary/10" disabled>
+                      {calc.ctaText}
                     </Button>
                   )}
                 </CardFooter>
@@ -401,29 +431,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Learn About Our Calculators */}
-      <section id="learn-calculators" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Learn About Our Calculators
-          </h2>
-          <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-            {calculatorInfoList.map((calc) => (
-              <AccordionItem value={calc.id} key={calc.id}>
-                <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
-                   {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-primary/80" />}
-                  {calc.name}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed pl-10">
-                  {calc.description}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Footer Section - Get Started was removed */}
+      {/* Footer Section */}
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
             <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
@@ -467,7 +475,7 @@ export default function LandingPage() {
       <Dialog open={isLevyCalcOpen} onOpenChange={setIsLevyCalcOpen}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><BarChart3 className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle> {/* Updated icon to Banknote */}
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
            <DialogClose asChild>
@@ -491,5 +499,3 @@ export default function LandingPage() {
   );
 }
 
-
-    

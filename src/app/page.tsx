@@ -4,7 +4,8 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
+// Image import is no longer needed for the hero section itself
+// import Image from "next/image"; 
 import {
   Accordion,
   AccordionContent,
@@ -25,18 +26,26 @@ import {
   DollarSign,
   Users as UsersIcon,
   Clock,
+  BarChart3, 
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  BarChart3,
-  BookOpen, 
-  FileHeart,
+  // FileText, // No longer used on this page directly, BookOpen is used instead
+  // Bell, // No longer used on this page
+  // Users, // Duplicate of UsersIcon
   Linkedin,
   Facebook,
+  // Heart, // No longer used
+  // ShieldHalf, // No longer used
+  // TrendingUp, // No longer used
+  // FileSpreadsheet, // No longer used
+  // ListChecks, // No longer used
+  FileHeart,
+  BookOpen, 
   CheckCircle2, 
-  ThumbsUp, 
+  ThumbsUp,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; // DialogDescription removed as not used
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -52,7 +61,7 @@ interface HeroContent {
   secondarySubheadline: string;
   primaryCtaText: string;
   primaryCtaLink: string;
-  backgroundImageUrl: string;
+  backgroundImageUrl: string; // This will no longer be used for the main hero image div
 }
 
 const heroContentData: HeroContent = {
@@ -112,9 +121,10 @@ interface DeadlineItem {
   status: "Urgent" | "Upcoming" | "Completed";
 }
 
+// Example data, dates might need to be dynamic or updated for real application
 const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
-  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" }, // Status changed to Urgent for demonstration
+  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" },
   { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2024.", nextDueDate: "2024-06-30", periodicity: "Quarterly", status: "Urgent" },
   { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
   { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2024.", nextDueDate: "2024-09-30", periodicity: "Quarterly", status: "Upcoming" },
@@ -160,7 +170,6 @@ export default function LandingPage() {
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
-  // const { toast } = useToast(); // Removed as handleAddToCalendar is removed
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
   const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
@@ -207,8 +216,6 @@ export default function LandingPage() {
     },
   ];
   
-  // handleAddToCalendar function removed as it's no longer used.
-
   const HeroIcon = heroContentData.icon;
 
   return (
@@ -216,34 +223,33 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section
         id="hero"
-        className="relative w-full py-24 md:py-32"
+        className="py-24 md:py-32 bg-gradient-to-br from-primary/10 via-background to-background"
       >
-        <div
-          className="absolute inset-0 grayscale opacity-20"
-          style={{ backgroundImage: `url('${heroContentData.backgroundImageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          aria-label="Background image of tax preparation scene"
-          data-ai-hint="taxes planning"
-        ></div>
-        <div className="absolute inset-0 bg-black/60"></div>
-
-        <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
-          <HeroIcon className="mb-6 h-16 w-16 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl mb-4">
-            {heroContentData.headline}
-          </h1>
-          <p className="mt-2 text-xl md:text-2xl font-semibold text-primary-foreground/90 mb-6">
-            {heroContentData.primarySubheadline}
-          </p>
-          <p className="max-w-xl text-base md:text-lg text-primary-foreground/80 mb-10">
-            {heroContentData.secondarySubheadline}
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-xs sm:max-w-md lg:max-w-none lg:flex-row lg:space-x-4">
-             <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto lg:mb-0 mb-2">
-              <Link href={heroContentData.primaryCtaLink}>
-                {heroContentData.primaryCtaText}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center text-center"> {/* Centering the content */}
+            <div className="md:w-full max-w-3xl"> {/* Max width for text content, was md:w-2/5 */}
+              <div className="flex items-center justify-center mb-6"> {/* Centered icon */}
+                <HeroIcon className="h-12 w-12 text-primary" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+                {heroContentData.headline}
+              </h1>
+              <p className="text-xl md:text-2xl font-semibold text-primary/90 mb-6">
+                {heroContentData.primarySubheadline}
+              </p>
+              <p className="text-base md:text-lg text-muted-foreground mb-10">
+                {heroContentData.secondarySubheadline}
+              </p>
+              <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-col sm:items-center lg:flex-row lg:space-x-4 justify-center">
+                <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto lg:mb-0 mb-2">
+                  <Link href={heroContentData.primaryCtaLink}>
+                    {heroContentData.primaryCtaText}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            {/* Image div has been removed */}
           </div>
         </div>
       </section>
@@ -321,17 +327,13 @@ export default function LandingPage() {
                 else if (item.status === "Upcoming") badgeVariant = "default"; 
                 else if (item.status === "Completed") badgeVariant = "outline"; 
                 
-                // const dueDate = parseISO(item.nextDueDate); // Removed as parseISO not imported
-                // const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed"; // Removed
-
               return (
                 <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${item.status === "Urgent" ? 'border-destructive' : ''}`}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg text-primary">{item.name}</CardTitle>
                        <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
-                        {/* {isPast ? "Overdue" : item.status} */}
-                        {item.status} {/* Simplified display */}
+                        {item.status}
                       </Badge>
                     </div>
                     <CardDescription className="text-xs pt-1">Periodicity: {item.periodicity}</CardDescription>
@@ -340,8 +342,7 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                      {/* Due: {format(dueDate, "MMMM d, yyyy")} */}
-                       Due: {item.nextDueDate} {/* Displaying as string directly */}
+                       Due: {item.nextDueDate}
                     </div>
                   </CardContent>
                    <CardFooter>
@@ -349,7 +350,6 @@ export default function LandingPage() {
                       variant="ghost"
                       size="sm"
                       className="w-full justify-start text-xs text-primary hover:bg-primary/10 p-1"
-                      // onClick={() => handleAddToCalendar(item)} // Removed as handleAddToCalendar is removed
                       disabled={item.status === "Completed"}
                     >
                       <CalendarDays className="mr-1.5 h-3 w-3"/> Set Reminder
@@ -423,6 +423,7 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Footer Section - Get Started was removed */}
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
             <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
@@ -489,5 +490,6 @@ export default function LandingPage() {
     </div>
   );
 }
+
 
     

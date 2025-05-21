@@ -30,8 +30,8 @@ import {
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  BookOpen, 
-  CheckCircle2, 
+  BookOpen,
+  CheckCircle2,
   ThumbsUp,
   FileHeart,
   Banknote,
@@ -42,9 +42,9 @@ import {
   ReceiptText,
   Linkedin,
   Facebook,
-  BarChart3, // Added from previous request, but not explicitly in new HTML. Keeping for now.
+  Bell, // Added Bell icon for ticker
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"; 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
@@ -114,14 +114,14 @@ interface DeadlineItem {
   id: string;
   name: string;
   description: string;
-  nextDueDate: string; 
+  nextDueDate: string;
   periodicity: string;
   status: "Urgent" | "Upcoming" | "Completed";
 }
 
 const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
-  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" }, // Changed from Upcoming to Urgent to match previous state
+  { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" },
   { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2024.", nextDueDate: "2024-06-30", periodicity: "Quarterly", status: "Urgent" },
   { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2023.", nextDueDate: "2024-04-30", periodicity: "Annually", status: "Completed" },
   { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2024.", nextDueDate: "2024-09-30", periodicity: "Quarterly", status: "Upcoming" },
@@ -146,7 +146,7 @@ const resourceGuides: ResourceGuide[] = [
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
-  const [payrollCalcKey, setPayrollCalcKey] = React.useState(0); // Key for Payroll Calc
+  const [payrollCalcKey, setPayrollCalcKey] = React.useState(0);
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
@@ -154,9 +154,9 @@ export default function LandingPage() {
   const { toast } = useToast();
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
-  
+
   const handleOpenPayrollCalc = React.useCallback(() => {
-    setPayrollCalcKey(prevKey => prevKey + 1); // Increment key to reset
+    setPayrollCalcKey(prevKey => prevKey + 1);
     setIsPayrollCalcOpen(true);
   }, []);
 
@@ -194,14 +194,14 @@ export default function LandingPage() {
       onClick: handleOpenVoluntaryNisCalc,
     },
     {
-      icon: Banknote, 
+      icon: Banknote,
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
       onClick: handleOpenLevyCalc,
     },
   ];
-  
+
   const HeroIcon = heroContentData.icon;
 
   const detailedCalculatorList = [
@@ -215,10 +215,9 @@ export default function LandingPage() {
     { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: House, href: "/calculators/property-tax", ctaText: "View Page" },
     { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page" },
   ];
-  
-  const halfLength = Math.ceil(detailedCalculatorList.length / 2);
-  const firstHalfCalculators = detailedCalculatorList.slice(0, halfLength);
-  const secondHalfCalculators = detailedCalculatorList.slice(halfLength);
+
+  const firstHalfCalculators = detailedCalculatorList.slice(0, Math.ceil(detailedCalculatorList.length / 2));
+  const secondHalfCalculators = detailedCalculatorList.slice(Math.ceil(detailedCalculatorList.length / 2));
 
   const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
     const eventDate = parseISO(deadline.nextDueDate);
@@ -232,7 +231,7 @@ export default function LandingPage() {
     }
 
     const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); 
+    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd");
 
     const icsContent = [
       "BEGIN:VCALENDAR",
@@ -264,6 +263,14 @@ export default function LandingPage() {
     });
   }, [toast]);
 
+  const upcomingTickerItems = React.useMemo(() => {
+    return deadlineItems
+      .filter(item => item.status !== "Completed")
+      .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
+      .slice(0, 5);
+  }, []);
+
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -272,9 +279,9 @@ export default function LandingPage() {
         className="py-24 md:py-32"
       >
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center text-center"> 
-            <div className="w-full max-w-3xl"> 
-              <div className="flex items-center justify-center mb-6"> 
+          <div className="flex flex-col items-center text-center">
+            <div className="w-full max-w-3xl">
+              <div className="flex items-center justify-center mb-6">
                 <HeroIcon className="h-12 w-12 text-primary" />
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
@@ -299,13 +306,36 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Upcoming Compliance Ticker */}
+      {upcomingTickerItems.length > 0 && (
+        <section id="compliance-ticker" className="py-4 bg-secondary/70">
+          <div className="container mx-auto px-4">
+            <div className="relative flex overflow-x-hidden">
+              <div className="py-2 animate-marquee-scroll whitespace-nowrap flex">
+                {[...upcomingTickerItems, ...upcomingTickerItems].map((item, index) => (
+                  <div key={`${item.id}-${index}`} className="flex items-center mx-4 px-3 py-1.5 bg-card/80 rounded-full shadow">
+                    <Bell className="h-4 w-4 text-accent mr-2" />
+                    <span className="text-sm font-medium text-card-foreground">
+                      {item.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground ml-1.5">
+                      (Due: {format(parseISO(item.nextDueDate), "MMM d")})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Quick Access Calculators */}
       <section id="popular-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -333,7 +363,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Explore All Our Calculators */}
       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
@@ -428,9 +458,9 @@ export default function LandingPage() {
             {deadlineItems.map((item) => {
                 let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
                 if (item.status === "Urgent") badgeVariant = "destructive";
-                else if (item.status === "Upcoming") badgeVariant = "default"; 
-                else if (item.status === "Completed") badgeVariant = "outline"; 
-                
+                else if (item.status === "Upcoming") badgeVariant = "default";
+                else if (item.status === "Completed") badgeVariant = "outline";
+
                 const dueDate = parseISO(item.nextDueDate);
                 const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed";
 
@@ -543,7 +573,7 @@ export default function LandingPage() {
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><UsersIcon className="mr-2 h-6 w-6"/>PAYE, NIS & HS Calculator</DialogTitle>
           </DialogHeader>
-          <SimplifiedPayrollCalculator key={payrollCalcKey} /> {/* Added key here */}
+          <SimplifiedPayrollCalculator key={payrollCalcKey} />
           <DialogClose asChild>
              <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
           </DialogClose>
@@ -577,4 +607,4 @@ export default function LandingPage() {
   );
 }
 
-
+    

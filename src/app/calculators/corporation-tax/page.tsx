@@ -45,12 +45,14 @@ const currentYear = getYear(new Date());
 const taxYearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - i).toString());
 
 const companyTypeOptions = [
-  { value: "regular", label: "Regular Company (e.g. Retail, Services)", rate: 0.30 },
-  { value: "commercial_bank", label: "Commercial Bank", rate: 0.35 },
-  { value: "petroleum_upstream", label: "Petroleum Co. (Upstream Exploration & Production)", rate: 0.35 }, // This can be higher, 55% for deepwater
-  { value: "petroleum_downstream", label: "Petroleum Co. (Downstream Refining & Marketing)", rate: 0.35 },
-  { value: "insurance_life", label: "Insurance Co. (Long-term Business)", rate: 0.15 }, // On net investment income, 0% on other profits
-  { value: "insurance_general", label: "Insurance Co. (General Business)", rate: 0.30 },
+  { value: "ordinary", label: "Ordinary Company", rate: 0.30 },
+  { value: "banking_petrochemical", label: "Banking / Petrochemical Co.", rate: 0.35 },
+  { value: "life_insurance", label: "Life Insurance Co.", rate: 0.15 }, // Simplified rate, actual is tiered
+  { value: "general_insurance", label: "General Insurance Co.", rate: 0.30 },
+  { value: "petroleum_production_std", label: "Petroleum Production (Standard PPT)", rate: 0.50 },
+  { value: "petroleum_production_deep_sea", label: "Petroleum Production (Deep Sea)", rate: 0.30 },
+  { value: "sme_listed", label: "SME (Listed on Stock Exchange)", rate: 0.10 }, // Simplified rate, actual is 0% then 15%
+  { value: "sez_company", label: "Special Economic Zone Co.", rate: 0.01 },
 ];
 
 const corporationTaxFormSchema = z.object({
@@ -84,7 +86,7 @@ export default function CorporationTaxPage() {
     resolver: zodResolver(corporationTaxFormSchema),
     defaultValues: {
       taxYear: currentYear.toString(),
-      companyType: "regular",
+      companyType: "ordinary",
       grossIncome: undefined,
       allowableDeductions: 0,
       otherIncome: 0,
@@ -108,25 +110,18 @@ export default function CorporationTaxPage() {
     }
 
     let taxRate = selectedCompanyType.rate;
-    // Special logic for life insurance could be more complex, this is simplified
-    if (data.companyType === "insurance_life") {
-      // Assuming otherIncome represents net investment income for simplicity here.
-      // Realistically, profits other than net investment income would be 0% taxed.
-      // This simplification taxes *all* adjusted chargeable income at 15%.
-      taxRate = 0.15; 
-    }
+
+    // Note: Simplified logic for Life Insurance & SME. Actual calculations are more complex.
+    // The selected rate is a base/average for estimation in this calculator.
+    // Detailed explanations are in the FAQ.
 
     const initialChargeable = chargeableIncomeAutoCalculated;
     const finalChargeable = Math.max(0, initialChargeable + data.otherIncome - data.lossCarriedForward);
     const taxBeforeOffsetsAndCredits = finalChargeable * taxRate;
     
-    // Business Levy can be offset against Corporation Tax.
-    // The offset is limited to the amount of Corporation Tax liability *before* this offset.
     const blOffset = Math.min(data.businessLevyPaid, taxBeforeOffsetsAndCredits);
     const taxAfterBLOffset = taxBeforeOffsetsAndCredits - blOffset;
 
-    // Tax credits are applied after BL offset.
-    // Tax credits cannot result in a refund beyond tax paid (liability cannot be negative).
     const creditsApplied = Math.min(data.taxCreditsClaimed, taxAfterBLOffset);
     const finalTax = Math.max(0, taxAfterBLOffset - creditsApplied);
 
@@ -144,7 +139,6 @@ export default function CorporationTaxPage() {
   };
 
   const handleExportSummary = () => {
-    // Placeholder for export logic
     console.log("Export Summary Clicked. Data:", form.getValues(), "Results:", calculationResults);
     toast({ title: "Export (Simulated)", description: "Summary export feature to be implemented." });
   };
@@ -157,27 +151,48 @@ export default function CorporationTaxPage() {
     {
       value: "item-1",
       trigger: "Who Pays Corporation Tax?",
-      content: "Corporation Tax is generally paid by companies resident in Trinidad and Tobago on their worldwide profits, and by non-resident companies on profits accruing in or derived from Trinidad and Tobago. This includes limited liability companies, unincorporated associations, and other bodies corporate.",
+      content: "Corporation Tax is generally paid by companies resident in Trinidad and Tobago on their worldwide income. Non-resident companies engaged in business in Trinidad and Tobago are taxed only on income directly or indirectly accruing in or derived from Trinidad and Tobago. This includes limited liability companies, unincorporated associations, and other bodies corporate.",
     },
     {
       value: "item-2",
-      trigger: "Latest Tax Rates (Simplified)",
-      content: "General Rate: 30%. Commercial Banks: 35%. Petroleum Companies (Exploration & Production): 35% (can be up to 55% for deepwater). Petroleum Companies (Refining & Marketing): 35%. Life Insurance Companies: 15% on net investment income, 0% on other profits. General Insurance: 30%. Rates can change with new Finance Acts.",
+      trigger: "Latest Tax Rates (Simplified Overview)",
+      content: (
+        <>
+          <p className="mb-2">The standard corporation tax rate is 30%, but varies for certain classes of companies. This calculator uses simplified rates for estimation. For exact applicability and conditions, refer to the Income Tax Act and official IRD guidelines.</p>
+          <ul className="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Ordinary Companies:</strong> 30% (e.g., retail, services, manufacturing not in special categories).</li>
+            <li><strong>Commercial Banks & Petrochemical Companies:</strong> 35%.</li>
+            <li><strong>Life Insurance Companies:</strong> Profits are subject to tiered rates (e.g., 0% on certain actuarial surplus distributions, 15% on net investment income, other rates like 25% or 30% may apply under specific circumstances). This calculator uses a simplified 15% on adjusted chargeable income for estimation.</li>
+            <li><strong>General Insurance Companies:</strong> 30%.</li>
+            <li><strong>Petroleum Production Companies (Petroleum Profits Tax):</strong> 50% on profits from petroleum operations.</li>
+            <li><strong>Petroleum Production Companies (Deep Sea Operations):</strong> 30% under specific contractual arrangements.</li>
+            <li><strong>Small and Medium Enterprises (SMEs) Listed on the T&T Stock Exchange:</strong> The first TT$500,000 of chargeable profit is taxed at 0%, and profits exceeding TT$500,000 are taxed at 15%. This calculator uses a simplified 10% for general estimation.</li>
+            <li><strong>Companies in Special Economic Zones (SEZs):</strong> May qualify for a rate of 1% or other concessions under the SEZ Act.</li>
+          </ul>
+          <p className="mt-2 text-xs">Rates and conditions can change with new Finance Acts. Always consult the latest legislation.</p>
+        </>
+      ),
     },
     {
       value: "item-3",
       trigger: "Filing Deadlines",
       content: "Corporation Tax returns are typically due by April 30th of the year following the income year (for companies with a December 31st year-end). Quarterly installment payments are due by March 31, June 30, September 30, and December 31. Always verify specific deadlines with the IRD.",
     },
-     {
+    {
       value: "item-4",
+      trigger: "Penalties, Interest, and Offences",
+      content: "Failure to comply with the Corporation Tax Act, including late filing of returns, late payment of taxes, or incorrect declarations, can lead to penalties and interest charges. Specific offences and their corresponding penalties are detailed in the Income Tax Act and Corporation Tax Act. It is crucial to adhere to all filing and payment obligations to avoid these. For detailed information, refer to the relevant sections of the Acts or consult with the IRD/a tax professional.",
+    },
+     {
+      value: "item-5",
       trigger: "Important Links & Disclaimer",
       content: (<>
         <ul className="list-disc list-inside space-y-1 mb-2">
           <li><a href="https://www.ird.gov.tt/corporations" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">IRD - Corporation Tax Information</a></li>
           <li><a href="https://www.finance.gov.tt/wp-content/uploads/2014/08/The-Corporation-Tax-Act.pdf" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">The Corporation Tax Act (finance.gov.tt)</a></li>
+           <li><a href="http://rgd.legalaffairs.gov.tt/Laws2/Alphabetical_List/lawspdfs/75.01.pdf" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Income Tax Act (Chap. 75:01) (legalaffairs.gov.tt)</a></li>
         </ul>
-        This calculator provides an estimate and does not cover all scenarios (e.g., specific industry incentives, detailed capital allowance rules, group relief).
+        This calculator provides an estimate and does not cover all scenarios (e.g., specific industry incentives, detailed capital allowance rules, group relief, exact tiered rate calculations for SMEs/Life Insurance).
       </>),
     },
   ];
@@ -191,7 +206,7 @@ export default function CorporationTaxPage() {
             <CardTitle className="text-3xl text-primary">Corporation Tax Calculator</CardTitle>
           </div>
           <CardDescription className="text-md pt-2">
-            Estimate your company's Corporation Tax liability for Trinidad and Tobago. This calculator provides an estimate based on standard rates.
+            Estimate your company's Corporation Tax liability for Trinidad and Tobago. This calculator provides an estimate based on general rates and rules. For precise calculations, especially for complex scenarios or specific industries, refer to the official tax legislation and consult a tax professional.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -237,6 +252,7 @@ export default function CorporationTaxPage() {
                               {companyTypeOptions.map(opt => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
                             </SelectContent>
                           </Select>
+                          <FormDescription className="text-xs">Refer to FAQ for rate details.</FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -321,7 +337,7 @@ export default function CorporationTaxPage() {
             </form>
           </Form>
 
-          {calculationResults.finalCorporationTaxDue > 0 || calculationResults.chargeableIncomeBeforeAdjustments > 0 || form.formState.isSubmitted ? (
+          {calculationResults.finalCorporationTaxDue > 0 || calculationResults.chargeableIncomeBeforeAdjustments > 0 || calculationResults.finalChargeableIncome > 0 || form.formState.isSubmitted ? (
             <Card className="shadow-md rounded-lg">
               <CardHeader>
                 <CardTitle className="text-xl text-primary flex items-center">
@@ -330,15 +346,15 @@ export default function CorporationTaxPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-muted-foreground">Chargeable Income (Before Adjustments):</span>
+                  <span className="font-medium text-muted-foreground">Chargeable Income (Gross - Deductions):</span>
                   <span className="font-semibold text-lg">${formatCurrency(calculationResults.chargeableIncomeBeforeAdjustments)}</span>
                 </div>
                  <div className="flex justify-between items-center">
-                  <span className="font-medium text-muted-foreground">Final Chargeable Income:</span>
+                  <span className="font-medium text-muted-foreground">Final Chargeable Income (after Other Income/Loss):</span>
                   <span className="font-semibold text-lg">${formatCurrency(calculationResults.finalChargeableIncome)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-muted-foreground">Tax Rate Applied:</span>
+                  <span className="font-medium text-muted-foreground">Tax Rate Applied (Simplified):</span>
                   <span className="font-semibold text-lg">{(calculationResults.taxRateApplied * 100).toFixed(1)}%</span>
                 </div>
                  <div className="flex justify-between items-center">
@@ -387,12 +403,10 @@ export default function CorporationTaxPage() {
         <CardFooter>
             <p className="text-xs text-muted-foreground flex items-start">
                 <AlertCircle size={16} className="mr-2 mt-0.5 shrink-0" />
-                <span>This calculator provides simplified estimates. Corporation tax laws are complex and include specific provisions for different industries (e.g., petroleum, insurance), various types of income (e.g., capital gains), detailed capital allowance rules, group relief, withholding taxes, and more. Always consult the official Corporation Tax Act of Trinidad and Tobago, IRD guidelines, or a qualified tax professional for definitive advice and precise calculations.</span>
+                <span>This calculator provides simplified estimates. Corporation tax laws in Trinidad and Tobago are complex and include specific provisions for different industries (e.g., petroleum, insurance, banking, petrochemicals), various types of income, detailed capital allowance rules, group relief, withholding taxes, and potential penalties or interest for non-compliance. The rates for Life Insurance and SMEs (Listed) are tiered and depend on specific profit thresholds or income types not fully captured by this simplified tool. Always consult the official Corporation Tax Act and Income Tax Act of Trinidad and Tobago, IRD guidelines, or a qualified tax professional for definitive advice and precise calculations.</span>
             </p>
         </CardFooter>
       </Card>
     </div>
   );
 }
-
-    

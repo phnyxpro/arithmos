@@ -49,6 +49,7 @@ import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculato
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
+import { StarReviewDialog } from '@/components/ui/star-review-dialog'; // Import the new component
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
 
@@ -59,7 +60,6 @@ interface HeroContent {
   secondarySubheadline: string;
   primaryCtaText: string;
   primaryCtaLink: string;
-  // backgroundImageUrl: string; // Removed as hero image is removed
 }
 
 const heroContentData: HeroContent = {
@@ -69,7 +69,6 @@ const heroContentData: HeroContent = {
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
-  // backgroundImageUrl: "https://firebasestorage.googleapis.com/v0/b/wage-wiz.firebasestorage.app/o/hero-taxes.webp?alt=media&token=37c7b6ac-f45e-4c1c-b33f-7381fb55244d",
 };
 
 interface CalculatorCardData {
@@ -79,6 +78,7 @@ interface CalculatorCardData {
   ctaText: string;
   ctaLink?: string;
   onClick?: () => void;
+  calculatorIdentifier: string; // To identify which calculator was used
 }
 
 interface BenefitItem {
@@ -142,7 +142,6 @@ const resourceGuides: ResourceGuide[] = [
   { id: "property-tax-guide", title: "Property Tax Essentials", description: "Key aspects of the Property Tax Act explained.", href: "/knowledge-base/property-tax" },
 ];
 
-
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
@@ -151,24 +150,40 @@ export default function LandingPage() {
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
+  
+  const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false);
+  const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
+
   const { toast } = useToast();
 
-  const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
+  const openCalculatorDialog = (
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setKey: React.Dispatch<React.SetStateAction<number>>
+  ) => {
+    setKey(prevKey => prevKey + 1);
+    setIsOpen(true);
+  };
 
-  const handleOpenPayrollCalc = React.useCallback(() => {
-    setPayrollCalcKey(prevKey => prevKey + 1);
-    setIsPayrollCalcOpen(true);
-  }, []);
-
-  const handleOpenLevyCalc = React.useCallback(() => {
-    setLevyCalcKey(prevKey => prevKey + 1);
-    setIsLevyCalcOpen(true);
-  }, []);
-
-  const handleOpenVoluntaryNisCalc = React.useCallback(() => {
-    setVoluntaryNisCalcKey(prevKey => prevKey + 1);
-    setIsVoluntaryNisCalcOpen(true);
-  }, []);
+  const handleCalculatorDialogClose = (
+    calculatorName: string,
+    currentOpenState: boolean,
+    setOpenState: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    // This function is called when onOpenChange is triggered
+    // `currentOpenState` is the new value of 'open' passed by the Dialog
+    if (!currentOpenState && 
+        (calculatorName === "Basic Time Calculator" && isBasicTimeCalcOpen ||
+         calculatorName === "PAYE, NIS & HS Calculator" && isPayrollCalcOpen ||
+         calculatorName === "Voluntary NIS Contribution Calculator" && isVoluntaryNisCalcOpen ||
+         calculatorName === "Levy Calculator" && isLevyCalcOpen
+        )
+      ) {
+      // If dialog is closing and it was the one that was open
+      setCalculatorToReview(calculatorName);
+      setIsReviewModalOpen(true);
+    }
+    setOpenState(currentOpenState); // Update the specific dialog's open state
+  };
 
 
   const coreCalculators: CalculatorCardData[] = [
@@ -177,38 +192,42 @@ export default function LandingPage() {
       title: "Basic Time Calculator",
       description: "For daily-paid workers to track work hours & pay.",
       ctaText: "Track Hours & Earnings",
-      onClick: handleOpenBasicTimeCalc,
+      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, () => {}), // No key needed for basic static content
+      calculatorIdentifier: "Basic Time Calculator",
     },
     {
       icon: UsersIcon,
       title: "PAYE, NIS & HS Calculator",
       description: "Determine monthly statutory deductions live.",
       ctaText: "Estimate Deductions",
-      onClick: handleOpenPayrollCalc,
+      onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey),
+      calculatorIdentifier: "PAYE, NIS & HS Calculator",
     },
     {
       icon: FileHeart,
       title: "Voluntary NIS Contribution",
       description: "Estimate your NIS contributions as a self-employed individual.",
       ctaText: "Estimate Voluntary NIS",
-      onClick: handleOpenVoluntaryNisCalc,
+      onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey),
+      calculatorIdentifier: "Voluntary NIS Contribution Calculator",
     },
     {
       icon: Banknote,
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
-      onClick: handleOpenLevyCalc,
+      onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey),
+      calculatorIdentifier: "Levy Calculator",
     },
   ];
 
   const HeroIcon = heroContentData.icon;
 
   const detailedCalculatorList = [
-    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: handleOpenBasicTimeCalc, ctaText: "Open Calculator" },
-    { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: handleOpenPayrollCalc, ctaText: "Open Calculator" },
-    { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: handleOpenVoluntaryNisCalc, ctaText: "Open Calculator" },
-    { id: "business-levy", name: "Business Levy Calculator", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
+    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, () => {}), ctaText: "Open Calculator" },
+    { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator" },
+    { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator" },
+    { id: "business-levy-page", name: "Business Levy Calculator", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
     { id: "green-fund", name: "Green Fund Levy Calculator", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page" },
     { id: "corp-tax", name: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page" },
     { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: User, href: "/calculators/income-tax", ctaText: "View Page" },
@@ -269,6 +288,15 @@ export default function LandingPage() {
       .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
       .slice(0, 5);
   }, []);
+
+  const handleSubmitReview = (calculatorName: string, rating: number) => {
+    console.log(`Review for ${calculatorName}: ${rating} stars`);
+    toast({
+      title: "Thank You!",
+      description: `You rated the ${calculatorName} ${rating} star(s).`,
+    });
+    setCalculatorToReview(null); // Clear for next review
+  };
 
 
   return (
@@ -335,7 +363,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -363,7 +391,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
+      
       {/* Explore All Our Calculators */}
       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
@@ -422,6 +450,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
 
        {/* Why Choose Tax TT */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -549,55 +578,49 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      <Dialog open={isBasicTimeCalcOpen} onOpenChange={setIsBasicTimeCalcOpen}>
+      <Dialog open={isBasicTimeCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Basic Time Calculator", open, setIsBasicTimeCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><Clock className="mr-2 h-6 w-6"/>Basic Time Calculator</DialogTitle>
           </DialogHeader>
           <BasicTimeCalculator />
-          <DialogClose asChild>
-             <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-          </DialogClose>
+          {/* Close button is part of DialogContent by default */}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isPayrollCalcOpen} onOpenChange={setIsPayrollCalcOpen}>
+      <Dialog open={isPayrollCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("PAYE, NIS & HS Calculator", open, setIsPayrollCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><UsersIcon className="mr-2 h-6 w-6"/>PAYE, NIS & HS Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedPayrollCalculator key={payrollCalcKey} />
-          <DialogClose asChild>
-             <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-          </DialogClose>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isLevyCalcOpen} onOpenChange={setIsLevyCalcOpen}>
+      <Dialog open={isLevyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Levy Calculator", open, setIsLevyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
-           <DialogClose asChild>
-             <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-          </DialogClose>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={setIsVoluntaryNisCalcOpen}>
+      <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Voluntary NIS Contribution Calculator", open, setIsVoluntaryNisCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl text-primary flex items-center"><FileHeart className="mr-2 h-6 w-6"/>Voluntary NIS Calculator</DialogTitle>
           </DialogHeader>
           <VoluntaryNisCalculator key={voluntaryNisCalcKey} />
-           <DialogClose asChild>
-             <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-          </DialogClose>
         </DialogContent>
       </Dialog>
+
+      <StarReviewDialog
+        isOpen={isReviewModalOpen}
+        onOpenChange={setIsReviewModalOpen}
+        calculatorName={calculatorToReview}
+        onSubmitReview={handleSubmitReview}
+      />
     </div>
   );
 }
-
-    

@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive } from "lucide-react";
+import { Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Sigma } from "lucide-react";
 import { getYear } from 'date-fns';
 
 const currentYear = getYear(new Date());
@@ -134,6 +134,7 @@ export default function CorporationTaxPage() {
   });
 
   const watchedOperatingExpenses = form.watch("operatingExpenses");
+  const totalOperatingExpenses = form.watch("allowableDeductions");
 
   React.useEffect(() => {
     if (watchedOperatingExpenses) {
@@ -345,6 +346,12 @@ export default function CorporationTaxPage() {
                             )}
                         />
                     ))}
+                    <div className="p-3 bg-muted/50 rounded-md mt-4 border-t pt-4">
+                        <FormLabel className="flex items-center mb-1 font-semibold">
+                           <Sigma className="mr-2 h-5 w-5 text-primary" /> Total Operating Expenses
+                        </FormLabel>
+                        <p className="text-lg font-bold text-primary">${formatCurrency(totalOperatingExpenses || 0)}</p>
+                    </div>
                 </CardContent>
               </Card>
               

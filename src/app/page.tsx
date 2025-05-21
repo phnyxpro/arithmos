@@ -298,7 +298,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -327,7 +327,7 @@ export default function LandingPage() {
         </div>
       </section>
       
-      {/* Explore All Our Calculators - New Position and Accordion Layout */}
+      {/* Explore All Our Calculators */}
       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
@@ -344,7 +344,16 @@ export default function LandingPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground leading-relaxed">
-                    Access this tool via its dedicated page or dialog.
+                    <p className="mb-3">{calc.description}</p>
+                    {calc.onClick ? (
+                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
+                            {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
+                        </Button>
+                    ) : (
+                        <Button asChild variant="link" className="text-accent p-0">
+                            <Link href={calc.href || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                        </Button>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               ))}
@@ -359,7 +368,16 @@ export default function LandingPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground leading-relaxed">
-                    Access this tool via its dedicated page or dialog.
+                    <p className="mb-3">{calc.description}</p>
+                    {calc.onClick ? (
+                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
+                            {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
+                        </Button>
+                    ) : (
+                        <Button asChild variant="link" className="text-accent p-0">
+                            <Link href={calc.href || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                        </Button>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               ))}
@@ -551,3 +569,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

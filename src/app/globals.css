@@ -7,13 +7,12 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
   background-color: hsl(var(--background)); /* Updated to use the new --background color */
-  background-image: linear-gradient(to bottom, #093637, #44A08D); /* Dark teal top to light teal bottom */
-  background-attachment: fixed; /* Kept for consistency, less impactful for solid color */
+  /* Removed gradient background-image */
 }
 
 @layer base {
   :root {
-    --background: 169 47% 48%; /* #44A08D - Light Teal (lighter end of gradient) */
+    --background: 210 10% 80%; /* #c7ccd1 - Light Grey-Blue */
     --foreground: 210 20% 25%; /* Dark Slate Grey */
 
     --card: 0 0% 100%; /* White */
@@ -39,7 +38,7 @@ body {
     --destructive-foreground: 0 0% 98%;
 
     /* Input adjusted for 5% grey background */
-    --border: 210 10% 80%; /* Lighter grey for border to be visible on light grey input */
+    --border: 210 10% 65%; /* Darker Grey-Blue for visible borders */
     --input: 0 0% 95%; /* Approx 5% grey */
     --ring: 180 75% 15%; /* Dark Teal for ring */
 
@@ -67,8 +66,6 @@ body {
   }
 
   .dark {
-    /* --background: 200 15% 12%; */ /* Dark Blue-Grey */
-    /* Let's try a darker teal/green for dark mode background too */
     --background: 180 30% 8%; /* Very Dark Teal */
     --foreground: 140 25% 85%; /* Light Minty Grey */
 

@@ -329,13 +329,13 @@ export default function LandingPage() {
         </section>
       )}
 
-      {/* Quick Access Calculators */}
+      {/* Start With Our Most Popular Calculators */}
       <section id="popular-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed lg:grid-cols-4 to lg:grid-cols-2 */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -496,13 +496,6 @@ export default function LandingPage() {
                 </Card>
               );
             })}
-          </div>
-          <div className="mt-12 text-center">
-             <Button asChild variant="outline" size="lg">
-                <Link href="https://www.ird.gov.tt/taxcalendar" target="_blank" rel="noopener noreferrer">
-                View Official IRD Tax Calendar <ArrowRight className="ml-2 h-4 w-4"/>
-                </Link>
-            </Button>
           </div>
         </div>
       </section>

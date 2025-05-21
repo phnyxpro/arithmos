@@ -49,6 +49,8 @@ import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculato
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO, addDays } from 'date-fns';
 
 interface HeroContent {
   icon: React.ElementType;
@@ -57,7 +59,6 @@ interface HeroContent {
   secondarySubheadline: string;
   primaryCtaText: string;
   primaryCtaLink: string;
-  backgroundImageUrl: string; // This will no longer be used for the main hero image div
 }
 
 const heroContentData: HeroContent = {
@@ -67,7 +68,6 @@ const heroContentData: HeroContent = {
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
-  backgroundImageUrl: "https://images.unsplash.com/photo-1564939558297-fc396f18e5c7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhY2NvdW50aW5nfGVufDB8fHx8MTc0NzM2MTg0MHww&ixlib=rb-4.1.0&q=80&w=1080",
 };
 
 interface CalculatorCardData {
@@ -117,7 +117,6 @@ interface DeadlineItem {
   status: "Urgent" | "Upcoming" | "Completed";
 }
 
-// Example data, dates might need to be dynamic or updated for real application
 const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2024-06-15", periodicity: "Monthly", status: "Urgent" },
   { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2024.", nextDueDate: "2024-07-25", periodicity: "Bi-Monthly", status: "Urgent" },
@@ -149,6 +148,7 @@ export default function LandingPage() {
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
+  const { toast } = useToast();
 
   const handleOpenBasicTimeCalc = React.useCallback(() => setIsBasicTimeCalcOpen(true), []);
   const handleOpenPayrollCalc = React.useCallback(() => setIsPayrollCalcOpen(true), []);
@@ -187,7 +187,7 @@ export default function LandingPage() {
       onClick: handleOpenVoluntaryNisCalc,
     },
     {
-      icon: Banknote, // Changed from BarChart3 for Levy Calculator
+      icon: Banknote, 
       title: "Levy Calculator",
       description: "Estimate Business Levy and Green Fund Levy from gross income.",
       ctaText: "Estimate Levies",
@@ -208,14 +208,61 @@ export default function LandingPage() {
     { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: House, href: "/calculators/property-tax", ctaText: "View Page" },
     { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page" },
   ];
+  
+  const halfLength = Math.ceil(detailedCalculatorList.length / 2);
+  const firstHalfCalculators = detailedCalculatorList.slice(0, halfLength);
+  const secondHalfCalculators = detailedCalculatorList.slice(halfLength);
 
+  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
+    const eventDate = parseISO(deadline.nextDueDate);
+    if (isNaN(eventDate.getTime()) || eventDate < new Date(new Date().setHours(0,0,0,0))) {
+      toast({
+        title: "Invalid or Past Date",
+        description: `Cannot set a reminder for "${deadline.name}" as the date is invalid or in the past.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const startDateStr = format(eventDate, "yyyyMMdd");
+    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); 
+
+    const icsContent = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      `PRODID:-//TaxTT//TaxTT Reminder//EN`,
+      "BEGIN:VEVENT",
+      `UID:${crypto.randomUUID()}@taxtt.com`,
+      `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
+      `DTSTART;VALUE=DATE:${startDateStr}`,
+      `DTEND;VALUE=DATE:${endDateStr}`,
+      `SUMMARY:Tax TT Reminder: ${deadline.name}`,
+      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+
+    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+
+    toast({
+      title: "Reminder Sent to Calendar",
+      description: `A calendar event file for "${deadline.name}" is being downloaded.`,
+    });
+  }, [toast]);
 
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
       <section
         id="hero"
-        className="py-24 md:py-32 bg-gradient-to-br from-primary/10 via-background to-background"
+        className="py-24 md:py-32"
       >
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center text-center"> 
@@ -251,7 +298,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4"> {/* Changed to lg:grid-cols-4 */}
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed to lg:grid-cols-2 */}
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -280,41 +327,43 @@ export default function LandingPage() {
         </div>
       </section>
       
-      {/* Learn About Our Calculators - New Position and Layout */}
+      {/* Explore All Our Calculators - New Position and Accordion Layout */}
       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Explore All Our Calculators
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {detailedCalculatorList.map((calc) => (
-              <Card key={calc.id} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
-                <CardHeader>
-                  <div className="flex items-start space-x-3">
-                    {calc.icon && <calc.icon className="h-8 w-8 text-accent flex-shrink-0 mt-1" />}
-                    <CardTitle className="text-lg text-primary">{calc.name}</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-grow pt-0">
-                  <p className="text-sm text-muted-foreground">{calc.description}</p>
-                </CardContent>
-                <CardFooter>
-                  {calc.onClick ? (
-                    <Button onClick={calc.onClick} variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
-                      {calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  ) : calc.href ? (
-                    <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
-                      <Link href={calc.href}>{calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                    </Button>
-                  ) : (
-                    <Button variant="outline" className="w-full text-primary border-primary hover:bg-primary/10" disabled>
-                      {calc.ctaText}
-                    </Button>
-                  )}
-                </CardFooter>
-              </Card>
-            ))}
+          <div className="grid md:grid-cols-2 gap-x-8">
+            <Accordion type="single" collapsible className="w-full">
+              {firstHalfCalculators.map((calc) => (
+                <AccordionItem value={calc.id} key={calc.id}>
+                  <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
+                    <div className="flex items-center">
+                      {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-accent flex-shrink-0" />}
+                      {calc.name}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    Access this tool via its dedicated page or dialog.
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <Accordion type="single" collapsible className="w-full">
+              {secondHalfCalculators.map((calc) => (
+                <AccordionItem value={calc.id} key={calc.id}>
+                  <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
+                     <div className="flex items-center">
+                      {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-accent flex-shrink-0" />}
+                      {calc.name}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                    Access this tool via its dedicated page or dialog.
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>
@@ -357,13 +406,16 @@ export default function LandingPage() {
                 else if (item.status === "Upcoming") badgeVariant = "default"; 
                 else if (item.status === "Completed") badgeVariant = "outline"; 
                 
+                const dueDate = parseISO(item.nextDueDate);
+                const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed";
+
               return (
-                <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${item.status === "Urgent" ? 'border-destructive' : ''}`}>
+                <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${isPast ? 'opacity-70' : ''}`}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg text-primary">{item.name}</CardTitle>
                        <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
-                        {item.status}
+                        {isPast ? "Overdue" : item.status}
                       </Badge>
                     </div>
                     <CardDescription className="text-xs pt-1">Periodicity: {item.periodicity}</CardDescription>
@@ -372,7 +424,7 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                       Due: {item.nextDueDate}
+                       Due: {format(dueDate, "MMMM d, yyyy")}
                     </div>
                   </CardContent>
                    <CardFooter>
@@ -380,6 +432,7 @@ export default function LandingPage() {
                       variant="ghost"
                       size="sm"
                       className="w-full justify-start text-xs text-primary hover:bg-primary/10 p-1"
+                      onClick={() => handleAddToCalendar(item)}
                       disabled={item.status === "Completed"}
                     >
                       <CalendarDays className="mr-1.5 h-3 w-3"/> Set Reminder
@@ -475,7 +528,7 @@ export default function LandingPage() {
       <Dialog open={isLevyCalcOpen} onOpenChange={setIsLevyCalcOpen}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle> {/* Updated icon to Banknote */}
+            <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
            <DialogClose asChild>
@@ -498,4 +551,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

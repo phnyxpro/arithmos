@@ -134,11 +134,14 @@ export default function CorporationTaxPage() {
   });
 
   const watchedOperatingExpenses = form.watch("operatingExpenses");
-  const totalOperatingExpenses = form.watch("allowableDeductions");
+  const totalOperatingExpensesDisplay = form.watch("allowableDeductions");
 
   React.useEffect(() => {
     if (watchedOperatingExpenses) {
-      const totalOpEx = Object.values(watchedOperatingExpenses).reduce((sum, val) => sum + (val || 0), 0);
+      const totalOpEx = Object.values(watchedOperatingExpenses).reduce(
+        (sum, val) => sum + (Number(val) || 0), // Robust parsing
+        0
+      );
       form.setValue("allowableDeductions", totalOpEx, { shouldValidate: true });
     }
   }, [watchedOperatingExpenses, form]);
@@ -159,7 +162,7 @@ export default function CorporationTaxPage() {
     let taxRate = selectedCompanyType.rate;
     
     const totalOpEx = data.operatingExpenses 
-      ? Object.values(data.operatingExpenses).reduce((sum, val) => sum + (val || 0), 0)
+      ? Object.values(data.operatingExpenses).reduce((sum, val) => sum + (Number(val) || 0), 0)
       : 0;
 
     const initialChargeable = (data.grossIncome || 0) - totalOpEx;
@@ -350,7 +353,7 @@ export default function CorporationTaxPage() {
                         <FormLabel className="flex items-center mb-1 font-semibold">
                            <Sigma className="mr-2 h-5 w-5 text-primary" /> Total Operating Expenses
                         </FormLabel>
-                        <p className="text-lg font-bold text-primary">${formatCurrency(totalOperatingExpenses || 0)}</p>
+                        <p className="text-lg font-bold text-primary">${formatCurrency(totalOperatingExpensesDisplay || 0)}</p>
                     </div>
                 </CardContent>
               </Card>
@@ -504,3 +507,5 @@ export default function CorporationTaxPage() {
   );
 }
 
+
+    

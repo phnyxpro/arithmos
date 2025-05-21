@@ -69,12 +69,13 @@ const userNavItems = [
 
 export default function Header() {
   const mainNavItems = [
+    { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-header text-header-foreground shadow-sm">
-      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10"> {/* Increased px from 4 to 10 */}
+      <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <AppLogo className="h-8 w-8 text-header-foreground" />
           <span className="font-bold text-xl text-header-foreground sm:inline-block">TaxTT</span>
@@ -84,7 +85,7 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-header-foreground hover:text-header-foreground/80 hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+              className="text-sm font-medium text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
             >
               {item.label}
             </Link>

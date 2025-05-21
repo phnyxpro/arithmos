@@ -43,7 +43,9 @@ import {
   Linkedin,
   Facebook,
   Bell,
-  // BarChart3, // Kept in case it's used elsewhere or for consistency
+  Download, 
+  Mail, 
+  CalendarPlus, 
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -52,7 +54,7 @@ import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLev
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
 import { StarReviewDialog } from '@/components/ui/star-review-dialog';
 import { useToast } from "@/hooks/use-toast";
-import { format, parseISO, addDays } from 'date-fns';
+import { format, parseISO, addDays, formatISO } from 'date-fns';
 
 interface HeroContent {
   icon: React.ElementType;
@@ -124,7 +126,7 @@ const deadlineItems: DeadlineItem[] = [
   { id: "paye", name: "PAYE Monthly Remittance", description: "Remittance of PAYE deducted from employees for the previous month.", nextDueDate: "2025-06-15", periodicity: "Monthly", status: "Upcoming" },
   { id: "vat", name: "VAT Return & Payment", description: "For tax period May-Jun 2025.", nextDueDate: "2025-07-25", periodicity: "Bi-Monthly", status: "Upcoming" },
   { id: "levies", name: "Business & Green Fund Levy (Q2)", description: "Second quarterly installment for 2025.", nextDueDate: "2025-06-30", periodicity: "Quarterly", status: "Upcoming" },
-  { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year ended Dec 31, 2024.", nextDueDate: "2025-04-30", periodicity: "Annually", status: "Upcoming" },
+  { id: "corp-tax-return", name: "Corporation Tax Return", description: "For income year 2024.", nextDueDate: "2025-04-30", periodicity: "Annually", status: "Upcoming" },
   { id: "corp-tax-install", name: "Corporation Tax Installment (Q3)", description: "Third quarterly installment for 2025.", nextDueDate: "2025-09-30", periodicity: "Quarterly", status: "Upcoming" },
   { id: "income-tax-return", name: "Individual Income Tax Return", description: "For income year 2024.", nextDueDate: "2025-04-30", periodicity: "Annually", status: "Upcoming" },
 ];
@@ -159,7 +161,7 @@ export default function LandingPage() {
 
   const openCalculatorDialog = (
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    setKey?: React.Dispatch<React.SetStateAction<number>> // Make setKey optional
+    setKey?: React.Dispatch<React.SetStateAction<number>>
   ) => {
     if (setKey) {
       setKey(prevKey => prevKey + 1);
@@ -238,18 +240,9 @@ export default function LandingPage() {
   const firstHalfCalculators = detailedCalculatorList.slice(0, Math.ceil(detailedCalculatorList.length / 2));
   const secondHalfCalculators = detailedCalculatorList.slice(Math.ceil(detailedCalculatorList.length / 2));
 
-  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem) => {
+  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem, type: 'google' | 'outlook' | 'ics') => {
     const eventDate = parseISO(deadline.nextDueDate);
-    // Check if the date is past and the event is not already completed
-    if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
-      toast({
-        title: "Past Due Date",
-        description: `Cannot set a reminder for "${deadline.name}" as the date is in the past.`,
-        variant: "default", // Use default or warning variant
-      });
-      return;
-    }
-     if (isNaN(eventDate.getTime())) {
+    if (isNaN(eventDate.getTime())) {
       toast({
         title: "Invalid Date",
         description: `Cannot set a reminder for "${deadline.name}" due to an invalid date.`,
@@ -257,39 +250,66 @@ export default function LandingPage() {
       });
       return;
     }
+     if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
+      toast({
+        title: "Past Due Date",
+        description: `Cannot set a reminder for "${deadline.name}" as the date is in the past.`,
+        variant: "default",
+      });
+      return;
+    }
 
+    const eventTitle = `Tax TT Reminder: ${deadline.name}`;
+    const eventDescription = `Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`;
+    
+    // For all-day events, Google Calendar needs end date to be the day AFTER the actual end.
+    const googleStartDate = format(eventDate, "yyyyMMdd");
+    const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd"); 
+    
+    // For Outlook, using ISO string without time for all-day.
+    const outlookStartDate = format(eventDate, "yyyy-MM-dd"); 
+    const outlookEndDate = format(eventDate, "yyyy-MM-dd"); 
 
-    const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd"); // All-day event
+    if (type === 'google') {
+      const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${googleStartDate}/${googleEndDate}&details=${encodeURIComponent(eventDescription)}`;
+      window.open(googleUrl, '_blank');
+      toast({ title: "Opening Google Calendar", description: `Adding reminder for "${deadline.name}".` });
+    } else if (type === 'outlook') {
+      // For Outlook all-day event, we use just the date for start and end.
+      const outlookAllDayStartDate = format(eventDate, "yyyy-MM-dd");
+      const outlookAllDayEndDate = format(eventDate, "yyyy-MM-dd"); // End date is same as start for single all-day event
+      const outlookUrl = `https://outlook.live.com/calendar/0/action/compose?rru=addevent&path=/calendar/action/compose&subject=${encodeURIComponent(eventTitle)}&startdt=${outlookAllDayStartDate}&enddt=${outlookAllDayEndDate}&allday=true&body=${encodeURIComponent(eventDescription)}`;
+      window.open(outlookUrl, '_blank');
+      toast({ title: "Opening Outlook Calendar", description: `Adding reminder for "${deadline.name}".` });
+    } else if (type === 'ics') {
+      const startDateStrICS = format(eventDate, "yyyyMMdd");
+      const endDateStrICS = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day event in ICS
 
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      `PRODID:-//TaxTT//TaxTT Reminder//EN`,
-      "BEGIN:VEVENT",
-      `UID:${crypto.randomUUID()}@taxtt.com`,
-      `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
-      `DTSTART;VALUE=DATE:${startDateStr}`,
-      `DTEND;VALUE=DATE:${endDateStr}`,
-      `SUMMARY:Tax TT Reminder: ${deadline.name}`,
-      `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`,
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join("\r\n");
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        `PRODID:-//TaxTT//TaxTT Reminder//EN`,
+        "BEGIN:VEVENT",
+        `UID:${crypto.randomUUID()}@taxtt.com`,
+        `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
+        `DTSTART;VALUE=DATE:${startDateStrICS}`,
+        `DTEND;VALUE=DATE:${endDateStrICS}`,
+        `SUMMARY:${eventTitle}`,
+        `DESCRIPTION:${eventDescription.replace(/\n/g, '\\n')}`,
+        "END:VEVENT",
+        "END:VCALENDAR",
+      ].join("\r\n");
 
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Tax_TT_Reminder_${deadline.name.replace(/[\s&/]+/g, '_')}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-
-    toast({
-      title: "Calendar Reminder Created",
-      description: `An event file for "${deadline.name}" is downloading. Please import it into your calendar.`,
-    });
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Tax_TT_Reminder_${deadline.name.replace(/[\s&/]+/g, '_')}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      toast({ title: "ICS File Downloading", description: `Import the file for "${deadline.name}" into your calendar.` });
+    }
   }, [toast]);
 
   const upcomingTickerItems = React.useMemo(() => {
@@ -373,7 +393,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> 
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -421,11 +441,11 @@ export default function LandingPage() {
                    <AccordionContent className="text-muted-foreground leading-relaxed">
                     <p className="mb-3">{calc.description}</p>
                     {calc.onClick ? (
-                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
+                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0 h-auto">
                             {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
                         </Button>
                     ) : (
-                        <Button asChild variant="link" className="text-accent p-0">
+                        <Button asChild variant="link" className="text-accent p-0 h-auto">
                             <Link href={calc.href || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
                         </Button>
                     )}
@@ -444,12 +464,12 @@ export default function LandingPage() {
                   </AccordionTrigger>
                    <AccordionContent className="text-muted-foreground leading-relaxed">
                     <p className="mb-3">{calc.description}</p>
-                    {calc.onClick ? (
-                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0">
+                     {calc.onClick ? (
+                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0 h-auto">
                             {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
                         </Button>
                     ) : (
-                        <Button asChild variant="link" className="text-accent p-0">
+                        <Button asChild variant="link" className="text-accent p-0 h-auto">
                             <Link href={calc.href || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
                         </Button>
                     )}
@@ -521,15 +541,39 @@ export default function LandingPage() {
                        Due: {format(dueDate, "MMMM d, yyyy")}
                     </div>
                   </CardContent>
-                   <CardFooter>
+                   <CardFooter className="pt-4 flex items-center justify-start space-x-1 sm:space-x-2">
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-xs text-primary hover:bg-primary/10 p-1"
-                      onClick={() => handleAddToCalendar(item)}
+                      size="icon"
+                      className="h-7 w-7 text-primary hover:bg-primary/10"
+                      onClick={() => handleAddToCalendar(item, 'google')}
                       disabled={item.status === "Completed"}
+                      aria-label="Add to Google Calendar"
+                      title="Add to Google Calendar"
                     >
-                      <Bell className="mr-1.5 h-3 w-3"/> Set Reminder
+                      <CalendarPlus className="h-4 w-4"/>
+                    </Button>
+                     <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-primary hover:bg-primary/10"
+                      onClick={() => handleAddToCalendar(item, 'outlook')}
+                      disabled={item.status === "Completed"}
+                      aria-label="Add to Outlook Calendar"
+                      title="Add to Outlook Calendar"
+                    >
+                      <Mail className="h-4 w-4"/>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-primary hover:bg-primary/10"
+                      onClick={() => handleAddToCalendar(item, 'ics')}
+                      disabled={item.status === "Completed"}
+                      aria-label="Download ICS File for Apple/Other Calendars"
+                      title="Download ICS for Apple/Other"
+                    >
+                      <Download className="h-4 w-4"/>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -556,7 +600,7 @@ export default function LandingPage() {
                   <p className="text-sm text-muted-foreground">{resource.description}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button asChild variant="link" className="text-accent p-0">
+                  <Button asChild variant="link" className="text-accent p-0 h-auto">
                     <Link href={resource.href}>Read Guide <ArrowRight className="ml-1 h-4 w-4"/></Link>
                   </Button>
                 </CardFooter>
@@ -633,4 +677,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

@@ -7,13 +7,13 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
   background-color: hsl(var(--background)); /* Updated to use the new --background color */
-  /* background-image: linear-gradient(to bottom, hsl(var(--header-background)), hsl(169, 47%, 48%)); */ /* Removed gradient */
+  background-image: linear-gradient(to bottom, #093637, #44A08D); /* Dark teal top to light teal bottom */
   background-attachment: fixed; /* Kept for consistency, less impactful for solid color */
 }
 
 @layer base {
   :root {
-    --background: 150 43% 94%; /* #e7f6f0 - Very Light Greenish Blue */
+    --background: 169 47% 48%; /* #44A08D - Light Teal (lighter end of gradient) */
     --foreground: 210 20% 25%; /* Dark Slate Grey */
 
     --card: 0 0% 100%; /* White */
@@ -79,7 +79,7 @@ body {
     --popover-foreground: 140 25% 85%;
 
     /* Adjusted primary for dark mode to be lighter than the page background */
-    --primary: 169 47% 48%; /* Light Teal for titles/accents in dark mode */
+    --primary: 120 50% 65%; /* #79d279 - New primary color for dark mode */
     --primary-foreground: 180 75% 10%; /* Very Dark Teal for text on primary buttons */
 
 
@@ -97,9 +97,9 @@ body {
 
     --border: 180 15% 25%;
     --input: 0 0% 10%; /* Darker grey input for dark mode, close to #1a1a1a */
-    --ring: 169 47% 48%; /* Light Teal for ring in dark mode */
+    --ring: 120 50% 65%; /* #79d279 - New ring color for dark mode */
 
-    --chart-1: 169 47% 48%;
+    --chart-1: 120 50% 65%; /* #79d279 - New chart color 1 for dark mode */
     --chart-2: 160 50% 60%;
     --chart-3: 170 55% 70%;
     --chart-4: 200 45% 80%;

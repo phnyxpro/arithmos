@@ -25,26 +25,54 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Clock, Watch, Copy, Trash2, Plus, Minus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Clock, Watch, Copy, Trash2, Plus, Minus, User, DollarSign, TrendingDown, Briefcase as BriefcaseIcon } from "lucide-react"; // Added BriefcaseIcon alias
 import { useToast } from "@/hooks/use-toast";
+import { format } from 'date-fns';
+
 
 export default function TimeCalculatorPage() {
   const { toast } = useToast();
 
-  // State for "Calculate Duration & Pay"
+  // State for "Basic Time Tools - Calculate Duration & Pay"
   const [basicStartTime, setBasicStartTime] = React.useState("09:00");
   const [basicEndTime, setBasicEndTime] = React.useState("17:00");
   const [basicHourlyRate, setBasicHourlyRate] = React.useState("");
-  const [durationResult, setDurationResult] = React.useState<string | null>(null);
+  const [basicDurationResult, setBasicDurationResult] = React.useState<string | null>(null);
 
-  // State for "Add / Subtract Time"
+  // State for "Basic Time Tools - Add / Subtract Time"
   const [baseTime, setBaseTime] = React.useState("10:00");
   const [hoursToModify, setHoursToModify] = React.useState("2");
   const [minutesToModify, setMinutesToModify] = React.useState("30");
   const [addSubtractResult, setAddSubtractResult] = React.useState<string | null>(null);
 
-  const handleCalculateDuration = () => {
-    // Basic validation
+  // State for "Advanced Pay Calculator"
+  const [employeeNameAdv, setEmployeeNameAdv] = React.useState("");
+  const [workDateAdv, setWorkDateAdv] = React.useState(format(new Date(), "yyyy-MM-dd"));
+  const [clockInTimeAdv, setClockInTimeAdv] = React.useState("08:00");
+  const [clockOutTimeAdv, setClockOutTimeAdv] = React.useState("17:00");
+  const [breakDurationAdv, setBreakDurationAdv] = React.useState("60");
+  const [breakUnitAdv, setBreakUnitAdv] = React.useState<"minutes" | "hours">("minutes");
+
+  const [hourlyRateAdv, setHourlyRateAdv] = React.useState("");
+  const [overtimeThresholdAdv, setOvertimeThresholdAdv] = React.useState("8");
+  const [overtimeMultiplierAdv, setOvertimeMultiplierAdv] = React.useState("1.5");
+
+  const [applyNISAdv, setApplyNISAdv] = React.useState(true);
+  const [applyHealthSurchargeAdv, setApplyHealthSurchargeAdv] = React.useState(true);
+  const [otherDeductionsAdv, setOtherDeductionsAdv] = React.useState("");
+
+  const [advancedCalcResults, setAdvancedCalcResults] = React.useState<string | null>(null);
+
+
+  const handleBasicCalculateDuration = () => {
     if (!basicStartTime || !basicEndTime) {
       toast({ title: "Error", description: "Please enter Start and End times.", variant: "destructive" });
       return;
@@ -53,43 +81,52 @@ export default function TimeCalculatorPage() {
     const rate = parseFloat(basicHourlyRate) || 0;
     const durationHours = 8; // Placeholder
     const pay = durationHours * rate;
-    setDurationResult(`Duration: ${durationHours} hours. Estimated Pay: TT$${pay.toFixed(2)}`);
-    toast({ title: "Calculation Complete", description: `Duration: ${durationHours} hrs. Pay: TT$${pay.toFixed(2)}` });
+    setBasicDurationResult(`Duration: ${durationHours} hours. Estimated Pay: TT$${pay.toFixed(2)}`);
+    toast({ title: "Calculation Complete (Basic)", description: `Duration: ${durationHours} hrs. Pay: TT$${pay.toFixed(2)}` });
   };
 
-  const handleCopyResults = () => {
-    if (durationResult) {
-      navigator.clipboard.writeText(durationResult);
-      toast({ title: "Copied!", description: "Results copied to clipboard." });
+  const handleBasicCopyResults = () => {
+    if (basicDurationResult) {
+      navigator.clipboard.writeText(basicDurationResult);
+      toast({ title: "Copied!", description: "Basic time results copied to clipboard." });
     } else {
       toast({ title: "No results", description: "Calculate first to copy results.", variant: "default" });
     }
   };
 
-  const handleClearDurationFields = () => {
+  const handleBasicClearDurationFields = () => {
     setBasicStartTime("09:00");
     setBasicEndTime("17:00");
     setBasicHourlyRate("");
-    setDurationResult(null);
-    toast({ title: "Fields Cleared", description: "Duration calculator fields have been reset." });
+    setBasicDurationResult(null);
+    toast({ title: "Fields Cleared", description: "Basic duration calculator fields have been reset." });
   };
   
-  const handleAddTime = () => {
-    // Dummy logic
+  const handleBasicAddTime = () => {
     setAddSubtractResult(`Result of adding time: (New Time)`);
-    toast({ title: "Time Added (Dummy)", description: "Time addition simulated." });
+    toast({ title: "Time Added (Basic - Dummy)", description: "Time addition simulated." });
   };
 
-  const handleSubtractTime = () => {
-    // Dummy logic
+  const handleBasicSubtractTime = () => {
     setAddSubtractResult(`Result of subtracting time: (New Time)`);
-    toast({ title: "Time Subtracted (Dummy)", description: "Time subtraction simulated." });
+    toast({ title: "Time Subtracted (Basic - Dummy)", description: "Time subtraction simulated." });
+  };
+
+  const handleCalculateAdvancedPay = () => {
+    // Placeholder for advanced calculation logic
+    console.log("Advanced Pay Calculation Triggered with:", {
+        employeeNameAdv, workDateAdv, clockInTimeAdv, clockOutTimeAdv,
+        breakDurationAdv, breakUnitAdv, hourlyRateAdv, overtimeThresholdAdv,
+        overtimeMultiplierAdv, applyNISAdv, applyHealthSurchargeAdv, otherDeductionsAdv
+    });
+    setAdvancedCalcResults("Advanced pay details calculated (Placeholder). See console for inputs.");
+    toast({ title: "Advanced Pay Calculated (Dummy)", description: "Check console for submitted values." });
   };
 
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
-      <Card className="w-[90vw] max-w-3xl shadow-xl rounded-xl mb-8">
+      <Card className="w-full max-w-3xl shadow-xl rounded-xl mb-8">
         <CardHeader>
           <div className="flex items-center space-x-3">
             <Clock className="h-8 w-8 text-primary" />
@@ -108,12 +145,12 @@ export default function TimeCalculatorPage() {
             <TabsContent value="basic" className="mt-6 space-y-6">
               <div className="space-y-6">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="p-4">
                     <CardTitle className="text-lg text-primary flex items-center">
                       <Watch className="mr-2 h-5 w-5" /> Calculate Duration &amp; Pay
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
+                  <CardContent className="p-4 space-y-3 text-sm">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                       <div>
                         <Label htmlFor="basicStartTimeDialog" className="text-xs">Start Time (HH:MM)</Label>
@@ -147,27 +184,27 @@ export default function TimeCalculatorPage() {
                         />
                       </div>
                     </div>
-                     <Button onClick={handleCalculateDuration} className="w-full mt-3 text-xs h-9">Calculate</Button>
-                     {durationResult && <p className="text-center text-primary font-medium mt-2 p-2 bg-primary/10 rounded-md">{durationResult}</p>}
+                     <Button onClick={handleBasicCalculateDuration} className="w-full mt-3 text-xs h-9">Calculate</Button>
+                     {basicDurationResult && <p className="text-center text-primary font-medium mt-2 p-2 bg-primary/10 rounded-md">{basicDurationResult}</p>}
                   </CardContent>
-                  <CardFooter className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" onClick={handleCopyResults} className="w-full text-xs h-9 flex-1">
+                  <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2">
+                    <Button variant="outline" onClick={handleBasicCopyResults} className="w-full text-xs h-9 flex-1">
                       <Copy className="mr-2 h-3 w-3" /> Copy Results
                     </Button>
-                    <Button variant="outline" onClick={handleClearDurationFields} className="w-full text-xs h-9 flex-1">
+                    <Button variant="outline" onClick={handleBasicClearDurationFields} className="w-full text-xs h-9 flex-1">
                       <Trash2 className="mr-2 h-3 w-3" /> Clear Fields
                     </Button>
                   </CardFooter>
                 </Card>
 
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="p-4">
                     <CardTitle className="text-lg text-primary flex items-center">
                       <Plus className="mr-1 h-5 w-5" />
                       <Minus className="mr-2 h-5 w-5" /> Add / Subtract Time
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
+                  <CardContent className="p-4 space-y-3 text-sm">
                     <div>
                       <Label htmlFor="basicBaseTimeDialog" className="text-xs">Base Time (HH:MM)</Label>
                       <Input
@@ -204,11 +241,11 @@ export default function TimeCalculatorPage() {
                     </div>
                     {addSubtractResult && <p className="text-center text-primary font-medium mt-2 p-2 bg-primary/10 rounded-md">{addSubtractResult}</p>}
                   </CardContent>
-                  <CardFooter className="flex flex-col sm:flex-row gap-2">
-                    <Button variant="outline" onClick={handleAddTime} className="w-full text-xs h-9 flex-1">
+                  <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2">
+                    <Button variant="outline" onClick={handleBasicAddTime} className="w-full text-xs h-9 flex-1">
                       <Plus className="mr-2 h-3 w-3" /> Add Time
                     </Button>
-                    <Button variant="outline" onClick={handleSubtractTime} className="w-full text-xs h-9 flex-1">
+                    <Button variant="outline" onClick={handleBasicSubtractTime} className="w-full text-xs h-9 flex-1">
                       <Minus className="mr-2 h-3 w-3" /> Subtract Time
                     </Button>
                   </CardFooter>
@@ -216,9 +253,113 @@ export default function TimeCalculatorPage() {
               </div>
             </TabsContent>
             <TabsContent value="advanced" className="mt-6 space-y-6">
-              <p className="text-muted-foreground text-center py-8">
-                Advanced Pay Calculator functionality will be implemented here.
-              </p>
+              <Card className="shadow-md rounded-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-primary flex items-center">
+                    <User className="mr-2 h-5 w-5" /> Workday Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="employeeNameAdv">Employee Name (Optional)</Label>
+                      <Input id="employeeNameAdv" placeholder="e.g., Jane Doe" value={employeeNameAdv} onChange={(e) => setEmployeeNameAdv(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label htmlFor="workDateAdv">Date</Label>
+                      <Input id="workDateAdv" type="date" value={workDateAdv} onChange={(e) => setWorkDateAdv(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="clockInTimeAdv">Clock In Time</Label>
+                      <Input id="clockInTimeAdv" type="time" value={clockInTimeAdv} onChange={(e) => setClockInTimeAdv(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label htmlFor="clockOutTimeAdv">Clock Out Time</Label>
+                      <Input id="clockOutTimeAdv" type="time" value={clockOutTimeAdv} onChange={(e) => setClockOutTimeAdv(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                    <div>
+                      <Label htmlFor="breakDurationAdv">Break Duration</Label>
+                      <Input id="breakDurationAdv" type="number" placeholder="e.g., 30 or 1" value={breakDurationAdv} onChange={(e) => setBreakDurationAdv(e.target.value)} />
+                    </div>
+                    <Select value={breakUnitAdv} onValueChange={(value) => setBreakUnitAdv(value as "minutes" | "hours")}>
+                      <SelectTrigger id="breakUnitAdv">
+                        <SelectValue placeholder="Select unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="minutes">Minutes</SelectItem>
+                        <SelectItem value="hours">Hours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md rounded-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-primary flex items-center">
+                    <DollarSign className="mr-2 h-5 w-5" /> Pay Rate &amp; Overtime
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor="hourlyRateAdv">Hourly Rate (TT$)</Label>
+                      <Input id="hourlyRateAdv" type="number" placeholder="e.g., 50.00" value={hourlyRateAdv} onChange={(e) => setHourlyRateAdv(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label htmlFor="overtimeThresholdAdv">OT Threshold (hours)</Label>
+                      <Input id="overtimeThresholdAdv" type="number" placeholder="e.g., 8" value={overtimeThresholdAdv} onChange={(e) => setOvertimeThresholdAdv(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label htmlFor="overtimeMultiplierAdv">OT Multiplier</Label>
+                      <Input id="overtimeMultiplierAdv" type="number" placeholder="e.g., 1.5" value={overtimeMultiplierAdv} onChange={(e) => setOvertimeMultiplierAdv(e.target.value)} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-md rounded-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-primary flex items-center">
+                    <TrendingDown className="mr-2 h-5 w-5" /> Deductions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="applyNISAdv" checked={applyNISAdv} onCheckedChange={(checked) => setApplyNISAdv(Boolean(checked))} />
+                    <Label htmlFor="applyNISAdv">Apply NIS (5.6% of Gross Pay - daily estimate)</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="applyHealthSurchargeAdv" checked={applyHealthSurchargeAdv} onCheckedChange={(checked) => setApplyHealthSurchargeAdv(Boolean(checked))} />
+                    <Label htmlFor="applyHealthSurchargeAdv">Apply Health Surcharge (tiered, daily estimate)</Label>
+                  </div>
+                  <div>
+                    <Label htmlFor="otherDeductionsAdv">Other Deductions (TT$)</Label>
+                    <Input id="otherDeductionsAdv" type="number" placeholder="e.g., 20.00" value={otherDeductionsAdv} onChange={(e) => setOtherDeductionsAdv(e.target.value)} />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {advancedCalcResults && (
+                <Card className="mt-4 bg-primary/5">
+                    <CardHeader>
+                        <CardTitle className="text-lg text-primary">Calculation Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">{advancedCalcResults}</p>
+                    </CardContent>
+                </Card>
+              )}
+
+              <div className="flex justify-end pt-4">
+                <Button onClick={handleCalculateAdvancedPay} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <BriefcaseIcon className="mr-2 h-5 w-5" /> Calculate Daily Pay 
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -247,7 +388,7 @@ export default function TimeCalculatorPage() {
             <AccordionItem value="item-3">
               <AccordionTrigger>NIS and Health Surcharge Estimates</AccordionTrigger>
               <AccordionContent>
-                The basic time and pay calculator here does not automatically estimate NIS or Health Surcharge. For detailed statutory deductions, please use our dedicated "PAYE, NIS & HS (Payroll)" calculator. This tool focuses on gross pay based on hours worked.
+                The basic time and pay calculator here does not automatically estimate NIS or Health Surcharge. For detailed statutory deductions, please use our dedicated "PAYE, NIS & HS (Payroll)" calculator. This tool focuses on gross pay based on hours worked. The Advanced Pay Calculator tab on this page provides daily estimates for NIS and Health Surcharge for illustrative purposes.
               </AccordionContent>
             </AccordionItem>
           </Accordion>

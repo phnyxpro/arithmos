@@ -19,7 +19,6 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetClose,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -43,7 +42,7 @@ import {
   Factory,
   Sun,
   Moon,
-  Menu, // Added Menu icon
+  Menu,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -106,7 +105,7 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[hsl(var(--header-background)/0.95)] text-header-foreground shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-[hsl(var(--header-background)/0.80)]">
+    <header className="sticky top-0 z-50 w-full text-header-foreground shadow-sm backdrop-blur-sm">
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <AppLogo className="h-8 w-8 text-header-foreground" />
@@ -119,7 +118,7 @@ export default function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="text-sm font-medium text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+              className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
             >
               {item.label}
             </Link>
@@ -129,7 +128,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
               >
                 Calculators
                 <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
@@ -151,7 +150,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
               >
                 Accounting
                 <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
@@ -173,7 +172,7 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
+                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
               >
                 Knowledge Base
                 <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
@@ -191,13 +190,13 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          {/* User Menu Dropdown - Stays part of desktop nav or general right-aligned items */}
+          {/* User Menu Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 rounded-full p-0 text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10"
+                className="relative h-9 w-9 rounded-full p-0 text-header-foreground hover:bg-header-foreground/10"
               >
                 <UserIcon className="h-5 w-5 text-header-foreground" />
                 <span className="sr-only">Open user menu</span>
@@ -257,7 +256,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10"
+                className="text-header-foreground hover:bg-header-foreground/10"
               >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
@@ -329,7 +328,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="relative h-9 w-9 rounded-full p-0 ml-2 text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10"
+                className="relative h-9 w-9 rounded-full p-0 ml-2 text-header-foreground hover:bg-header-foreground/10"
               >
                 <UserIcon className="h-5 w-5 text-header-foreground" />
                 <span className="sr-only">Open user menu</span>
@@ -386,6 +385,3 @@ export default function Header() {
     </header>
   );
 }
-
-
-    

@@ -23,29 +23,11 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Coins, ArrowRightLeft, DollarSign, Info, Copy, Trash2, Loader2, AlertTriangle, RefreshCw, LineChart as LineChartIcon } from 'lucide-react';
+import { Coins, ArrowRightLeft, DollarSign, Info, Copy, Trash2, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getExchangeRate, type GetExchangeRateInput } from '@/ai/flows/get-exchange-rate-flow';
 import { getPopularExchangeRates, type GetPopularExchangeRatesOutput, type PopularRate } from '@/ai/flows/get-popular-exchange-rates-flow';
-import { getHistoricalExchangeRateMarkers, type GetHistoricalExchangeRateMarkersInput, type GetHistoricalExchangeRateMarkersOutput, type HistoricalRateMarker } from '@/ai/flows/get-historical-exchange-rate-markers-flow';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
-import type { ChartConfig } from "@/components/ui/chart";
-
 
 const currencyOptions = [
   { value: "TTD", label: "TTD - Trinidad & Tobago Dollar" },
@@ -78,22 +60,134 @@ const currencyOptions = [
   { value: "KYD", label: "KYD - Cayman Islands Dollar" },
   { value: "BSD", label: "BSD - Bahamian Dollar" },
   { value: "BMD", label: "BMD - Bermudian Dollar" },
+  // Add more currencies as needed
+  { value: "AED", label: "AED - UAE Dirham" },
+  { value: "AFN", label: "AFN - Afghan Afghani" },
+  { value: "ALL", label: "ALL - Albanian Lek" },
+  { value: "AMD", label: "AMD - Armenian Dram" },
+  { value: "AOA", label: "AOA - Angolan Kwanza" },
+  { value: "ARS", label: "ARS - Argentine Peso" },
+  { value: "AZN", label: "AZN - Azerbaijani Manat" },
+  { value: "BAM", label: "BAM - Bosnia-Herzegovina Convertible Mark" },
+  { value: "BDT", label: "BDT - Bangladeshi Taka" },
+  { value: "BGN", label: "BGN - Bulgarian Lev" },
+  { value: "BHD", label: "BHD - Bahraini Dinar" },
+  { value: "BIF", label: "BIF - Burundian Franc" },
+  { value: "BOB", label: "BOB - Bolivian Boliviano" },
+  { value: "BYN", label: "BYN - Belarusian Ruble" },
+  { value: "BZD", label: "BZD - Belize Dollar" },
+  { value: "CDF", label: "CDF - Congolese Franc" },
+  { value: "CLP", label: "CLP - Chilean Peso" },
+  { value: "COP", label: "COP - Colombian Peso" },
+  { value: "CRC", label: "CRC - Costa Rican Colón" },
+  { value: "CUP", label: "CUP - Cuban Peso" },
+  { value: "CVE", label: "CVE - Cape Verdean Escudo" },
+  { value: "CZK", label: "CZK - Czech Koruna" },
+  { value: "DJF", label: "DJF - Djiboutian Franc" },
+  { value: "DKK", label: "DKK - Danish Krone" },
+  { value: "DOP", label: "DOP - Dominican Peso" },
+  { value: "DZD", label: "DZD - Algerian Dinar" },
+  { value: "EGP", label: "EGP - Egyptian Pound" },
+  { value: "ERN", label: "ERN - Eritrean Nakfa" },
+  { value: "ETB", label: "ETB - Ethiopian Birr" },
+  { value: "FJD", label: "FJD - Fijian Dollar" },
+  { value: "FKP", label: "FKP - Falkland Islands Pound" },
+  { value: "GEL", label: "GEL - Georgian Lari" },
+  { value: "GHS", label: "GHS - Ghanaian Cedi" },
+  { value: "GIP", label: "GIP - Gibraltar Pound" },
+  { value: "GMD", label: "GMD - Gambian Dalasi" },
+  { value: "GNF", label: "GNF - Guinean Franc" },
+  { value: "GTQ", label: "GTQ - Guatemalan Quetzal" },
+  { value: "HNL", label: "HNL - Honduran Lempira" },
+  { value: "HTG", label: "HTG - Haitian Gourde" },
+  { value: "HUF", label: "HUF - Hungarian Forint" },
+  { value: "IDR", label: "IDR - Indonesian Rupiah" },
+  { value: "ILS", label: "ILS - Israeli New Shekel" },
+  { value: "IQD", label: "IQD - Iraqi Dinar" },
+  { value: "IRR", label: "IRR - Iranian Rial" },
+  { value: "ISK", label: "ISK - Icelandic Króna" },
+  { value: "JOD", label: "JOD - Jordanian Dinar" },
+  { value: "KES", label: "KES - Kenyan Shilling" },
+  { value: "KGS", label: "KGS - Kyrgystani Som" },
+  { value: "KHR", label: "KHR - Cambodian Riel" },
+  { value: "KMF", label: "KMF - Comorian Franc" },
+  { value: "KWD", label: "KWD - Kuwaiti Dinar" },
+  { value: "KZT", label: "KZT - Kazakhstani Tenge" },
+  { value: "LAK", label: "LAK - Laotian Kip" },
+  { value: "LBP", label: "LBP - Lebanese Pound" },
+  { value: "LKR", label: "LKR - Sri Lankan Rupee" },
+  { value: "LRD", label: "LRD - Liberian Dollar" },
+  { value: "LSL", label: "LSL - Lesotho Loti" },
+  { value: "LYD", label: "LYD - Libyan Dinar" },
+  { value: "MAD", label: "MAD - Moroccan Dirham" },
+  { value: "MDL", label: "MDL - Moldovan Leu" },
+  { value: "MGA", label: "MGA - Malagasy Ariary" },
+  { value: "MKD", label: "MKD - Macedonian Denar" },
+  { value: "MMK", label: "MMK - Myanma Kyat" },
+  { value: "MNT", label: "MNT - Mongolian Tugrik" },
+  { value: "MOP", label: "MOP - Macanese Pataca" },
+  { value: "MRU", label: "MRU - Mauritanian Ouguiya" },
+  { value: "MUR", label: "MUR - Mauritian Rupee" },
+  { value: "MVR", label: "MVR - Maldivian Rufiyaa" },
+  { value: "MWK", label: "MWK - Malawian Kwacha" },
+  { value: "MYR", label: "MYR - Malaysian Ringgit" },
+  { value: "MZN", label: "MZN - Mozambican Metical" },
+  { value: "NAD", label: "NAD - Namibian Dollar" },
+  { value: "NGN", label: "NGN - Nigerian Naira" },
+  { value: "NIO", label: "NIO - Nicaraguan Córdoba" },
+  { value: "NPR", label: "NPR - Nepalese Rupee" },
+  { value: "OMR", label: "OMR - Omani Rial" },
+  { value: "PAB", label: "PAB - Panamanian Balboa" },
+  { value: "PEN", label: "PEN - Peruvian Sol" },
+  { value: "PGK", label: "PGK - Papua New Guinean Kina" },
+  { value: "PHP", label: "PHP - Philippine Peso" },
+  { value: "PKR", label: "PKR - Pakistani Rupee" },
+  { value: "PLN", label: "PLN - Polish Zloty" },
+  { value: "PYG", label: "PYG - Paraguayan Guarani" },
+  { value: "QAR", label: "QAR - Qatari Rial" },
+  { value: "RON", label: "RON - Romanian Leu" },
+  { value: "RSD", label: "RSD - Serbian Dinar" },
+  { value: "RWF", label: "RWF - Rwandan Franc" },
+  { value: "SAR", label: "SAR - Saudi Riyal" },
+  { value: "SBD", label: "SBD - Solomon Islands Dollar" },
+  { value: "SCR", label: "SCR - Seychellois Rupee" },
+  { value: "SDG", label: "SDG - Sudanese Pound" },
+  { value: "SHP", label: "SHP - Saint Helena Pound" },
+  { value: "SLE", label: "SLE - Sierra Leonean Leone" },
+  { value: "SOS", label: "SOS - Somali Shilling" },
+  { value: "SSP", label: "SSP - South Sudanese Pound" },
+  { value: "STN", label: "STN - São Tomé & Príncipe Dobra" },
+  { value: "SYP", label: "SYP - Syrian Pound" },
+  { value: "SZL", label: "SZL - Swazi Lilangeni" },
+  { value: "THB", label: "THB - Thai Baht" },
+  { value: "TJS", label: "TJS - Tajikistani Somoni" },
+  { value: "TMT", label: "TMT - Turkmenistani Manat" },
+  { value: "TND", label: "TND - Tunisian Dinar" },
+  { value: "TOP", label: "TOP - Tongan Paʻanga" },
+  { value: "TRY", label: "TRY - Turkish Lira" },
+  { value: "TWD", label: "TWD - New Taiwan Dollar" },
+  { value: "TZS", label: "TZS - Tanzanian Shilling" },
+  { value: "UAH", label: "UAH - Ukrainian Hryvnia" },
+  { value: "UGX", label: "UGX - Ugandan Shilling" },
+  { value: "UYU", label: "UYU - Uruguayan Peso" },
+  { value: "UZS", label: "UZS - Uzbekistan Som" },
+  { value: "VES", label: "VES - Venezuelan Bolívar Soberano" },
+  { value: "VND", label: "VND - Vietnamese Dong" },
+  { value: "VUV", label: "VUV - Vanuatu Vatu" },
+  { value: "WST", label: "WST - Samoan Tala" },
+  { value: "XAF", label: "XAF - CFA Franc BEAC" },
+  { value: "XOF", label: "XOF - CFA Franc BCEAO" },
+  { value: "XPF", label: "XPF - CFP Franc" },
+  { value: "YER", label: "YER - Yemeni Rial" },
+  { value: "ZMW", label: "ZMW - Zambian Kwacha" },
 ];
+
 
 const initialConversionResults = {
   convertedAmountDisplay: "0.00",
   exchangeRateUsedDisplay: "N/A",
   conversionDisclaimer: "",
 };
-
-const chartConfig = {
-  usdRate: { label: "USD", color: "hsl(var(--chart-1))" },
-  eurRate: { label: "EUR", color: "hsl(var(--chart-2))" },
-  gbpRate: { label: "GBP", color: "hsl(var(--chart-3))" },
-  cadRate: { label: "CAD", color: "hsl(var(--chart-4))" },
-  audRate: { label: "AUD", color: "hsl(var(--chart-5))" },
-} satisfies ChartConfig;
-
 
 export function CurrencyExchangeCalculator() {
   const { toast } = useToast();
@@ -110,12 +204,6 @@ export function CurrencyExchangeCalculator() {
   const [isLoadingPopularRates, setIsLoadingPopularRates] = useState<boolean>(false);
   const [popularRatesError, setPopularRatesError] = useState<string | null>(null);
   const [popularRatesDisclaimer, setPopularRatesDisclaimer] = useState<string>("");
-
-  const [historicalMarkersData, setHistoricalMarkersData] = useState<GetHistoricalExchangeRateMarkersOutput['markers']>([]);
-  const [isLoadingHistoricalData, setIsLoadingHistoricalData] = useState<boolean>(false);
-  const [historicalDataError, setHistoricalDataError] = useState<string | null>(null);
-  const [historicalDataDisclaimer, setHistoricalDataDisclaimer] = useState<string>("");
-
 
   const formatCurrency = (num: number) => {
     try {
@@ -186,10 +274,14 @@ export function CurrencyExchangeCalculator() {
       }, 500); 
       return () => clearTimeout(timer);
     } else {
-      setConversionResults(initialConversionResults);
-      setConversionError(null);
+      // Clear results if inputs are invalid but don't show an error unless an API call failed
+      if (!isLoadingConversion) { // Only clear if not already in a loading state
+        setConversionResults(initialConversionResults);
+        setConversionError(null); 
+      }
     }
-  }, [amount, fromCurrency, toCurrency, handleConversion]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, fromCurrency, toCurrency]); // handleConversion removed to prevent re-triggering from its own update
 
 
   const fetchPopularRates = useCallback(async () => {
@@ -214,40 +306,9 @@ export function CurrencyExchangeCalculator() {
     }
   }, []);
 
-  const fetchHistoricalMarkersData = useCallback(async () => {
-    setIsLoadingHistoricalData(true);
-    setHistoricalDataError(null);
-    setHistoricalMarkersData([]);
-    try {
-        const input: GetHistoricalExchangeRateMarkersInput = {
-            baseCurrency: "TTD",
-            targetCurrencies: ["USD", "EUR", "GBP", "CAD", "AUD"], 
-            numberOfYears: 5,
-        };
-        const result: GetHistoricalExchangeRateMarkersOutput = await getHistoricalExchangeRateMarkers(input);
-
-        if (result && Array.isArray(result.markers) && result.markers.length > 0) {
-            const sortedMarkers = result.markers.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            setHistoricalMarkersData(sortedMarkers);
-            setHistoricalDataDisclaimer(result.aiDisclaimer || "Historical markers are AI-generated estimates.");
-        } else {
-            setHistoricalDataError("AI did not return historical data in the expected format or data was empty.");
-            setHistoricalDataDisclaimer("Could not fetch historical trend data. Please try again later.");
-        }
-    } catch (error: any) {
-        console.error("Error fetching historical rate markers:", error);
-        setHistoricalDataError(error.message || "Failed to fetch AI-generated historical trends.");
-        setHistoricalDataDisclaimer("Could not fetch historical trend data. Please try again later.");
-    } finally {
-        setIsLoadingHistoricalData(false);
-    }
-  }, []);
-
-
   useEffect(() => {
     fetchPopularRates();
-    fetchHistoricalMarkersData();
-  }, [fetchPopularRates, fetchHistoricalMarkersData]);
+  }, [fetchPopularRates]);
 
   const handleClearFields = () => {
     setAmount("100"); 
@@ -283,16 +344,6 @@ Disclaimer: Exchange rates are indicative and subject to change.
     setToCurrency(tempFrom);
   };
 
-  const transformedHistoricalDataForChart = historicalMarkersData.map(marker => ({
-    date: new Date(marker.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
-    usdRate: marker.usdRate,
-    eurRate: marker.eurRate,
-    gbpRate: marker.gbpRate,
-    cadRate: marker.cadRate, 
-    audRate: marker.audRate,
-  }));
-
-
   return (
     <div className="py-4">
       <Card className="border-none shadow-none">
@@ -302,7 +353,17 @@ Disclaimer: Exchange rates are indicative and subject to change.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-0">
-          <div className="grid grid-cols-1 gap-4 items-end sm:grid-cols-[1fr_auto_1fr]">
+          <div className="space-y-1">
+            <Label htmlFor="amountToConvert" className="flex items-center text-sm">
+               Amount to Convert
+            </Label>
+            <Input
+              id="amountToConvert" type="number" step="0.01" placeholder="e.g., 100.00"
+              value={amount} onChange={(e) => setAmount(e.target.value)}
+              className="h-9 text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] gap-2 items-end">
             <div className="space-y-1">
               <Label htmlFor="fromCurrency" className="flex items-center text-sm">
                 <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" /> From Currency
@@ -339,17 +400,6 @@ Disclaimer: Exchange rates are indicative and subject to change.
               </Select>
             </div>
           </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="amountToConvert" className="flex items-center text-sm">
-               Amount to Convert
-            </Label>
-            <Input
-              id="amountToConvert" type="number" step="0.01" placeholder="e.g., 100.00"
-              value={amount} onChange={(e) => setAmount(e.target.value)}
-              className="h-9 text-sm"
-            />
-          </div>
           
           {isLoadingConversion && (
             <div className="flex items-center justify-center mt-4 p-3 border rounded-md bg-muted/30">
@@ -366,7 +416,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
             </Alert>
           )}
 
-          {(!isLoadingConversion && !conversionError && (conversionResults.convertedAmountDisplay !== "0.00" || conversionResults.exchangeRateUsedDisplay !== "N/A" || conversionResults.conversionDisclaimer === "Same currency selected.")) && (
+          {(!isLoadingConversion && !conversionError && (parseNum(amount) > 0 || conversionResults.conversionDisclaimer === "Same currency selected.")) && (
             <Card className="mt-4 bg-muted/30">
               <CardHeader className="p-3">
                 <CardTitle className="text-md text-primary flex items-center">
@@ -450,94 +500,9 @@ Disclaimer: Exchange rates are indicative and subject to change.
         </CardContent>
       </Card>
       
-      <Separator className="my-8" />
-
-      <Card className="mt-6 w-full border-none shadow-none">
-        <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-xl text-primary flex items-center justify-between">
-              <div className="flex items-center">
-                <LineChartIcon className="mr-2 h-5 w-5" /> AI-Generated Indicative Historical Trend (TTD Base)
-              </div>
-              <Button variant="outline" size="sm" onClick={fetchHistoricalMarkersData} disabled={isLoadingHistoricalData} className="h-8 px-3">
-                <RefreshCw className={`mr-2 h-3 w-3 ${isLoadingHistoricalData ? 'animate-spin' : ''}`} />
-                {isLoadingHistoricalData ? 'Refreshing...' : 'Refresh Trend'}
-              </Button>
-            </CardTitle>
-            <CardDescription>
-                Illustrative graph showing indicative historical exchange rate markers over the past 5 years, as generated by AI. This is not precise financial data.
-            </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-            {isLoadingHistoricalData && (
-              <div className="space-y-2">
-                <Skeleton className="h-[300px] w-full" />
-              </div>
-            )}
-            {historicalDataError && !isLoadingHistoricalData && (
-              <Alert variant="destructive" className="mt-2">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Error Fetching Historical Data</AlertTitle>
-                <AlertDescription>{historicalDataError}</AlertDescription>
-              </Alert>
-            )}
-            {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length > 0 && (
-              <div className="h-[350px] w-full bg-muted/30 rounded-md p-4">
-                <ChartContainer config={chartConfig} className="w-full h-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis 
-                        dataKey="date" 
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        tickFormatter={(value) => value} 
-                      />
-                      <YAxis 
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        tickFormatter={(value) => value.toFixed(3)}
-                        domain={['dataMin - 0.005', 'auto']}
-                        width={45}
-                      />
-                      <ChartTooltip 
-                        cursor={true} 
-                        content={<ChartTooltipContent indicator="line" labelKey="date" />} 
-                      />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      {Object.keys(chartConfig).filter(currencyKey => 
-                          transformedHistoricalDataForChart.some(d => d[currencyKey as keyof typeof d] !== undefined && d[currencyKey as keyof typeof d] !== null)
-                      ).map((currencyKey) => (
-                          <Line 
-                              key={currencyKey}
-                              dataKey={currencyKey} 
-                              type="monotone" 
-                              stroke={`var(--color-${currencyKey})`}
-                              strokeWidth={2} 
-                              dot={true} 
-                              name={(chartConfig as any)[currencyKey]?.label || currencyKey.replace('Rate','').toUpperCase()}
-                              connectNulls={true}
-                          />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
-            )}
-            {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-10">No AI-generated historical data available to display.</p>
-            )}
-            {historicalDataDisclaimer && (
-              <p className="text-xs text-muted-foreground pt-2">AI Disclaimer: {historicalDataDisclaimer}</p>
-            )}
-        </CardContent>
-      </Card>
-
       <p className="text-xs text-muted-foreground text-center mt-8">
-        Disclaimer: All exchange rates provided by this calculator are indicative and sourced via AI. They are not real-time financial data and are for informational purposes only. Rates fluctuate constantly. Always consult with a financial institution or a professional forex service for actual transaction rates. AI-generated historical data provides approximate markers and not precise daily/weekly historical figures.
+        Disclaimer: All exchange rates provided by this calculator are indicative and sourced via AI. They are not real-time financial data and are for informational purposes only. Rates fluctuate constantly. Always consult with a financial institution or a professional forex service for actual transaction rates.
       </p>
     </div>
   );
 }
-

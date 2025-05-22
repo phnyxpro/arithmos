@@ -41,12 +41,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { 
   Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
-  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, Check, ChevronsUpDown
+  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, Check, ChevronsUpDown,
+  Copy as CopyIcon, ChevronDown as ChevronDownIcon
 } from "lucide-react";
 import { getYear } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const currentYear = getYear(new Date());
 const taxYearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - i).toString());
@@ -150,6 +157,18 @@ const corporationTaxFormSchema = z.object({
 
 type CorporationTaxFormData = z.infer<typeof corporationTaxFormSchema>;
 
+const initialFormValues: CorporationTaxFormData = {
+  taxYear: currentYear.toString(),
+  companyType: "ordinary",
+  grossIncome: 0,
+  dynamicOperatingExpenses: [],
+  allowableDeductions: 0,
+  otherIncome: 0,
+  lossCarriedForward: 0,
+  businessLevyPaid: 0,
+  taxCreditsClaimed: 0,
+};
+
 const initialCalculationResults = {
   chargeableIncomeBeforeAdjustments: 0,
   finalChargeableIncome: 0,
@@ -170,20 +189,9 @@ export default function CorporationTaxPage() {
   const [quarterlyIncomes, setQuarterlyIncomes] = React.useState<string[]>(Array(4).fill(""));
   const [monthlyIncomes, setMonthlyIncomes] = React.useState<string[]>(Array(12).fill(""));
 
-
   const form = useForm<CorporationTaxFormData>({
     resolver: zodResolver(corporationTaxFormSchema),
-    defaultValues: {
-      taxYear: currentYear.toString(),
-      companyType: "ordinary",
-      grossIncome: undefined,
-      dynamicOperatingExpenses: [],
-      allowableDeductions: 0,
-      otherIncome: 0,
-      lossCarriedForward: 0,
-      businessLevyPaid: 0,
-      taxCreditsClaimed: 0,
-    },
+    defaultValues: initialFormValues,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -302,12 +310,8 @@ export default function CorporationTaxPage() {
     return Math.max(0, gross - deductions);
   }, [form.watch("grossIncome"), form.watch("allowableDeductions")]);
 
-  const handleExportSummary = () => {
-    console.log("Export Summary Clicked. Data:", form.getValues(), "Results:", calculationResults);
-    toast({ title: "Export (Simulated)", description: "Summary export feature to be implemented." });
-  };
-  
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number | undefined) => {
+    if (value === undefined) return "0.00";
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
@@ -318,6 +322,135 @@ export default function CorporationTaxPage() {
       return newStates;
     });
   };
+  
+  const handleClearFields = () => {
+    form.reset(initialFormValues);
+    setAnnualIncomeInput("");
+    setQuarterlyIncomes(Array(4).fill(""));
+    setMonthlyIncomes(Array(12).fill(""));
+    setIncomeInputPeriod("annually");
+    setCalculationResults(initialCalculationResults);
+    setComboboxOpenStates([]);
+    toast({ title: "Fields Cleared", description: "All inputs and results have been reset." });
+  };
+
+  const handleCopyResults = () => {
+    const formData = form.getValues();
+    const results = calculationResults;
+    const selectedCompany = companyTypeOptions.find(opt => opt.value === formData.companyType);
+
+    let incomeDetails = "";
+    if (incomeInputPeriod === "annually") {
+        incomeDetails = `Annual Gross Income: TT$ ${formatCurrency(Number(annualIncomeInput) || 0)}\n`;
+    } else if (incomeInputPeriod === "quarterly") {
+        quarterlyIncomes.forEach((qIncome, i) => {
+            incomeDetails += `Quarter ${i + 1} Income: TT$ ${formatCurrency(Number(qIncome) || 0)}\n`;
+        });
+    } else if (incomeInputPeriod === "monthly") {
+        monthlyIncomes.forEach((mIncome, i) => {
+            incomeDetails += `Month ${i + 1} Income: TT$ ${formatCurrency(Number(mIncome) || 0)}\n`;
+        });
+    }
+    incomeDetails += `Annualized Gross Income: TT$ ${formatCurrency(formData.grossIncome)}\n`;
+
+    let expenseDetails = "Operating Expenses:\n";
+    if (formData.dynamicOperatingExpenses && formData.dynamicOperatingExpenses.length > 0) {
+      formData.dynamicOperatingExpenses.forEach(exp => {
+        const expenseLabel = expenseOptionsList.find(opt => opt.value === exp.expenseType)?.label || exp.expenseType;
+        expenseDetails += `  - ${expenseLabel}: TT$ ${formatCurrency(exp.expenseValue)}\n`;
+      });
+    } else {
+      expenseDetails += "  None entered\n";
+    }
+    expenseDetails += `Total Allowable Deductions: TT$ ${formatCurrency(formData.allowableDeductions)}\n`;
+    
+    const textToCopy = `
+CORPORATION TAX CALCULATION SUMMARY
+---------------------------------
+INPUTS:
+Tax Year: ${formData.taxYear}
+Company Type: ${selectedCompany ? selectedCompany.label : 'N/A'}
+${incomeDetails}
+${expenseDetails}
+Other Income: TT$ ${formatCurrency(formData.otherIncome)}
+Loss Carried Forward: TT$ ${formatCurrency(formData.lossCarriedForward)}
+Business Levy Paid (for offset): TT$ ${formatCurrency(formData.businessLevyPaid)}
+Tax Credits Claimed: TT$ ${formatCurrency(formData.taxCreditsClaimed)}
+---------------------------------
+CALCULATION RESULTS:
+Chargeable Income (Gross - Total Deductions): TT$ ${formatCurrency(results.chargeableIncomeBeforeAdjustments)}
+Final Chargeable Income (after Other Income/Loss): TT$ ${formatCurrency(results.finalChargeableIncome)}
+Tax Rate Applied: ${(results.taxRateApplied * 100).toFixed(1)}%
+Corporation Tax Before Offsets/Credits: TT$ ${formatCurrency(results.corporationTaxBeforeOffsets)}
+Business Levy Offset Applied: TT$ ${formatCurrency(results.businessLevyOffsetApplied)}
+Tax Credits Applied: TT$ ${formatCurrency(results.taxCreditsApplied)}
+FINAL CORPORATION TAX DUE: TT$ ${formatCurrency(results.finalCorporationTaxDue)}
+---------------------------------
+Disclaimer: This calculator provides estimates. Consult official guidelines.
+    `;
+    navigator.clipboard.writeText(textToCopy.trim());
+    toast({ title: "Results Copied!", description: "Corporation Tax summary copied to clipboard." });
+  };
+
+  const handleExportCSV = () => {
+    const formData = form.getValues();
+    const results = calculationResults;
+    const selectedCompany = companyTypeOptions.find(opt => opt.value === formData.companyType);
+
+    const csvRows = [
+      ["Description", "Value"],
+      ["Tax Year", formData.taxYear],
+      ["Company Type", selectedCompany ? selectedCompany.label : 'N/A'],
+    ];
+
+    if (incomeInputPeriod === "annually") {
+        csvRows.push(["Annual Gross Income (Input)", formatCurrency(Number(annualIncomeInput) || 0)]);
+    } else if (incomeInputPeriod === "quarterly") {
+        quarterlyIncomes.forEach((qIncome, i) => {
+            csvRows.push([`Quarter ${i + 1} Income`, formatCurrency(Number(qIncome) || 0)]);
+        });
+    } else if (incomeInputPeriod === "monthly") {
+        monthlyIncomes.forEach((mIncome, i) => {
+            csvRows.push([`Month ${i + 1} Income`, formatCurrency(Number(mIncome) || 0)]);
+        });
+    }
+    csvRows.push(["Annualized Gross Income", formatCurrency(formData.grossIncome)]);
+
+    if (formData.dynamicOperatingExpenses && formData.dynamicOperatingExpenses.length > 0) {
+      formData.dynamicOperatingExpenses.forEach(exp => {
+        const expenseLabel = expenseOptionsList.find(opt => opt.value === exp.expenseType)?.label || exp.expenseType;
+        csvRows.push([`Operating Expense: ${expenseLabel}`, formatCurrency(exp.expenseValue)]);
+      });
+    }
+    csvRows.push(["Total Allowable Deductions", formatCurrency(formData.allowableDeductions)]);
+    
+    csvRows.push(["Other Income", formatCurrency(formData.otherIncome)]);
+    csvRows.push(["Loss Carried Forward", formatCurrency(formData.lossCarriedForward)]);
+    csvRows.push(["Business Levy Paid (for offset)", formatCurrency(formData.businessLevyPaid)]);
+    csvRows.push(["Tax Credits Claimed", formatCurrency(formData.taxCreditsClaimed)]);
+    
+    csvRows.push(["--- CALCULATION RESULTS ---", ""]);
+    csvRows.push(["Chargeable Income (Gross - Deductions)", formatCurrency(results.chargeableIncomeBeforeAdjustments)]);
+    csvRows.push(["Final Chargeable Income", formatCurrency(results.finalChargeableIncome)]);
+    csvRows.push(["Tax Rate Applied", `${(results.taxRateApplied * 100).toFixed(1)}%`]);
+    csvRows.push(["Corporation Tax Before Offsets/Credits", formatCurrency(results.corporationTaxBeforeOffsets)]);
+    csvRows.push(["Business Levy Offset Applied", formatCurrency(results.businessLevyOffsetApplied)]);
+    csvRows.push(["Tax Credits Applied", formatCurrency(results.taxCreditsApplied)]);
+    csvRows.push(["FINAL CORPORATION TAX DUE", formatCurrency(results.finalCorporationTaxDue)]);
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.map(e => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `corporation_tax_summary_${formData.taxYear}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast({ title: "CSV Exported", description: "Corporation tax summary downloaded." });
+  };
+
+  const handleExportXLSX = () => toast({ title: "XLSX Export (Coming Soon)", description: "This feature will be implemented." });
+  const handleExportPDF = () => toast({ title: "PDF Export (Coming Soon)", description: "This feature will be implemented." });
 
   const showResultsCard = (Number(watchedGrossIncome) || 0) > 0 || calculationResults.finalCorporationTaxDue !== initialCalculationResults.finalCorporationTaxDue;
 
@@ -729,11 +862,11 @@ export default function CorporationTaxPage() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-muted-foreground">Annualized Gross Income:</span>
-                  <span className="font-semibold text-lg">${formatCurrency(Number(watchedGrossIncome) || 0)}</span>
+                  <span className="font-semibold text-lg">${formatCurrency(watchedGrossIncome)}</span>
                 </div>
                  <div className="flex justify-between items-center">
                   <span className="font-medium text-muted-foreground">Total Allowable Deductions:</span>
-                  <span className="font-semibold text-lg">${formatCurrency(Number(watchedAllowableDeductions) || 0)}</span>
+                  <span className="font-semibold text-lg">${formatCurrency(watchedAllowableDeductions)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-muted-foreground">Chargeable Income (Gross - Total Deductions):</span>
@@ -764,9 +897,24 @@ export default function CorporationTaxPage() {
                   <span className="font-bold text-xl text-primary">${formatCurrency(calculationResults.finalCorporationTaxDue)}</span>
                 </div>
               </CardContent>
-              <CardFooter>
-                <Button onClick={handleExportSummary} variant="outline">
-                  <Download className="mr-2 h-4 w-4" /> Export Summary
+              <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
+                 <Button variant="outline" onClick={handleCopyResults} className="w-full text-sm h-9 flex-1">
+                    <CopyIcon className="mr-2 h-4 w-4" /> Copy Results
+                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full text-sm h-9 flex-1">
+                        <Download className="mr-2 h-4 w-4" /> Export Data <ChevronDownIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                        <DropdownMenuItem onClick={handleExportCSV}>Export as CSV</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExportXLSX}>Export as XLSX (Coming Soon)</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExportPDF}>Export as PDF (Coming Soon)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <Button variant="destructive" onClick={handleClearFields} className="w-full text-sm h-9 flex-1">
+                    <Trash2 className="mr-2 h-4 w-4" /> Clear Fields
                 </Button>
               </CardFooter>
             </Card>
@@ -800,3 +948,7 @@ export default function CorporationTaxPage() {
     </div>
   );
 }
+
+    
+
+    

@@ -26,13 +26,8 @@ import {
   DollarSign,
   Users as UsersIcon,
   Clock,
-  BarChart3,
-  ShieldCheck,
-  Smartphone,
-  Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  FileText,
   Bell,
   Users,
   Linkedin,
@@ -48,7 +43,7 @@ import {
   Mail,
   CalendarPlus,
   Percent,
-  Cigarette, // Added Cigarette
+  Cigarette, 
   AlarmClock,
   Gift,
   Plane,
@@ -68,6 +63,9 @@ import {
   ShieldAlert,
   Network,
   BookOpen,
+  ShieldCheck,
+  Smartphone,
+  Calculator as CalculatorIcon,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -129,9 +127,9 @@ interface CalculatorCardData {
   ctaText: string;
   ctaLink?: string;
   onClick?: () => void;
-  calculatorIdentifier: string; // For StarReviewDialog
-  id: string; // Unique ID for key prop
-  name: string; // Often same as title, used for consistency
+  calculatorIdentifier: string; 
+  id: string; 
+  name: string; 
 }
 
 interface BenefitItem {
@@ -211,7 +209,6 @@ export default function LandingPage() {
   const [isSimpleVatCalcOpen, setIsSimpleVatCalcOpen] = React.useState(false);
   const [simpleVatCalcKey, setSimpleVatCalcKey] = React.useState(0);
 
-  // State for new calculators
   const [isExciseDutyCalcOpen, setIsExciseDutyCalcOpen] = React.useState(false);
   const [exciseDutyCalcKey, setExciseDutyCalcKey] = React.useState(0);
   const [isGrossToNetCalcOpen, setIsGrossToNetCalcOpen] = React.useState(false);
@@ -277,43 +274,45 @@ export default function LandingPage() {
     currentOpenState: boolean,
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
-    const wasOpen = (
-        (calculatorName === "Basic Time Calculator" && isBasicTimeCalcOpen) ||
-        (calculatorName === "PAYE, NIS & HS Calculator" && isPayrollCalcOpen) ||
-        (calculatorName === "Voluntary NIS Contribution Calculator" && isVoluntaryNisCalcOpen) ||
-        (calculatorName === "Levy Calculator" && isLevyCalcOpen) ||
-        (calculatorName === "Simple VAT Calculator" && isSimpleVatCalcOpen) ||
-        (calculatorName === "Excise Duty Calculator" && isExciseDutyCalcOpen) ||
-        (calculatorName === "Gross to Net Salary Calculator" && isGrossToNetCalcOpen) ||
-        (calculatorName === "Overtime Pay Calculator" && isOvertimePayCalcOpen) ||
-        (calculatorName === "Bonus & Commission Calculator" && isBonusCommCalcOpen) ||
-        (calculatorName === "Vacation Pay Calculator" && isVacationPayCalcOpen) ||
-        (calculatorName === "Loan Interest & Amortisation Calculator" && isLoanAmortCalcOpen) ||
-        (calculatorName === "Mortgage Calculator" && isMortgageCalcOpen) ||
-        (calculatorName === "Savings & Investment Calculator" && isSavingsInvestCalcOpen) ||
-        (calculatorName === "Currency Exchange Calculator" && isCurrencyExCalcOpen) ||
-        (calculatorName === "Simple Interest Calculator" && isSimpleInterestCalcOpen) ||
-        (calculatorName === "Markup & Margin Calculator" && isMarkupMarginCalcOpen) ||
-        (calculatorName === "Break-even Analysis Calculator" && isBreakEvenCalcOpen) ||
-        (calculatorName === "Cash Flow Projection Calculator" && isCashFlowProjCalcOpen) ||
-        (calculatorName === "Depreciation Calculator" && isDepreciationCalcOpen) ||
-        (calculatorName === "Tariff & Customs Duty Calculator" && isTariffDutyCalcOpen) ||
-        (calculatorName === "Freight & Shipping Cost Calculator" && isFreightShipCalcOpen) ||
-        (calculatorName === "Cost, Insurance, and Freight (CIF) Calculator" && isCIFCalcOpen) ||
-        (calculatorName === "Stamp Duty Calculator" && isStampDutyCalcOpen) ||
-        (calculatorName === "Property Tax Calculator" && isPropertyTaxDialogCalcOpen) ||
-        (calculatorName === "Rental Yield Calculator" && isRentalYieldCalcOpen) ||
-        (calculatorName === "AML Compliance Risk Assessment Calculator" && isAMLRiskCalcOpen) ||
-        (calculatorName === "FATCA & CRS Compliance Calculator" && isFATCACRSCalcOpen)
-    );
+    let wasOpen = false;
+    // Determine if the specific dialog being closed was indeed open
+    switch (calculatorName) {
+        case "Basic Time Calculator": wasOpen = isBasicTimeCalcOpen; break;
+        case "PAYE, NIS & HS Calculator": wasOpen = isPayrollCalcOpen; break;
+        case "Voluntary NIS Contribution Calculator": wasOpen = isVoluntaryNisCalcOpen; break;
+        case "Levy Calculator": wasOpen = isLevyCalcOpen; break;
+        case "Simple VAT Calculator": wasOpen = isSimpleVatCalcOpen; break;
+        case "Excise Duty Calculator": wasOpen = isExciseDutyCalcOpen; break;
+        case "Gross to Net Salary Calculator": wasOpen = isGrossToNetCalcOpen; break;
+        case "Overtime Pay Calculator": wasOpen = isOvertimePayCalcOpen; break;
+        case "Bonus & Commission Calculator": wasOpen = isBonusCommCalcOpen; break;
+        case "Vacation Pay Calculator": wasOpen = isVacationPayCalcOpen; break;
+        case "Loan Interest & Amortisation Calculator": wasOpen = isLoanAmortCalcOpen; break;
+        case "Mortgage Calculator": wasOpen = isMortgageCalcOpen; break;
+        case "Savings & Investment Calculator": wasOpen = isSavingsInvestCalcOpen; break;
+        case "Currency Exchange Calculator": wasOpen = isCurrencyExCalcOpen; break;
+        case "Simple Interest Calculator": wasOpen = isSimpleInterestCalcOpen; break;
+        case "Markup & Margin Calculator": wasOpen = isMarkupMarginCalcOpen; break;
+        case "Break-even Analysis Calculator": wasOpen = isBreakEvenCalcOpen; break;
+        case "Cash Flow Projection Calculator": wasOpen = isCashFlowProjCalcOpen; break;
+        case "Depreciation Calculator": wasOpen = isDepreciationCalcOpen; break;
+        case "Tariff & Customs Duty Calculator": wasOpen = isTariffDutyCalcOpen; break;
+        case "Freight & Shipping Cost Calculator": wasOpen = isFreightShipCalcOpen; break;
+        case "Cost, Insurance, and Freight (CIF) Calculator": wasOpen = isCIFCalcOpen; break;
+        case "Stamp Duty Calculator": wasOpen = isStampDutyCalcOpen; break;
+        case "Property Tax Calculator": wasOpen = isPropertyTaxDialogCalcOpen; break;
+        case "Rental Yield Calculator": wasOpen = isRentalYieldCalcOpen; break;
+        case "AML Compliance Risk Assessment Calculator": wasOpen = isAMLRiskCalcOpen; break;
+        case "FATCA & CRS Compliance Calculator": wasOpen = isFATCACRSCalcOpen; break;
+        default: break;
+    }
 
-    if (wasOpen && !currentOpenState) { // Check if it *was* open and is *now* closing
+    if (wasOpen && !currentOpenState) { 
         setCalculatorToReview(calculatorName);
         setIsReviewModalOpen(true);
     }
     setOpenState(currentOpenState);
   };
-
 
   const detailedCalculatorList: CalculatorCardData[] = [
     { id: "time", name: "Basic Time Calculator", title: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Track Hours & Earnings", calculatorIdentifier: "Basic Time Calculator" },
@@ -351,9 +350,7 @@ export default function LandingPage() {
     { id: "property-tax-page", name: "Property Tax Estimator (Full Page)", title: "Property Tax Estimator (Full Page)", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: HomeIcon, href: "/calculators/property-tax", ctaText: "View Page", calculatorIdentifier: "Property Tax Estimator (Full Page)" },
     { id: "vat-calc-page", name: "VAT Calculator (Full Page)", title: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page", calculatorIdentifier: "VAT Calculator (Full Page)" },
   ];
-
-  const coreCalculators = detailedCalculatorList.slice(0, 5); // Show first 5 as "popular"
-
+  
   const HeroIcon = heroContentData.icon;
 
   const upcomingTickerItems = React.useMemo(() => {

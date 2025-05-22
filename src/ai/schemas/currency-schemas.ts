@@ -36,3 +36,22 @@ export const GetPopularExchangeRatesOutputSchema = z.object({
 });
 export type GetPopularExchangeRatesOutput = z.infer<typeof GetPopularExchangeRatesOutputSchema>;
 
+// Schemas for Historical Exchange Rate Markers Flow
+export const HistoricalRateMarkerSchema = z.object({
+  date: z.string().describe("The approximate date of the rate marker (e.g., YYYY-MM-DD)."),
+  rates: z.record(z.string().length(3), z.number()).describe("An object where keys are target currency codes (e.g., USD) and values are the exchange rate of 1 base currency unit to that target currency."),
+});
+export type HistoricalRateMarker = z.infer<typeof HistoricalRateMarkerSchema>;
+
+export const GetHistoricalExchangeRateMarkersInputSchema = z.object({
+  baseCurrency: z.string().length(3, 'Base currency code must be 3 characters.'),
+  targetCurrencies: z.array(z.string().length(3)).min(1, "At least one target currency is required."),
+  numberOfYears: z.number().int().min(1).max(10).describe("Number of years back to get markers for."),
+});
+export type GetHistoricalExchangeRateMarkersInput = z.infer<typeof GetHistoricalExchangeRateMarkersInputSchema>;
+
+export const GetHistoricalExchangeRateMarkersOutputSchema = z.object({
+  markers: z.array(HistoricalRateMarkerSchema).describe("A list of historical exchange rate markers."),
+  aiDisclaimer: z.string().optional().describe('Disclaimer from the AI about the indicative and approximate nature of the historical data.'),
+});
+export type GetHistoricalExchangeRateMarkersOutput = z.infer<typeof GetHistoricalExchangeRateMarkersOutputSchema>;

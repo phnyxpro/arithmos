@@ -23,11 +23,29 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Coins, ArrowRightLeft, DollarSign, Info, Copy, Trash2, Loader2, AlertTriangle, BarChartHorizontalBig, RefreshCw } from 'lucide-react';
+import { Coins, ArrowRightLeft, DollarSign, Info, Copy, Trash2, Loader2, AlertTriangle, RefreshCw, LineChart as LineChartIcon } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getExchangeRate, type GetExchangeRateInput } from '@/ai/flows/get-exchange-rate-flow';
 import { getPopularExchangeRates, type GetPopularExchangeRatesOutput, type PopularRate } from '@/ai/flows/get-popular-exchange-rates-flow';
+import { getHistoricalExchangeRateMarkers, type GetHistoricalExchangeRateMarkersInput, type GetHistoricalExchangeRateMarkersOutput, type HistoricalRateMarker } from '@/ai/flows/get-historical-exchange-rate-markers-flow';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+} from "recharts"; // Removed Tooltip, Legend from here as they are used via Chart components
+import type { ChartConfig } from "@/components/ui/chart";
+
 
 const currencyOptions = [
   { value: "TTD", label: "TTD - Trinidad & Tobago Dollar" },
@@ -45,6 +63,15 @@ const initialConversionResults = {
   conversionDisclaimer: "",
 };
 
+const chartConfig = {
+  USD: { label: "USD", color: "hsl(var(--chart-1))" },
+  EUR: { label: "EUR", color: "hsl(var(--chart-2))" },
+  GBP: { label: "GBP", color: "hsl(var(--chart-3))" },
+  CAD: { label: "CAD", color: "hsl(var(--chart-4))" }, // Added for consistency if needed
+  JMD: { label: "JMD", color: "hsl(var(--chart-5))" }, // Added for consistency if needed
+} satisfies ChartConfig;
+
+
 export function CurrencyExchangeCalculator() {
   const { toast } = useToast();
 
@@ -61,15 +88,20 @@ export function CurrencyExchangeCalculator() {
   const [popularRatesError, setPopularRatesError] = useState<string | null>(null);
   const [popularRatesDisclaimer, setPopularRatesDisclaimer] = useState<string>("");
 
+  const [historicalMarkersData, setHistoricalMarkersData] = useState<GetHistoricalExchangeRateMarkersOutput['markers']>([]);
+  const [isLoadingHistoricalData, setIsLoadingHistoricalData] = useState<boolean>(false);
+  const [historicalDataError, setHistoricalDataError] = useState<string | null>(null);
+  const [historicalDataDisclaimer, setHistoricalDataDisclaimer] = useState<string>("");
 
-  const formatCurrency = (num: number, currencyCode?: string) => {
+
+  const formatCurrency = (num: number) => {
     try {
         return num.toLocaleString(undefined, { 
             minimumFractionDigits: 2, 
-            maximumFractionDigits: 2,
+            maximumFractionDigits: 4, 
         });
     } catch (e) {
-        return num.toFixed(2); // Fallback
+        return num.toFixed(4);
     }
   };
   const parseNum = (val: string) => parseFloat(val) || 0;
@@ -77,14 +109,13 @@ export function CurrencyExchangeCalculator() {
   const handleConversion = useCallback(async () => {
     const numAmount = parseNum(amount);
     if (numAmount <= 0 || !fromCurrency || !toCurrency ) {
-      // Don't toast for initial invalid state, let useEffect handle valid calls
       setConversionResults(initialConversionResults);
-      setConversionError(null); // Clear previous errors if input becomes invalid
+      setConversionError(null);
       return;
     }
     if (fromCurrency === toCurrency) {
        setConversionResults({
-          convertedAmountDisplay: formatCurrency(numAmount, toCurrency),
+          convertedAmountDisplay: formatCurrency(numAmount),
           exchangeRateUsedDisplay: `1 ${fromCurrency} = 1.0000 ${toCurrency}`,
           conversionDisclaimer: "Same currency selected.",
         });
@@ -94,8 +125,7 @@ export function CurrencyExchangeCalculator() {
 
     setIsLoadingConversion(true);
     setConversionError(null);
-    // Don't reset to initialConversionResults here to avoid flicker if only one input changes
-
+    
     try {
       const input: GetExchangeRateInput = {
         amount: numAmount,
@@ -106,12 +136,10 @@ export function CurrencyExchangeCalculator() {
       
       if (result && typeof result.convertedAmount === 'number' && typeof result.exchangeRate === 'number') {
         setConversionResults({
-          convertedAmountDisplay: formatCurrency(result.convertedAmount, toCurrency),
+          convertedAmountDisplay: formatCurrency(result.convertedAmount),
           exchangeRateUsedDisplay: `1 ${fromCurrency} = ${result.exchangeRate.toFixed(4)} ${toCurrency}`,
           conversionDisclaimer: result.aiDisclaimer || "Rate is indicative. Verify with financial institutions.",
         });
-        // Optional: Toast on successful conversion if not too noisy
-        // toast({ title: "Conversion Successful", description: `${fromCurrency} to ${toCurrency} conversion complete.` });
       } else {
         throw new Error("AI did not return data in the expected format.");
       }
@@ -121,20 +149,18 @@ export function CurrencyExchangeCalculator() {
         ? "One of the selected currencies is not supported by the AI for conversion."
         : (error.message || "Failed to get exchange rate. Please try again.");
       setConversionError(errorMessage);
-      setConversionResults(initialConversionResults); // Reset results on error
-      // toast({ title: "Conversion Error", description: errorMessage, variant: "destructive" });
+      setConversionResults(initialConversionResults);
     } finally {
       setIsLoadingConversion(false);
     }
-  }, [amount, fromCurrency, toCurrency, toast]);
+  }, [amount, fromCurrency, toCurrency]);
 
-  // useEffect for automatic conversion on input change
   useEffect(() => {
     const numAmount = parseNum(amount);
     if (numAmount > 0 && fromCurrency && toCurrency) {
-      const timer = setTimeout(() => { // Debounce API call
+      const timer = setTimeout(() => { 
         handleConversion();
-      }, 500); // Adjust delay as needed (e.g., 500ms)
+      }, 500); 
       return () => clearTimeout(timer);
     } else {
       setConversionResults(initialConversionResults);
@@ -165,12 +191,43 @@ export function CurrencyExchangeCalculator() {
     }
   }, []);
 
+  const fetchHistoricalMarkersData = useCallback(async () => {
+    setIsLoadingHistoricalData(true);
+    setHistoricalDataError(null);
+    setHistoricalMarkersData([]);
+    try {
+        const input: GetHistoricalExchangeRateMarkersInput = {
+            baseCurrency: "TTD",
+            targetCurrencies: ["USD", "EUR", "GBP"],
+            numberOfYears: 5,
+        };
+        const result: GetHistoricalExchangeRateMarkersOutput = await getHistoricalExchangeRateMarkers(input);
+
+        if (result && Array.isArray(result.markers) && result.markers.length > 0) {
+            const sortedMarkers = result.markers.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            setHistoricalMarkersData(sortedMarkers);
+            setHistoricalDataDisclaimer(result.aiDisclaimer || "Historical markers are AI-generated estimates.");
+        } else {
+            setHistoricalDataError("AI did not return historical data in the expected format or data was empty.");
+            setHistoricalDataDisclaimer("Could not fetch historical trend data. Please try again later.");
+        }
+    } catch (error: any) {
+        console.error("Error fetching historical rate markers:", error);
+        setHistoricalDataError(error.message || "Failed to fetch AI-generated historical trends.");
+        setHistoricalDataDisclaimer("Could not fetch historical trend data. Please try again later.");
+    } finally {
+        setIsLoadingHistoricalData(false);
+    }
+  }, []);
+
+
   useEffect(() => {
     fetchPopularRates();
-  }, [fetchPopularRates]);
+    fetchHistoricalMarkersData();
+  }, [fetchPopularRates, fetchHistoricalMarkersData]);
 
   const handleClearFields = () => {
-    setAmount("100"); // Reset to default or ""
+    setAmount("100"); 
     setFromCurrency("TTD");
     setToCurrency("USD");
     setConversionResults(initialConversionResults);
@@ -201,8 +258,14 @@ Disclaimer: Exchange rates are indicative and subject to change.
     const tempFrom = fromCurrency;
     setFromCurrency(toCurrency);
     setToCurrency(tempFrom);
-    // The useEffect will trigger handleConversion automatically
   };
+
+  const transformedHistoricalDataForChart = historicalMarkersData.map(marker => ({
+    date: new Date(marker.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
+    USD: marker.rates.USD,
+    EUR: marker.rates.EUR,
+    GBP: marker.rates.GBP,
+  }));
 
 
   return (
@@ -263,8 +326,6 @@ Disclaimer: Exchange rates are indicative and subject to change.
             />
           </div>
           
-          {/* Convert button removed, calculations are automatic via useEffect */}
-
           {isLoadingConversion && (
             <div className="flex items-center justify-center mt-4 p-3 border rounded-md bg-muted/30">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -355,7 +416,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
               </div>
             ))
           )}
-          {!isLoadingPopularRates && !popularRatesError && popularRates && popularRates.length === 0 && (
+           {!isLoadingPopularRates && !popularRatesError && popularRates && popularRates.length === 0 && (
              <p className="text-sm text-muted-foreground">No popular rates available from AI at this time.</p>
            )}
            {popularRatesDisclaimer && (
@@ -368,24 +429,83 @@ Disclaimer: Exchange rates are indicative and subject to change.
 
       <Card className="mt-6 w-full border-none shadow-none">
         <CardHeader className="p-0 pb-4">
-            <CardTitle className="text-xl text-primary flex items-center">
-                <BarChartHorizontalBig className="mr-2 h-5 w-5" /> Historical Exchange Rate Graph (Placeholder)
+            <CardTitle className="text-xl text-primary flex items-center justify-between">
+              <div className="flex items-center">
+                <LineChartIcon className="mr-2 h-5 w-5" /> AI-Generated Indicative Historical Trend (TTD Base)
+              </div>
+              <Button variant="outline" size="sm" onClick={fetchHistoricalMarkersData} disabled={isLoadingHistoricalData} className="h-8 px-3">
+                <RefreshCw className={`mr-2 h-3 w-3 ${isLoadingHistoricalData ? 'animate-spin' : ''}`} />
+                {isLoadingHistoricalData ? 'Refreshing...' : 'Refresh Trend'}
+              </Button>
             </CardTitle>
             <CardDescription>
-                Illustrative graph showing trends. This feature requires integration with a dedicated financial data API for accurate historical data.
+                Illustrative graph showing indicative historical exchange rate markers over the past 5 years, as generated by AI. This is not precise financial data.
             </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-            <div className="h-[300px] w-full bg-muted/50 rounded-md flex items-center justify-center">
-                <p className="text-muted-foreground">Graph placeholder - Historical data API integration needed.</p>
-            </div>
+            {isLoadingHistoricalData && (
+              <div className="space-y-2">
+                <Skeleton className="h-[300px] w-full" />
+              </div>
+            )}
+            {historicalDataError && !isLoadingHistoricalData && (
+              <Alert variant="destructive" className="mt-2">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Error Fetching Historical Data</AlertTitle>
+                <AlertDescription>{historicalDataError}</AlertDescription>
+              </Alert>
+            )}
+            {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length > 0 && (
+              <div className="h-[350px] w-full bg-muted/30 rounded-md p-4">
+                <ChartContainer config={chartConfig} className="w-full h-full">
+                  <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis 
+                      dataKey="date" 
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      tickFormatter={(value) => value} 
+                    />
+                    <YAxis 
+                      tickLine={false}
+                      axisLine={false}
+                      tickMargin={8}
+                      tickFormatter={(value) => value.toFixed(3)}
+                      domain={['dataMin - 0.005', 'dataMax + 0.005']} // Adjusted domain for tighter fit
+                    />
+                    <ChartTooltip 
+                      cursor={true} 
+                      content={<ChartTooltipContent indicator="line" labelKey="date" />} 
+                    />
+                    <ChartLegend content={<ChartLegendContent />} />
+                    {Object.keys(chartConfig).filter(key => transformedHistoricalDataForChart[0]?.[key] !== undefined).map((currencyKey) => (
+                        <Line 
+                            key={currencyKey}
+                            dataKey={currencyKey} 
+                            type="monotone" 
+                            stroke={`var(--color-${currencyKey})`}
+                            strokeWidth={2} 
+                            dot={true} 
+                            name={(chartConfig as any)[currencyKey]?.label || currencyKey.toUpperCase()}
+                        />
+                    ))}
+                  </LineChart>
+                </ChartContainer>
+              </div>
+            )}
+            {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-10">No AI-generated historical data available to display.</p>
+            )}
+            {historicalDataDisclaimer && (
+              <p className="text-xs text-muted-foreground pt-2">AI Disclaimer: {historicalDataDisclaimer}</p>
+            )}
         </CardContent>
       </Card>
 
       <p className="text-xs text-muted-foreground text-center mt-8">
-        Disclaimer: All exchange rates provided by this calculator are indicative and sourced via AI. They are not real-time financial data and are for informational purposes only. Rates fluctuate constantly. Always consult with a financial institution or a professional forex service for actual transaction rates.
+        Disclaimer: All exchange rates provided by this calculator are indicative and sourced via AI. They are not real-time financial data and are for informational purposes only. Rates fluctuate constantly. Always consult with a financial institution or a professional forex service for actual transaction rates. AI-generated historical data provides approximate markers and not precise daily/weekly historical figures.
       </p>
     </div>
   );
 }
-

@@ -60,7 +60,6 @@ const currencyOptions = [
   { value: "KYD", label: "KYD - Cayman Islands Dollar" },
   { value: "BSD", label: "BSD - Bahamian Dollar" },
   { value: "BMD", label: "BMD - Bermudian Dollar" },
-  // Add more currencies as needed
   { value: "AED", label: "AED - UAE Dirham" },
   { value: "AFN", label: "AFN - Afghan Afghani" },
   { value: "ALL", label: "ALL - Albanian Lek" },
@@ -182,7 +181,6 @@ const currencyOptions = [
   { value: "ZMW", label: "ZMW - Zambian Kwacha" },
 ];
 
-
 const initialConversionResults = {
   convertedAmountDisplay: "0.00",
   exchangeRateUsedDisplay: "N/A",
@@ -205,14 +203,14 @@ export function CurrencyExchangeCalculator() {
   const [popularRatesError, setPopularRatesError] = useState<string | null>(null);
   const [popularRatesDisclaimer, setPopularRatesDisclaimer] = useState<string>("");
 
-  const formatCurrency = (num: number) => {
+  const formatNumber = (num: number, maxDecimals = 4) => {
     try {
         return num.toLocaleString(undefined, { 
             minimumFractionDigits: 2, 
-            maximumFractionDigits: 4, 
+            maximumFractionDigits: maxDecimals, 
         });
     } catch (e) {
-        return num.toFixed(4);
+        return num.toFixed(maxDecimals);
     }
   };
   const parseNum = (val: string) => parseFloat(val) || 0;
@@ -226,8 +224,8 @@ export function CurrencyExchangeCalculator() {
     }
     if (fromCurrency === toCurrency) {
        setConversionResults({
-          convertedAmountDisplay: formatCurrency(numAmount),
-          exchangeRateUsedDisplay: `1 ${fromCurrency} = 1.0000 ${toCurrency}`,
+          convertedAmountDisplay: formatNumber(numAmount, 2),
+          exchangeRateUsedDisplay: `1 ${fromCurrency} = ${formatNumber(1, 4)} ${toCurrency}`,
           conversionDisclaimer: "Same currency selected.",
         });
         setConversionError(null);
@@ -247,12 +245,12 @@ export function CurrencyExchangeCalculator() {
       
       if (result && typeof result.convertedAmount === 'number' && typeof result.exchangeRate === 'number') {
         setConversionResults({
-          convertedAmountDisplay: formatCurrency(result.convertedAmount),
-          exchangeRateUsedDisplay: `1 ${fromCurrency} = ${result.exchangeRate.toFixed(4)} ${toCurrency}`,
+          convertedAmountDisplay: formatNumber(result.convertedAmount, 2),
+          exchangeRateUsedDisplay: `1 ${fromCurrency} = ${formatNumber(result.exchangeRate)} ${toCurrency}`,
           conversionDisclaimer: result.aiDisclaimer || "Rate is indicative. Verify with financial institutions.",
         });
       } else {
-        throw new Error("AI did not return data in the expected format.");
+        throw new Error("AI did not return data in the expected format for conversion.");
       }
     } catch (error: any) {
       console.error("Error during conversion:", error);
@@ -264,7 +262,8 @@ export function CurrencyExchangeCalculator() {
     } finally {
       setIsLoadingConversion(false);
     }
-  }, [amount, fromCurrency, toCurrency]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amount, fromCurrency, toCurrency]); // Removed handleConversion from its own dep array
 
   useEffect(() => {
     const numAmount = parseNum(amount);
@@ -274,14 +273,12 @@ export function CurrencyExchangeCalculator() {
       }, 500); 
       return () => clearTimeout(timer);
     } else {
-      // Clear results if inputs are invalid but don't show an error unless an API call failed
-      if (!isLoadingConversion) { // Only clear if not already in a loading state
+      if (!isLoadingConversion) {
         setConversionResults(initialConversionResults);
         setConversionError(null); 
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amount, fromCurrency, toCurrency]); // handleConversion removed to prevent re-triggering from its own update
+  }, [amount, fromCurrency, toCurrency, handleConversion]);
 
 
   const fetchPopularRates = useCallback(async () => {
@@ -327,7 +324,7 @@ export function CurrencyExchangeCalculator() {
     const textToCopy = `
 Currency Conversion Summary
 ---------------------------------
-Amount: ${amount} ${fromCurrency}
+Amount: ${parseNum(amount).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})} ${fromCurrency}
 Converted To: ${conversionResults.convertedAmountDisplay} ${toCurrency}
 Exchange Rate Used: ${conversionResults.exchangeRateUsedDisplay}
 AI Disclaimer: ${conversionResults.conversionDisclaimer}
@@ -342,6 +339,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
     const tempFrom = fromCurrency;
     setFromCurrency(toCurrency);
     setToCurrency(tempFrom);
+    // Conversion will re-trigger due to useEffect watching fromCurrency and toCurrency
   };
 
   return (
@@ -465,13 +463,13 @@ Disclaimer: Exchange rates are indicative and subject to change.
             </Button>
           </CardTitle>
           <CardDescription>
-            Indicative rates for TTD against major currencies, provided by AI.
+            Indicative rates for TTD, provided by AI.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 p-0">
           {isLoadingPopularRates && (
             <div className="space-y-2">
-              {[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}
+              {[1,2,3,4].map(i => <Skeleton key={i} className="h-12 w-full" />)}
             </div>
           )}
           {popularRatesError && !isLoadingPopularRates && (
@@ -482,14 +480,29 @@ Disclaimer: Exchange rates are indicative and subject to change.
             </Alert>
           )}
           {!isLoadingPopularRates && !popularRatesError && popularRates && popularRates.length > 0 && (
-            popularRates.map((rate) => (
-              <div key={rate.targetCurrencyCode} className="p-3 border rounded-md bg-muted/30 flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-sm text-foreground">TTD to {rate.targetCurrencyCode} ({rate.targetCurrencyName})</h4>
-                  <p className="text-xs text-primary">1 TTD = {rate.rateAgainstBase.toFixed(4)} {rate.targetCurrencyCode}</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+              <div>
+                <h4 className="text-sm font-semibold text-primary mb-2">TTD to Other Currencies</h4>
+                {popularRates.map((rate) => (
+                  <div key={`ttd-to-${rate.targetCurrencyCode}`} className="p-2.5 border rounded-md bg-muted/30 mb-2">
+                    <h5 className="font-medium text-xs text-foreground">TTD to {rate.targetCurrencyCode} <span className="text-muted-foreground">({rate.targetCurrencyName})</span></h5>
+                    <p className="text-xs text-primary">1 TTD = {formatNumber(rate.rateAgainstBase)} {rate.targetCurrencyCode}</p>
+                  </div>
+                ))}
               </div>
-            ))
+              <div>
+                <h4 className="text-sm font-semibold text-primary mb-2">Other Currencies to TTD</h4>
+                {popularRates.map((rate) => {
+                  const inverseRate = rate.rateAgainstBase !== 0 ? 1 / rate.rateAgainstBase : 0;
+                  return (
+                    <div key={`${rate.targetCurrencyCode}-to-ttd`} className="p-2.5 border rounded-md bg-muted/30 mb-2">
+                      <h5 className="font-medium text-xs text-foreground">{rate.targetCurrencyCode} <span className="text-muted-foreground">({rate.targetCurrencyName})</span> to TTD</h5>
+                      <p className="text-xs text-primary">1 {rate.targetCurrencyCode} = {inverseRate !== 0 ? formatNumber(inverseRate) : "N/A"} TTD</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
            {!isLoadingPopularRates && !popularRatesError && popularRates && popularRates.length === 0 && (
              <p className="text-sm text-muted-foreground">No popular rates available from AI at this time.</p>
@@ -506,3 +519,5 @@ Disclaimer: Exchange rates are indicative and subject to change.
     </div>
   );
 }
+
+    

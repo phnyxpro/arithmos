@@ -43,15 +43,17 @@ import {
   Linkedin,
   Facebook,
   Bell,
-  Download, 
-  Mail, 
-  CalendarPlus, 
+  Download,
+  Mail,
+  CalendarPlus,
+  Percent,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
 import { VoluntaryNisCalculator } from '@/components/calculators/VoluntaryNisCalculator';
+import { SimpleVatCalculator } from '@/components/calculators/SimpleVatCalculator';
 import { StarReviewDialog } from '@/components/ui/star-review-dialog';
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays, formatISO } from 'date-fns';
@@ -153,7 +155,9 @@ export default function LandingPage() {
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
-  
+  const [isSimpleVatCalcOpen, setIsSimpleVatCalcOpen] = React.useState(false);
+  const [simpleVatCalcKey, setSimpleVatCalcKey] = React.useState(0);
+
   const [isReviewModalOpen, setIsReviewModalOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
 
@@ -174,11 +178,12 @@ export default function LandingPage() {
     currentOpenState: boolean,
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
-    if (!currentOpenState && 
+    if (!currentOpenState &&
         (calculatorName === "Basic Time Calculator" && isBasicTimeCalcOpen ||
          calculatorName === "PAYE, NIS & HS Calculator" && isPayrollCalcOpen ||
          calculatorName === "Voluntary NIS Contribution Calculator" && isVoluntaryNisCalcOpen ||
-         calculatorName === "Levy Calculator" && isLevyCalcOpen
+         calculatorName === "Levy Calculator" && isLevyCalcOpen ||
+         calculatorName === "Simple VAT Calculator" && isSimpleVatCalcOpen
         )
       ) {
       setCalculatorToReview(calculatorName);
@@ -194,7 +199,7 @@ export default function LandingPage() {
       title: "Basic Time Calculator",
       description: "For daily-paid workers to track work hours & pay.",
       ctaText: "Track Hours & Earnings",
-      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen), 
+      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen),
       calculatorIdentifier: "Basic Time Calculator",
     },
     {
@@ -204,6 +209,14 @@ export default function LandingPage() {
       ctaText: "Estimate Deductions",
       onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey),
       calculatorIdentifier: "PAYE, NIS & HS Calculator",
+    },
+     {
+      icon: Percent,
+      title: "Simple VAT Calculator",
+      description: "Quickly add or remove 12.5% VAT from a price.",
+      ctaText: "Calculate VAT",
+      onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey),
+      calculatorIdentifier: "Simple VAT Calculator",
     },
     {
       icon: FileHeart,
@@ -226,15 +239,17 @@ export default function LandingPage() {
   const HeroIcon = heroContentData.icon;
 
   const detailedCalculatorList = [
-    { id: "time", name: "Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen), ctaText: "Open Calculator" },
+    { id: "time", name: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen), ctaText: "Open Calculator" },
     { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator" },
+    { id: "simple-vat", name: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Open Calculator" },
     { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator" },
-    { id: "business-levy-page", name: "Business Levy Calculator", description: "Calculates the Business Levy at 0.6% on annualized gross income. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
-    { id: "green-fund", name: "Green Fund Levy Calculator", description: "Estimates the Green Fund Levy at 0.3% of total annualized gross sales, payable quarterly.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page" },
+    { id: "levy-dialog", name: "Levy Calculator (Dialog)", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Open Calculator" },
+    { id: "business-levy-page", name: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page" },
+    { id: "green-fund", name: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page" },
     { id: "corp-tax", name: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page" },
     { id: "income-tax", name: "Income Tax (Personal)", description: "Calculates personal income tax (PAYE), NIS, and Health Surcharge based on gross annual income and allowable deductions, applying the TT$90,000 personal allowance and relevant tax brackets.", icon: User, href: "/calculators/income-tax", ctaText: "View Page" },
     { id: "property-tax", name: "Property Tax Estimator", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: House, href: "/calculators/property-tax", ctaText: "View Page" },
-    { id: "vat-calc", name: "VAT Calculator", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page" },
+    { id: "vat-calc", name: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page" },
   ];
 
   const firstHalfCalculators = detailedCalculatorList.slice(0, Math.ceil(detailedCalculatorList.length / 2));
@@ -261,29 +276,26 @@ export default function LandingPage() {
 
     const eventTitle = `Tax TT Reminder: ${deadline.name}`;
     const eventDescription = `Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`;
-    
-    // For all-day events, Google Calendar needs end date to be the day AFTER the actual end.
+
     const googleStartDate = format(eventDate, "yyyyMMdd");
-    const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd"); 
-    
-    // For Outlook, using ISO string without time for all-day.
-    const outlookStartDate = format(eventDate, "yyyy-MM-dd"); 
-    const outlookEndDate = format(eventDate, "yyyy-MM-dd"); 
+    const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd");
+
+    const outlookStartDate = format(eventDate, "yyyy-MM-dd");
+    const outlookEndDate = format(eventDate, "yyyy-MM-dd");
 
     if (type === 'google') {
       const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${googleStartDate}/${googleEndDate}&details=${encodeURIComponent(eventDescription)}`;
       window.open(googleUrl, '_blank');
       toast({ title: "Opening Google Calendar", description: `Adding reminder for "${deadline.name}".` });
     } else if (type === 'outlook') {
-      // For Outlook all-day event, we use just the date for start and end.
       const outlookAllDayStartDate = format(eventDate, "yyyy-MM-dd");
-      const outlookAllDayEndDate = format(eventDate, "yyyy-MM-dd"); // End date is same as start for single all-day event
+      const outlookAllDayEndDate = format(eventDate, "yyyy-MM-dd");
       const outlookUrl = `https://outlook.live.com/calendar/0/action/compose?rru=addevent&path=/calendar/action/compose&subject=${encodeURIComponent(eventTitle)}&startdt=${outlookAllDayStartDate}&enddt=${outlookAllDayEndDate}&allday=true&body=${encodeURIComponent(eventDescription)}`;
       window.open(outlookUrl, '_blank');
       toast({ title: "Opening Outlook Calendar", description: `Adding reminder for "${deadline.name}".` });
     } else if (type === 'ics') {
       const startDateStrICS = format(eventDate, "yyyyMMdd");
-      const endDateStrICS = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day event in ICS
+      const endDateStrICS = format(addDays(eventDate, 1), "yyyyMMdd");
 
       const icsContent = [
         "BEGIN:VCALENDAR",
@@ -393,7 +405,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> 
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -421,9 +433,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      
+
       {/* Explore All Our Calculators */}
-      <section id="learn-calculators" className="py-16 lg:py-24">
+       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Explore All Our Calculators
@@ -650,6 +662,15 @@ export default function LandingPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={isSimpleVatCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Simple VAT Calculator", open, setIsSimpleVatCalcOpen)}>
+        <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-primary flex items-center"><Percent className="mr-2 h-6 w-6"/>Simple VAT Calculator</DialogTitle>
+          </DialogHeader>
+          <SimpleVatCalculator key={simpleVatCalcKey} />
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isLevyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Levy Calculator", open, setIsLevyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -677,3 +698,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

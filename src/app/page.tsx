@@ -29,7 +29,6 @@ import {
   ArrowRight,
   CalendarDays,
   Bell,
-  Users,
   Linkedin,
   Facebook,
   FileHeart,
@@ -318,34 +317,34 @@ export default function LandingPage() {
     setOpenState(currentOpenState);
   };
 
- const allCalculatorsList: CalculatorCardData[] = [
-    { id: "time", name: "Basic Time Calculator", title: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Track Hours & Earnings", calculatorIdentifier: "Basic Time Calculator" },
-    { id: "paye", name: "PAYE + NIS + HS (Payroll)", title: "PAYE, NIS & HS Calculator", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Estimate Deductions", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
-    { id: "voluntary-nis", name: "Voluntary NIS Contribution", title: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Estimate Voluntary NIS", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
-    { id: "levy-dialog", name: "Levy Calculator", title: "Levy Calculator", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Estimate Levies", calculatorIdentifier: "Levy Calculator" },
-    { id: "simple-vat", name: "Simple VAT Calculator", title: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Calculate VAT", calculatorIdentifier: "Simple VAT Calculator" },
-    { id: "excise-duty", name: "Excise Duty Calculator", title: "Excise Duty Calculator", description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.", icon: Cigarette, onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey), ctaText: "Calculate Excise Duty", calculatorIdentifier: "Excise Duty Calculator" },
-    { id: "gross-to-net", name: "Gross to Net Salary Calculator", title: "Gross to Net Salary Calculator", description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey), ctaText: "Calculate Net Salary", calculatorIdentifier: "Gross to Net Salary Calculator" },
-    { id: "overtime-pay", name: "Overtime Pay Calculator", title: "Overtime Pay Calculator", description: "Compute overtime pay accurately for hourly paid workers.", icon: AlarmClock, onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey), ctaText: "Calculate Overtime", calculatorIdentifier: "Overtime Pay Calculator" },
-    { id: "bonus-commission", name: "Bonus & Commission Calculator", title: "Bonus & Commission Calculator", description: "Determine tax impacts of bonuses or commissions.", icon: Gift, onClick: () => openCalculatorDialog(setIsBonusCommCalcOpen, setBonusCommCalcKey), ctaText: "Assess Tax Impact", calculatorIdentifier: "Bonus & Commission Calculator" },
-    { id: "vacation-pay", name: "Vacation Pay Calculator", title: "Vacation Pay Calculator", description: "Easily estimate accrued vacation pay entitlements.", icon: Plane, onClick: () => openCalculatorDialog(setIsVacationPayCalcOpen, setVacationPayCalcKey), ctaText: "Estimate Vacation Pay", calculatorIdentifier: "Vacation Pay Calculator" },
-    { id: "loan-amort", name: "Loan Interest & Amortisation Calculator", title: "Loan Interest & Amortisation Calculator", description: "Calculate loan repayments (monthly, quarterly, annually).", icon: Landmark, onClick: () => openCalculatorDialog(setIsLoanAmortCalcOpen, setLoanAmortCalcKey), ctaText: "View Amortisation", calculatorIdentifier: "Loan Interest & Amortisation Calculator" },
-    { id: "mortgage", name: "Mortgage Calculator", title: "Mortgage Calculator", description: "Calculate mortgage repayments, including down payments and interest.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsMortgageCalcOpen, setMortgageCalcKey), ctaText: "Estimate Mortgage", calculatorIdentifier: "Mortgage Calculator" },
-    { id: "savings-invest", name: "Savings & Investment Calculator", title: "Savings & Investment Calculator", description: "Project returns from savings accounts, fixed deposits, and investment products.", icon: PiggyBank, onClick: () => openCalculatorDialog(setIsSavingsInvestCalcOpen, setSavingsInvestCalcKey), ctaText: "Project Returns", calculatorIdentifier: "Savings & Investment Calculator" },
-    { id: "currency-ex", name: "Currency Exchange Calculator", title: "Currency Exchange Calculator", description: "Real-time currency conversion for international transactions.", icon: Coins, onClick: () => openCalculatorDialog(setIsCurrencyExCalcOpen, setCurrencyExCalcKey), ctaText: "Convert Currency", calculatorIdentifier: "Currency Exchange Calculator" },
-    { id: "simple-interest", name: "Simple Interest Calculator", title: "Simple Interest Calculator", description: "Quickly calculate simple interest amounts for short-term loans or deposits.", icon: PercentCircle, onClick: () => openCalculatorDialog(setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey), ctaText: "Calculate Interest", calculatorIdentifier: "Simple Interest Calculator" },
-    { id: "markup-margin", name: "Markup & Margin Calculator", title: "Markup & Margin Calculator", description: "Accurately determine product/service pricing and profit margins.", icon: Target, onClick: () => openCalculatorDialog(setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey), ctaText: "Calculate Pricing", calculatorIdentifier: "Markup & Margin Calculator" },
-    { id: "break-even", name: "Break-even Analysis Calculator", title: "Break-even Analysis Calculator", description: "Determine sales needed to cover fixed and variable expenses.", icon: LineChart, onClick: () => openCalculatorDialog(setIsBreakEvenCalcOpen, setBreakEvenCalcKey), ctaText: "Analyze Break-even", calculatorIdentifier: "Break-even Analysis Calculator" },
-    { id: "cash-flow-proj", name: "Cash Flow Projection Calculator", title: "Cash Flow Projection Calculator", description: "Forecast monthly or quarterly cash flows easily.", icon: AreaChart, onClick: () => openCalculatorDialog(setIsCashFlowProjCalcOpen, setCashFlowProjCalcKey), ctaText: "Project Cash Flow", calculatorIdentifier: "Cash Flow Projection Calculator" },
-    { id: "depreciation", name: "Depreciation Calculator", title: "Depreciation Calculator", description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsDepreciationCalcOpen, setDepreciationCalcKey), ctaText: "Calculate Depreciation", calculatorIdentifier: "Depreciation Calculator" },
-    { id: "tariff-duty", name: "Tariff & Customs Duty Calculator", title: "Tariff & Customs Duty Calculator", description: "Quickly calculate import duties based on HS codes and tariff schedules.", icon: Ship, onClick: () => openCalculatorDialog(setIsTariffDutyCalcOpen, setTariffDutyCalcKey), ctaText: "Calculate Duties", calculatorIdentifier: "Tariff & Customs Duty Calculator" },
-    { id: "freight-ship", name: "Freight & Shipping Cost Calculator", title: "Freight & Shipping Cost Calculator", description: "Estimate total landed costs, including shipping, insurance, and duties.", icon: Truck, onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey), ctaText: "Estimate Landed Costs", calculatorIdentifier: "Freight & Shipping Cost Calculator" },
-    { id: "cif-calc", name: "Cost, Insurance, and Freight (CIF) Calculator", title: "Cost, Insurance, and Freight (CIF) Calculator", description: "Compute total import costs for accurate pricing and profit analysis.", icon: FileBox, onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey), ctaText: "Calculate CIF", calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator" },
-    { id: "stamp-duty", name: "Stamp Duty Calculator", title: "Stamp Duty Calculator", description: "Determine stamp duty payable on property transfers.", icon: Stamp, onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey), ctaText: "Calculate Stamp Duty", calculatorIdentifier: "Stamp Duty Calculator" },
-    { id: "prop-tax-dialog", name: "Property Tax Calculator", title: "Property Tax Calculator", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Estimate Property Tax", calculatorIdentifier: "Property Tax Calculator" },
-    { id: "rental-yield", name: "Rental Yield Calculator", title: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Calculate Yield", calculatorIdentifier: "Rental Yield Calculator" },
-    { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", title: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Assess AML Risk", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
-    { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", title: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Assess FATCA/CRS", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
+ const detailedCalculatorList: CalculatorCardData[] = [
+    { id: "time", name: "Basic Time Calculator", title: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Basic Time Calculator" },
+    { id: "paye", name: "PAYE + NIS + HS (Payroll)", title: "PAYE, NIS & HS Calculator", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
+    { id: "voluntary-nis", name: "Voluntary NIS Contribution", title: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
+    { id: "levy-dialog", name: "Levy Calculator", title: "Levy Calculator", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Levy Calculator" },
+    { id: "simple-vat", name: "Simple VAT Calculator", title: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Simple VAT Calculator" },
+    { id: "excise-duty", name: "Excise Duty Calculator", title: "Excise Duty Calculator", description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.", icon: Cigarette, onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Excise Duty Calculator" },
+    { id: "gross-to-net", name: "Gross to Net Salary Calculator", title: "Gross to Net Salary Calculator", description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Gross to Net Salary Calculator" },
+    { id: "overtime-pay", name: "Overtime Pay Calculator", title: "Overtime Pay Calculator", description: "Compute overtime pay accurately for hourly paid workers.", icon: AlarmClock, onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Overtime Pay Calculator" },
+    { id: "bonus-commission", name: "Bonus & Commission Calculator", title: "Bonus & Commission Calculator", description: "Determine tax impacts of bonuses or commissions.", icon: Gift, onClick: () => openCalculatorDialog(setIsBonusCommCalcOpen, setBonusCommCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Bonus & Commission Calculator" },
+    { id: "vacation-pay", name: "Vacation Pay Calculator", title: "Vacation Pay Calculator", description: "Easily estimate accrued vacation pay entitlements.", icon: Plane, onClick: () => openCalculatorDialog(setIsVacationPayCalcOpen, setVacationPayCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Vacation Pay Calculator" },
+    { id: "loan-amort", name: "Loan Interest & Amortisation Calculator", title: "Loan Interest & Amortisation Calculator", description: "Calculate loan repayments (monthly, quarterly, annually).", icon: Landmark, onClick: () => openCalculatorDialog(setIsLoanAmortCalcOpen, setLoanAmortCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Loan Interest & Amortisation Calculator" },
+    { id: "mortgage", name: "Mortgage Calculator", title: "Mortgage Calculator", description: "Calculate mortgage repayments, including down payments and interest.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsMortgageCalcOpen, setMortgageCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Mortgage Calculator" },
+    { id: "savings-invest", name: "Savings & Investment Calculator", title: "Savings & Investment Calculator", description: "Project returns from savings accounts, fixed deposits, and investment products.", icon: PiggyBank, onClick: () => openCalculatorDialog(setIsSavingsInvestCalcOpen, setSavingsInvestCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Savings & Investment Calculator" },
+    { id: "currency-ex", name: "Currency Exchange Calculator", title: "Currency Exchange Calculator", description: "Real-time currency conversion for international transactions.", icon: Coins, onClick: () => openCalculatorDialog(setIsCurrencyExCalcOpen, setCurrencyExCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Currency Exchange Calculator" },
+    { id: "simple-interest", name: "Simple Interest Calculator", title: "Simple Interest Calculator", description: "Quickly calculate simple interest amounts for short-term loans or deposits.", icon: PercentCircle, onClick: () => openCalculatorDialog(setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Simple Interest Calculator" },
+    { id: "markup-margin", name: "Markup & Margin Calculator", title: "Markup & Margin Calculator", description: "Accurately determine product/service pricing and profit margins.", icon: Target, onClick: () => openCalculatorDialog(setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Markup & Margin Calculator" },
+    { id: "break-even", name: "Break-even Analysis Calculator", title: "Break-even Analysis Calculator", description: "Determine sales needed to cover fixed and variable expenses.", icon: LineChart, onClick: () => openCalculatorDialog(setIsBreakEvenCalcOpen, setBreakEvenCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Break-even Analysis Calculator" },
+    { id: "cash-flow-proj", name: "Cash Flow Projection Calculator", title: "Cash Flow Projection Calculator", description: "Forecast monthly or quarterly cash flows easily.", icon: AreaChart, onClick: () => openCalculatorDialog(setIsCashFlowProjCalcOpen, setCashFlowProjCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Cash Flow Projection Calculator" },
+    { id: "depreciation", name: "Depreciation Calculator", title: "Depreciation Calculator", description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsDepreciationCalcOpen, setDepreciationCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Depreciation Calculator" },
+    { id: "tariff-duty", name: "Tariff & Customs Duty Calculator", title: "Tariff & Customs Duty Calculator", description: "Quickly calculate import duties based on HS codes and tariff schedules.", icon: Ship, onClick: () => openCalculatorDialog(setIsTariffDutyCalcOpen, setTariffDutyCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Tariff & Customs Duty Calculator" },
+    { id: "freight-ship", name: "Freight & Shipping Cost Calculator", title: "Freight & Shipping Cost Calculator", description: "Estimate total landed costs, including shipping, insurance, and duties.", icon: Truck, onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Freight & Shipping Cost Calculator" },
+    { id: "cif-calc", name: "Cost, Insurance, and Freight (CIF) Calculator", title: "Cost, Insurance, and Freight (CIF) Calculator", description: "Compute total import costs for accurate pricing and profit analysis.", icon: FileBox, onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator" },
+    { id: "stamp-duty", name: "Stamp Duty Calculator", title: "Stamp Duty Calculator", description: "Determine stamp duty payable on property transfers.", icon: Stamp, onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Stamp Duty Calculator" },
+    { id: "prop-tax-dialog", name: "Property Tax Calculator", title: "Property Tax Calculator", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Property Tax Calculator" },
+    { id: "rental-yield", name: "Rental Yield Calculator", title: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Rental Yield Calculator" },
+    { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", title: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
+    { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", title: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
     { id: "business-levy-page", name: "Business Levy (Full Page)", title: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page", calculatorIdentifier: "Business Levy (Full Page)" },
     { id: "green-fund", name: "Green Fund Levy (Full Page)", title: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page", calculatorIdentifier: "Green Fund Levy (Full Page)" },
     { id: "corp-tax", name: "Corporation Tax Calculator", title: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page", calculatorIdentifier: "Corporation Tax Calculator" },
@@ -354,19 +353,10 @@ export default function LandingPage() {
     { id: "vat-calc-page", name: "VAT Calculator (Full Page)", title: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page", calculatorIdentifier: "VAT Calculator (Full Page)" },
   ];
 
-  const calculatorsToExcludeFromPopular = [
-    "business-levy-page",
-    "green-fund",
-    "corp-tax",
-    "income-tax",
-    "property-tax-page",
-    "vat-calc-page"
-  ];
-
-  const coreCalculators = allCalculatorsList.filter(
-    calc => !calculatorsToExcludeFromPopular.includes(calc.id)
+  const coreCalculators = detailedCalculatorList.filter(calc =>
+    ["time", "paye", "voluntary-nis", "levy-dialog", "simple-vat", "excise-duty", "gross-to-net", "overtime-pay", "bonus-commission", "vacation-pay", "loan-amort", "mortgage", "savings-invest", "currency-ex", "simple-interest", "markup-margin", "break-even", "cash-flow-proj", "depreciation", "tariff-duty", "freight-ship", "cif-calc", "stamp-duty", "prop-tax-dialog", "rental-yield", "aml-risk", "fatca-crs"]
+    .includes(calc.id)
   );
-
 
   const HeroIcon = heroContentData.icon;
 
@@ -495,11 +485,11 @@ export default function LandingPage() {
               <div className="py-2 animate-marquee-scroll whitespace-nowrap flex">
                 {[...upcomingTickerItems, ...upcomingTickerItems].map((item, index) => (
                   <div key={`${item.id}-${index}`} className="flex items-center mx-4 px-3 py-1.5 bg-card/80 rounded-full shadow">
-                    <Bell className="h-4 w-4 text-primary-foreground mr-2" />
-                    <span className="text-sm font-medium text-primary-foreground">
+                    <Bell className="h-4 w-4 text-accent mr-2" />
+                    <span className="text-sm font-medium text-card-foreground">
                       {item.name}
                     </span>
-                    <span className="text-xs text-primary-foreground/80 ml-1.5">
+                    <span className="text-xs text-muted-foreground ml-1.5">
                       (Due: {format(parseISO(item.nextDueDate), "MMM d")})
                     </span>
                   </div>
@@ -544,6 +534,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
 
       {/* Why Choose Tax TT */}
       <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -614,7 +605,15 @@ export default function LandingPage() {
                       aria-label="Add to Google Calendar"
                       title="Add to Google Calendar"
                     >
-                      <CalendarPlus className="h-4 w-4" />
+                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.46 14.354V10.822H21.75V4.763C21.75 4.03 21.17 3.45 20.438 3.45H3.563C2.83 3.45 2.25 4.03 2.25 4.763V20.145C2.25 20.878 2.83 21.457 3.563 21.457H12.69V20.181H3.563C3.546 20.181 3.53 20.175 3.518 20.162C3.506 20.149 3.5 20.132 3.5 20.115V8.52H20.5V10.822H19.219V14.354H20.46Z" fill="#34A853"/>
+                        <path d="M19.219 14.354V10.822H10.888V8.52H3.5V4.793C3.5 4.776 3.506 4.759 3.518 4.746C3.53 4.733 3.546 4.728 3.563 4.728H20.438C20.454 4.728 20.47 4.733 20.482 4.746C20.494 4.759 20.5 4.776 20.5 4.793V8.52H13.15V10.822H20.5V14.354H19.219Z" fill="#4285F4"/>
+                        <path d="M12.69 20.181H3.563C3.546 20.181 3.53 20.175 3.518 20.162C3.506 20.149 3.5 20.132 3.5 20.115V8.52H10.888V14.354H13.15V20.181H12.69Z" fill="#FBBC04"/>
+                        <path d="M20.5 8.52H13.15V14.354H10.888V20.115C10.888 20.132 10.882 20.149 10.87 20.162C10.857 20.175 10.841 20.181 10.824 20.181H12.69V21.457H20.438C21.17 21.457 21.75 20.878 21.75 20.145V4.763C21.75 4.03 21.17 3.45 20.438 3.45H3.563C2.83 3.45 2.25 4.03 2.25 4.763V8.52H20.5Z" fill="#EA4335"/>
+                        <path d="M16.8563 21.75C18.7368 21.75 20.25 20.2368 20.25 18.3562C20.25 16.4757 18.7368 14.9625 16.8563 14.9625C14.9757 14.9625 13.4625 16.4757 13.4625 18.3562C13.4625 20.2368 14.9757 21.75 16.8563 21.75Z" fill="#FFFFFF"/>
+                        <path d="M16.8563 20.8125C18.2105 20.8125 19.3125 19.7105 19.3125 18.3562C19.3125 17.0019 18.2105 15.9 16.8563 15.9C15.502 15.9 14.4 17.0019 14.4 18.3562C14.4 19.7105 15.502 20.8125 16.8563 20.8125Z" fill="#4285F4"/>
+                        <path d="M18.5625 16.65H17.775V15.8625H15.9V16.65H15.1125V17.5125H15.9V18.3H17.775V17.5125H18.5625V16.65Z" fill="#FFFFFF"/>
+                      </svg>
                     </Button>
                     <Button
                       variant="ghost"
@@ -625,7 +624,13 @@ export default function LandingPage() {
                       aria-label="Add to Outlook Calendar"
                       title="Add to Outlook Calendar"
                     >
-                      <Mail className="h-4 w-4" />
+                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20.4 3.6H3.6C3.26863 3.6 3 3.86863 3 4.2V19.8C3 20.1314 3.26863 20.4 3.6 20.4H20.4C20.7314 20.4 21 20.1314 21 19.8V4.2C21 3.86863 20.7314 3.6 20.4 3.6Z" fill="#0078D4"/>
+                        <path d="M9.86252 12.4603L5.01002 16.2178V7.06785L9.86252 12.4603Z" fill="white"/>
+                        <path d="M10.6711 13.1009L12.0001 14.1396L13.3291 13.1009L18.0616 7.50146H5.93857L10.6711 13.1009Z" fill="white"/>
+                        <path d="M14.1311 12.4603L18.9836 7.06785V16.2178L14.1311 12.4603Z" fill="white"/>
+                        <path d="M10.6711 13.1008L12.0001 14.1395L13.3291 13.1008L14.1311 12.4602L18.9836 16.2177V16.7327L12.0001 11.4664L5.01657 16.7327V16.2177L9.86255 12.4602L10.6711 13.1008Z" fill="#C4DDFF"/>
+                       </svg>
                     </Button>
                     <Button
                       variant="ghost"
@@ -636,7 +641,9 @@ export default function LandingPage() {
                       aria-label="Download ICS File for Apple/Other Calendars"
                       title="Download ICS for Apple/Other"
                     >
-                      <Download className="h-4 w-4" />
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.3055 10.1139C17.8919 7.04895 15.2311 4.65002 12.0005 4.65002C10.0991 4.65002 8.40054 5.5908 7.31079 7.05378C7.26054 7.01928 7.20724 6.98765 7.15169 6.95858C6.62301 6.67998 6.00054 6.90263 5.72194 7.43131C5.44226 7.95999 5.66491 8.58255 6.19359 8.86123C6.25266 8.89245 6.31387 8.91992 6.37675 8.94324C5.31985 10.0977 5.2145 11.779 6.11515 13.0526C6.13475 13.0794 6.15525 13.1057 6.17659 13.1314C6.52258 13.5422 6.96372 13.8761 7.46817 14.1165C7.08673 14.7656 6.93878 15.5373 7.06217 16.2985C7.07054 16.3457 7.07954 16.3926 7.08917 16.439C7.40475 17.9048 8.68016 19.0017 10.2246 19.0948C10.2753 19.0979 10.3261 19.1006 10.377 19.1027C10.435 19.1051 10.4932 19.1063 10.5516 19.1063C11.9064 19.1063 13.1088 18.3272 13.6598 17.1119C13.9355 17.0211 14.2003 16.9058 14.4519 16.7687C15.2161 17.4126 16.2258 17.7582 17.2741 17.7265C18.9907 17.674 20.4114 16.3616 20.6692 14.6643C20.7153 14.3428 20.7283 14.017 20.7075 13.693C21.2484 13.3535 21.6296 12.7926 21.7581 12.1418C21.9032 11.3976 21.5403 10.6659 20.8453 10.2902C20.8277 10.2797 20.8097 10.2699 20.7913 10.2608C20.7659 10.2484 20.7403 10.2368 20.7145 10.2261C19.7311 9.84768 18.8421 10.2673 18.4108 11.1739C18.3584 11.2854 18.3231 11.4012 18.3055 11.5199V10.1139Z" />
+                      </svg>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -678,7 +685,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer Section */}
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
@@ -931,3 +937,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

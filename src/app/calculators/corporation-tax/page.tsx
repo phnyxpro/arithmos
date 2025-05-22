@@ -134,45 +134,72 @@ export default function CorporationTaxPage() {
   });
 
   const watchedOperatingExpenses = form.watch("operatingExpenses");
-  const totalOperatingExpensesDisplay = form.watch("allowableDeductions");
-
+  
   React.useEffect(() => {
     if (watchedOperatingExpenses) {
-      const totalOpEx = Object.values(watchedOperatingExpenses).reduce(
-        (sum, val) => sum + (Number(val) || 0), // Robust parsing
-        0
-      );
-      form.setValue("allowableDeductions", totalOpEx, { shouldValidate: true });
+      const {
+        bankServiceCharges,
+        salaries,
+        advertisingAndPromotion,
+        rent,
+        creativeSubscriptions,
+        training,
+        officeExpenses,
+        administrativeExpenses,
+        depreciation,
+      } = watchedOperatingExpenses;
+
+      const totalOpEx =
+        (Number(bankServiceCharges) || 0) +
+        (Number(salaries) || 0) +
+        (Number(advertisingAndPromotion) || 0) +
+        (Number(rent) || 0) +
+        (Number(creativeSubscriptions) || 0) +
+        (Number(training) || 0) +
+        (Number(officeExpenses) || 0) +
+        (Number(administrativeExpenses) || 0) +
+        (Number(depreciation) || 0);
+      
+      form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false });
     }
   }, [watchedOperatingExpenses, form]);
+  
+  const totalOperatingExpensesDisplay = form.watch("allowableDeductions");
 
-  const chargeableIncomeAutoCalculated = React.useMemo(() => {
-    const gross = form.watch("grossIncome") || 0;
-    const deductions = form.watch("allowableDeductions") || 0;
-    return Math.max(0, gross - deductions);
-  }, [form.watch("grossIncome"), form.watch("allowableDeductions")]);
+  const watchedTaxYear = form.watch("taxYear");
+  const watchedCompanyType = form.watch("companyType");
+  const watchedGrossIncome = form.watch("grossIncome");
+  const watchedAllowableDeductions = form.watch("allowableDeductions");
+  const watchedOtherIncome = form.watch("otherIncome");
+  const watchedLossCarriedForward = form.watch("lossCarriedForward");
+  const watchedBusinessLevyPaid = form.watch("businessLevyPaid");
+  const watchedTaxCreditsClaimed = form.watch("taxCreditsClaimed");
 
-  const onSubmit: SubmitHandler<CorporationTaxFormData> = (data) => {
-    const selectedCompanyType = companyTypeOptions.find(opt => opt.value === data.companyType);
+  React.useEffect(() => {
+    const grossIncomeNum = Number(watchedGrossIncome) || 0;
+    const allowableDeductionsNum = Number(watchedAllowableDeductions) || 0;
+    const otherIncomeNum = Number(watchedOtherIncome) || 0;
+    const lossCarriedForwardNum = Number(watchedLossCarriedForward) || 0;
+    const businessLevyPaidNum = Number(watchedBusinessLevyPaid) || 0;
+    const taxCreditsClaimedNum = Number(watchedTaxCreditsClaimed) || 0;
+
+    const selectedCompanyType = companyTypeOptions.find(opt => opt.value === watchedCompanyType);
+    
     if (!selectedCompanyType) {
-      toast({ title: "Error", description: "Invalid company type selected.", variant: "destructive" });
+      setCalculationResults(initialCalculationResults);
       return;
     }
 
     let taxRate = selectedCompanyType.rate;
     
-    const totalOpEx = data.operatingExpenses 
-      ? Object.values(data.operatingExpenses).reduce((sum, val) => sum + (Number(val) || 0), 0)
-      : 0;
-
-    const initialChargeable = (data.grossIncome || 0) - totalOpEx;
-    const finalChargeable = Math.max(0, initialChargeable + (data.otherIncome || 0) - (data.lossCarriedForward || 0));
+    const initialChargeable = Math.max(0, grossIncomeNum - allowableDeductionsNum);
+    const finalChargeable = Math.max(0, initialChargeable + otherIncomeNum - lossCarriedForwardNum);
     const taxBeforeOffsetsAndCredits = finalChargeable * taxRate;
     
-    const blOffset = Math.min(data.businessLevyPaid || 0, taxBeforeOffsetsAndCredits);
+    const blOffset = Math.min(businessLevyPaidNum, taxBeforeOffsetsAndCredits);
     const taxAfterBLOffset = taxBeforeOffsetsAndCredits - blOffset;
 
-    const creditsApplied = Math.min(data.taxCreditsClaimed || 0, taxAfterBLOffset);
+    const creditsApplied = Math.min(taxCreditsClaimedNum, taxAfterBLOffset);
     const finalTax = Math.max(0, taxAfterBLOffset - creditsApplied);
 
     setCalculationResults({
@@ -185,8 +212,24 @@ export default function CorporationTaxPage() {
       finalCorporationTaxDue: finalTax,
     });
 
-    toast({ title: "Corporation Tax Calculated", description: "Review the estimated tax liability below." });
-  };
+  }, [
+    watchedTaxYear, 
+    watchedCompanyType, 
+    watchedGrossIncome, 
+    watchedAllowableDeductions, 
+    watchedOtherIncome, 
+    watchedLossCarriedForward, 
+    watchedBusinessLevyPaid, 
+    watchedTaxCreditsClaimed
+  ]);
+
+
+  const chargeableIncomeAutoCalculated = React.useMemo(() => {
+    const gross = Number(form.watch("grossIncome")) || 0;
+    const deductions = Number(form.watch("allowableDeductions")) || 0;
+    return Math.max(0, gross - deductions);
+  }, [form.watch("grossIncome"), form.watch("allowableDeductions")]);
+
 
   const handleExportSummary = () => {
     console.log("Export Summary Clicked. Data:", form.getValues(), "Results:", calculationResults);
@@ -196,6 +239,10 @@ export default function CorporationTaxPage() {
   const formatCurrency = (value: number) => {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
+
+  const grossIncomeValue = Number(form.watch("grossIncome")) || 0;
+  const showResultsCard = grossIncomeValue > 0 || calculationResults.finalCorporationTaxDue !== initialCalculationResults.finalCorporationTaxDue;
+
 
   const faqItems = [
     {
@@ -261,7 +308,7 @@ export default function CorporationTaxPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form className="space-y-6"> {/* Removed onSubmit here */}
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                   <CardTitle className="text-xl text-primary flex items-center">
@@ -429,11 +476,11 @@ export default function CorporationTaxPage() {
                     />
                 </CardContent>
               </Card>
-              <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">Calculate Corporation Tax</Button>
+              {/* Submit button removed */}
             </form>
           </Form>
 
-          {calculationResults.finalCorporationTaxDue > 0 || calculationResults.chargeableIncomeBeforeAdjustments > 0 || calculationResults.finalChargeableIncome > 0 || form.formState.isSubmitted ? (
+           {showResultsCard ? (
             <Card className="shadow-md rounded-lg">
               <CardHeader>
                 <CardTitle className="text-xl text-primary flex items-center">
@@ -506,6 +553,5 @@ export default function CorporationTaxPage() {
     </div>
   );
 }
-
 
     

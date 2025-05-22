@@ -160,12 +160,12 @@ export default function CorporationTaxPage() {
         (Number(administrativeExpenses) || 0) +
         (Number(depreciation) || 0);
       
-      form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false });
+      if (form.getValues("allowableDeductions") !== totalOpEx) {
+        form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false });
+      }
     }
   }, [watchedOperatingExpenses, form]);
   
-  const totalOperatingExpensesDisplay = form.watch("allowableDeductions");
-
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
   const watchedGrossIncome = form.watch("grossIncome");
@@ -202,7 +202,7 @@ export default function CorporationTaxPage() {
     const creditsApplied = Math.min(taxCreditsClaimedNum, taxAfterBLOffset);
     const finalTax = Math.max(0, taxAfterBLOffset - creditsApplied);
 
-    setCalculationResults({
+    const newResults = {
       chargeableIncomeBeforeAdjustments: initialChargeable,
       finalChargeableIncome: finalChargeable,
       taxRateApplied: taxRate,
@@ -210,7 +210,11 @@ export default function CorporationTaxPage() {
       businessLevyOffsetApplied: blOffset,
       taxCreditsApplied: creditsApplied,
       finalCorporationTaxDue: finalTax,
-    });
+    };
+
+    if (JSON.stringify(newResults) !== JSON.stringify(calculationResults)) {
+        setCalculationResults(newResults);
+    }
 
   }, [
     watchedTaxYear, 
@@ -220,7 +224,8 @@ export default function CorporationTaxPage() {
     watchedOtherIncome, 
     watchedLossCarriedForward, 
     watchedBusinessLevyPaid, 
-    watchedTaxCreditsClaimed
+    watchedTaxCreditsClaimed,
+    calculationResults // Added calculationResults to dep array for conditional set
   ]);
 
 
@@ -308,7 +313,7 @@ export default function CorporationTaxPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <Form {...form}>
-            <form className="space-y-6"> {/* Removed onSubmit here */}
+            <form className="space-y-6"> 
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                   <CardTitle className="text-xl text-primary flex items-center">
@@ -396,12 +401,6 @@ export default function CorporationTaxPage() {
                             )}
                         />
                     ))}
-                    <div className="p-3 bg-muted/50 rounded-md mt-4 border-t pt-4">
-                        <FormLabel className="flex items-center mb-1 font-semibold">
-                           <Sigma className="mr-2 h-5 w-5 text-primary" /> Total Operating Expenses
-                        </FormLabel>
-                        <p className="text-lg font-bold text-primary">${formatCurrency(totalOperatingExpensesDisplay || 0)}</p>
-                    </div>
                 </CardContent>
               </Card>
               
@@ -476,7 +475,6 @@ export default function CorporationTaxPage() {
                     />
                 </CardContent>
               </Card>
-              {/* Submit button removed */}
             </form>
           </Form>
 
@@ -553,5 +551,7 @@ export default function CorporationTaxPage() {
     </div>
   );
 }
+
+    
 
     

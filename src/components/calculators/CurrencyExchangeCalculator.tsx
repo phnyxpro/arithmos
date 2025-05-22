@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"; // Added Alert
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Coins, ArrowRightLeft, DollarSign, Info, Copy, Trash2, Loader2, AlertTriangle, BarChartHorizontalBig, RefreshCw } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { getExchangeRate, type GetExchangeRateInput } from '@/ai/flows/get-exchange-rate-flow';
@@ -77,32 +77,24 @@ export function CurrencyExchangeCalculator() {
   const handleConversion = useCallback(async () => {
     const numAmount = parseNum(amount);
     if (numAmount <= 0 || !fromCurrency || !toCurrency ) {
-      toast({
-        title: "Invalid Input",
-        description: "Please enter a valid amount and select currencies.",
-        variant: "destructive",
-      });
+      // Don't toast for initial invalid state, let useEffect handle valid calls
       setConversionResults(initialConversionResults);
+      setConversionError(null); // Clear previous errors if input becomes invalid
       return;
     }
     if (fromCurrency === toCurrency) {
-      toast({
-        title: "Same Currencies",
-        description: "Please select two different currencies for conversion.",
-        variant: "default"
-      });
        setConversionResults({
           convertedAmountDisplay: formatCurrency(numAmount, toCurrency),
           exchangeRateUsedDisplay: `1 ${fromCurrency} = 1.0000 ${toCurrency}`,
           conversionDisclaimer: "Same currency selected.",
         });
+        setConversionError(null);
       return;
     }
 
-
     setIsLoadingConversion(true);
     setConversionError(null);
-    setConversionResults(initialConversionResults);
+    // Don't reset to initialConversionResults here to avoid flicker if only one input changes
 
     try {
       const input: GetExchangeRateInput = {
@@ -118,7 +110,8 @@ export function CurrencyExchangeCalculator() {
           exchangeRateUsedDisplay: `1 ${fromCurrency} = ${result.exchangeRate.toFixed(4)} ${toCurrency}`,
           conversionDisclaimer: result.aiDisclaimer || "Rate is indicative. Verify with financial institutions.",
         });
-        toast({ title: "Conversion Successful", description: `${fromCurrency} to ${toCurrency} conversion complete.` });
+        // Optional: Toast on successful conversion if not too noisy
+        // toast({ title: "Conversion Successful", description: `${fromCurrency} to ${toCurrency} conversion complete.` });
       } else {
         throw new Error("AI did not return data in the expected format.");
       }
@@ -128,11 +121,27 @@ export function CurrencyExchangeCalculator() {
         ? "One of the selected currencies is not supported by the AI for conversion."
         : (error.message || "Failed to get exchange rate. Please try again.");
       setConversionError(errorMessage);
-      toast({ title: "Conversion Error", description: errorMessage, variant: "destructive" });
+      setConversionResults(initialConversionResults); // Reset results on error
+      // toast({ title: "Conversion Error", description: errorMessage, variant: "destructive" });
     } finally {
       setIsLoadingConversion(false);
     }
   }, [amount, fromCurrency, toCurrency, toast]);
+
+  // useEffect for automatic conversion on input change
+  useEffect(() => {
+    const numAmount = parseNum(amount);
+    if (numAmount > 0 && fromCurrency && toCurrency) {
+      const timer = setTimeout(() => { // Debounce API call
+        handleConversion();
+      }, 500); // Adjust delay as needed (e.g., 500ms)
+      return () => clearTimeout(timer);
+    } else {
+      setConversionResults(initialConversionResults);
+      setConversionError(null);
+    }
+  }, [amount, fromCurrency, toCurrency, handleConversion]);
+
 
   const fetchPopularRates = useCallback(async () => {
     setIsLoadingPopularRates(true);
@@ -161,7 +170,7 @@ export function CurrencyExchangeCalculator() {
   }, [fetchPopularRates]);
 
   const handleClearFields = () => {
-    setAmount("100");
+    setAmount("100"); // Reset to default or ""
     setFromCurrency("TTD");
     setToCurrency("USD");
     setConversionResults(initialConversionResults);
@@ -170,7 +179,7 @@ export function CurrencyExchangeCalculator() {
   };
 
   const handleCopyResults = () => {
-    if (conversionResults.convertedAmountDisplay === "0.00" && conversionResults.exchangeRateUsedDisplay === "N/A") {
+    if (conversionResults.convertedAmountDisplay === "0.00" && conversionResults.exchangeRateUsedDisplay === "N/A" && conversionResults.conversionDisclaimer !== "Same currency selected.") {
       toast({ title: "No Results", description: "Please perform a conversion first.", variant: "default"});
       return;
     }
@@ -192,6 +201,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
     const tempFrom = fromCurrency;
     setFromCurrency(toCurrency);
     setToCurrency(tempFrom);
+    // The useEffect will trigger handleConversion automatically
   };
 
 
@@ -253,20 +263,24 @@ Disclaimer: Exchange rates are indicative and subject to change.
             />
           </div>
           
-          <Button onClick={handleConversion} className="w-full mt-4 bg-primary hover:bg-primary/90 text-sm h-9" disabled={isLoadingConversion}>
-            {isLoadingConversion ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRightLeft className="mr-2 h-4 w-4" />}
-            {isLoadingConversion ? 'Converting...' : 'Convert'}
-          </Button>
+          {/* Convert button removed, calculations are automatic via useEffect */}
 
-          {conversionError && (
+          {isLoadingConversion && (
+            <div className="flex items-center justify-center mt-4 p-3 border rounded-md bg-muted/30">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Converting...</span>
+            </div>
+          )}
+
+          {conversionError && !isLoadingConversion && (
             <Alert variant="destructive" className="mt-4">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Conversion Error</AlertTitle>
-              <AlertDescription>{conversionError}</AlertDescription> {/* Changed from CardDescription to AlertDescription */}
+              <AlertDescription>{conversionError}</AlertDescription>
             </Alert>
           )}
 
-          {(conversionResults.convertedAmountDisplay !== "0.00" || conversionResults.exchangeRateUsedDisplay !== "N/A" || conversionResults.conversionDisclaimer === "Same currency selected.") && !conversionError && (
+          {(!isLoadingConversion && !conversionError && (conversionResults.convertedAmountDisplay !== "0.00" || conversionResults.exchangeRateUsedDisplay !== "N/A" || conversionResults.conversionDisclaimer === "Same currency selected.")) && (
             <Card className="mt-4 bg-muted/30">
               <CardHeader className="p-3">
                 <CardTitle className="text-md text-primary flex items-center">
@@ -328,7 +342,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Error Fetching Popular Rates</AlertTitle>
-              <AlertDescription>{popularRatesError}</AlertDescription> {/* Changed from CardDescription to AlertDescription */}
+              <AlertDescription>{popularRatesError}</AlertDescription>
             </Alert>
           )}
           {!isLoadingPopularRates && !popularRatesError && popularRates && popularRates.length > 0 && (
@@ -375,4 +389,3 @@ Disclaimer: Exchange rates are indicative and subject to change.
   );
 }
 
-    

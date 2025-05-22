@@ -40,9 +40,12 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { 
   Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
-  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma
+  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, ChevronsUpDown, Check
 } from "lucide-react";
 import { getYear } from 'date-fns';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 const currentYear = getYear(new Date());
 const taxYearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - i).toString());
@@ -59,7 +62,6 @@ const companyTypeOptions = [
 ];
 
 const expenseOptionsList = [
-  // Payroll & Employee Benefits
   { category: "Payroll & Employee Benefits", value: "Salaries & Wages", label: "Salaries & Wages" },
   { category: "Payroll & Employee Benefits", value: "Bonuses & Commissions", label: "Bonuses & Commissions" },
   { category: "Payroll & Employee Benefits", value: "Employee Health Insurance", label: "Employee Health Insurance" },
@@ -67,7 +69,6 @@ const expenseOptionsList = [
   { category: "Payroll & Employee Benefits", value: "Employer Taxes (PAYE, NIS, Health Surcharge)", label: "Employer Taxes (PAYE, NIS, HS)" },
   { category: "Payroll & Employee Benefits", value: "Training & Development Costs", label: "Training & Development Costs" },
   { category: "Payroll & Employee Benefits", value: "Employee Allowances", label: "Employee Allowances" },
-  // Office & Administrative Expenses
   { category: "Office & Administrative Expenses", value: "Office Rent or Lease", label: "Office Rent or Lease" },
   { category: "Office & Administrative Expenses", value: "Utilities (electricity, water, internet)", label: "Utilities" },
   { category: "Office & Administrative Expenses", value: "Office Supplies & Stationery", label: "Office Supplies & Stationery" },
@@ -75,64 +76,53 @@ const expenseOptionsList = [
   { category: "Office & Administrative Expenses", value: "Repairs & Maintenance", label: "Repairs & Maintenance" },
   { category: "Office & Administrative Expenses", value: "Postage & Courier Services", label: "Postage & Courier Services" },
   { category: "Office & Administrative Expenses", value: "Cleaning & Janitorial Services", label: "Cleaning & Janitorial Services" },
-  // Professional & Consulting Fees
   { category: "Professional & Consulting Fees", value: "Legal Fees", label: "Legal Fees" },
   { category: "Professional & Consulting Fees", value: "Accounting & Auditing Fees", label: "Accounting & Auditing Fees" },
   { category: "Professional & Consulting Fees", value: "Consulting & Advisory Services", label: "Consulting & Advisory Services" },
   { category: "Professional & Consulting Fees", value: "IT & Software Support", label: "IT & Software Support" },
   { category: "Professional & Consulting Fees", value: "Recruitment & Placement Fees", label: "Recruitment & Placement Fees" },
-  // Marketing & Advertising
   { category: "Marketing & Advertising", value: "Digital Advertising", label: "Digital Advertising" },
   { category: "Marketing & Advertising", value: "Print & Media Advertising", label: "Print & Media Advertising" },
   { category: "Marketing & Advertising", value: "Promotional Materials", label: "Promotional Materials" },
   { category: "Marketing & Advertising", value: "Branding & Design Services", label: "Branding & Design Services" },
   { category: "Marketing & Advertising", value: "Market Research", label: "Market Research" },
   { category: "Marketing & Advertising", value: "Sponsorship & Events", label: "Sponsorship & Events" },
-  // Travel & Entertainment
   { category: "Travel & Entertainment", value: "Business Travel Expenses", label: "Business Travel Expenses" },
   { category: "Travel & Entertainment", value: "Mileage & Vehicle Expenses", label: "Mileage & Vehicle Expenses" },
   { category: "Travel & Entertainment", value: "Entertainment (business meals, client hospitality)", label: "Entertainment" },
   { category: "Travel & Entertainment", value: "Conference & Seminar Fees", label: "Conference & Seminar Fees" },
   { category: "Travel & Entertainment", value: "Staff Meetings & Retreats", label: "Staff Meetings & Retreats" },
-  // Technology & IT Expenses
   { category: "Technology & IT Expenses", value: "Software & Subscription Licenses", label: "Software & Subscription Licenses" },
   { category: "Technology & IT Expenses", value: "Cloud Services & Hosting", label: "Cloud Services & Hosting" },
   { category: "Technology & IT Expenses", value: "Website & Domain Hosting", label: "Website & Domain Hosting" },
   { category: "Technology & IT Expenses", value: "Computer Hardware & Mobile Devices", label: "Computer Hardware & Mobile Devices" },
   { category: "Technology & IT Expenses", value: "IT Infrastructure & Network Expenses", label: "IT Infrastructure & Network Expenses" },
-  // Insurance
   { category: "Insurance", value: "General Liability Insurance", label: "General Liability Insurance" },
   { category: "Insurance", value: "Property Insurance", label: "Property Insurance" },
   { category: "Insurance", value: "Workers’ Compensation", label: "Workers’ Compensation" },
   { category: "Insurance", value: "Professional Liability Insurance", label: "Professional Liability Insurance" },
   { category: "Insurance", value: "Directors & Officers (D&O) Insurance", label: "Directors & Officers (D&O) Insurance" },
-  // Financial Expenses
   { category: "Financial Expenses", value: "Bank Charges & Fees", label: "Bank Charges & Fees" },
   { category: "Financial Expenses", value: "Interest Expense (loans, overdrafts)", label: "Interest Expense" },
   { category: "Financial Expenses", value: "Merchant Service Fees (payment processing)", label: "Merchant Service Fees" },
   { category: "Financial Expenses", value: "Foreign Exchange Losses/Gains", label: "Foreign Exchange Losses/Gains" },
-  // Taxes & Regulatory Fees
   { category: "Taxes & Regulatory Fees", value: "Business Levy", label: "Business Levy (Paid)" },
   { category: "Taxes & Regulatory Fees", value: "Green Fund Levy", label: "Green Fund Levy (Paid)" },
   { category: "Taxes & Regulatory Fees", value: "Corporation Tax", label: "Corporation Tax (Installments)" },
   { category: "Taxes & Regulatory Fees", value: "VAT Payments", label: "VAT Payments (Net)" },
   { category: "Taxes & Regulatory Fees", value: "Licenses & Permits", label: "Licenses & Permits" },
   { category: "Taxes & Regulatory Fees", value: "Fines & Penalties", label: "Fines & Penalties (If allowable)" },
-  // Cost of Goods Sold (COGS)
   { category: "Cost of Goods Sold (COGS)", value: "Raw Materials & Supplies", label: "Raw Materials & Supplies" },
   { category: "Cost of Goods Sold (COGS)", value: "Inventory Costs", label: "Inventory Costs" },
   { category: "Cost of Goods Sold (COGS)", value: "Manufacturing & Production Expenses", label: "Manufacturing & Production Expenses" },
   { category: "Cost of Goods Sold (COGS)", value: "Direct Labour Costs", label: "Direct Labour Costs" },
   { category: "Cost of Goods Sold (COGS)", value: "Freight & Shipping Costs", label: "Freight & Shipping Costs" },
-  // Depreciation & Amortisation
   { category: "Depreciation & Amortisation", value: "Depreciation of Equipment & Machinery", label: "Depreciation - Equipment & Machinery" },
   { category: "Depreciation & Amortisation", value: "Depreciation of Buildings", label: "Depreciation - Buildings" },
   { category: "Depreciation & Amortisation", value: "Amortisation of Intangible Assets", label: "Amortisation - Intangible Assets" },
-  // Research & Development
   { category: "Research & Development", value: "Product Development Expenses", label: "Product Development Expenses" },
   { category: "Research & Development", value: "Laboratory & Testing Costs", label: "Laboratory & Testing Costs" },
   { category: "Research & Development", value: "Prototype & Sample Production", label: "Prototype & Sample Production" },
-  // Miscellaneous Expenses
   { category: "Miscellaneous Expenses", value: "Donations & Charitable Contributions", label: "Donations & Charitable Contributions" },
   { category: "Miscellaneous Expenses", value: "Membership & Subscriptions", label: "Membership & Subscriptions" },
   { category: "Miscellaneous Expenses", value: "Staff Welfare & Gifts", label: "Staff Welfare & Gifts" },
@@ -140,14 +130,13 @@ const expenseOptionsList = [
   { category: "Miscellaneous Expenses", value: "Other Operating Expense", label: "Other Operating Expense" },
 ];
 
-
 const corporationTaxFormSchema = z.object({
   taxYear: z.string({ required_error: "Tax year is required." }),
   companyType: z.string({ required_error: "Company type is required." }),
   grossIncome: z.coerce.number({ required_error: "Gross income is required." }).min(0, "Gross income must be positive."),
   dynamicOperatingExpenses: z.array(
     z.object({
-      expenseType: z.string().min(1, "Please select an expense type."),
+      expenseType: z.string().min(1, "Expense type/name is required."),
       expenseValue: z.coerce.number({ invalid_type_error: "Must be a number" }).min(0, "Value must be positive.").optional().default(0),
     })
   ).optional(),
@@ -173,6 +162,13 @@ const initialCalculationResults = {
 export default function CorporationTaxPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
+  const [comboboxOpenStates, setComboboxOpenStates] = React.useState<boolean[]>([]);
+  
+  // State for periodic income input
+  const [incomeInputPeriod, setIncomeInputPeriod] = React.useState<"annually" | "quarterly" | "monthly">("annually");
+  const [annualIncomeInput, setAnnualIncomeInput] = React.useState<string>("");
+  const [quarterlyIncomeInput, setQuarterlyIncomeInput] = React.useState<string>("");
+  const [monthlyIncomeInput, setMonthlyIncomeInput] = React.useState<string>("");
 
   const form = useForm<CorporationTaxFormData>({
     resolver: zodResolver(corporationTaxFormSchema),
@@ -195,21 +191,40 @@ export default function CorporationTaxPage() {
   });
 
   const watchedDynamicExpenses = form.watch("dynamicOperatingExpenses");
+  const watchedGrossIncome = form.watch("grossIncome");
 
+  // Effect for annualizing income
+  React.useEffect(() => {
+    let annualized = 0;
+    if (incomeInputPeriod === "annually") {
+      annualized = Number(annualIncomeInput) || 0;
+    } else if (incomeInputPeriod === "quarterly") {
+      annualized = (Number(quarterlyIncomeInput) || 0) * 4;
+    } else if (incomeInputPeriod === "monthly") {
+      annualized = (Number(monthlyIncomeInput) || 0) * 12;
+    }
+    if (form.getValues("grossIncome") !== annualized) {
+        form.setValue("grossIncome", annualized, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    }
+  }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomeInput, monthlyIncomeInput, form]);
+
+
+  // Effect for total operating expenses
   React.useEffect(() => {
     if (watchedDynamicExpenses) {
       const totalOpEx = watchedDynamicExpenses.reduce((sum, item) => {
         return sum + (Number(item.expenseValue) || 0);
       }, 0);
       if (form.getValues("allowableDeductions") !== totalOpEx) {
-        form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false });
+        form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false, shouldDirty: true, shouldTouch: true });
       }
     }
   }, [watchedDynamicExpenses, form]);
   
+  // Effect for main tax calculation
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
-  const watchedGrossIncome = form.watch("grossIncome");
+  // watchedGrossIncome is already defined above
   const watchedAllowableDeductions = form.watch("allowableDeductions");
   const watchedOtherIncome = form.watch("otherIncome");
   const watchedLossCarriedForward = form.watch("lossCarriedForward");
@@ -227,7 +242,9 @@ export default function CorporationTaxPage() {
     const selectedCompanyType = companyTypeOptions.find(opt => opt.value === watchedCompanyType);
     
     if (!selectedCompanyType) {
-      setCalculationResults(initialCalculationResults);
+      if (JSON.stringify(initialCalculationResults) !== JSON.stringify(calculationResults)) {
+        setCalculationResults(initialCalculationResults);
+      }
       return;
     }
 
@@ -266,7 +283,7 @@ export default function CorporationTaxPage() {
     watchedLossCarriedForward, 
     watchedBusinessLevyPaid, 
     watchedTaxCreditsClaimed,
-    calculationResults // Added calculationResults to dep array for conditional set
+    calculationResults 
   ]);
 
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
@@ -284,8 +301,15 @@ export default function CorporationTaxPage() {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const grossIncomeValue = Number(form.watch("grossIncome")) || 0;
-  const showResultsCard = grossIncomeValue > 0 || calculationResults.finalCorporationTaxDue !== initialCalculationResults.finalCorporationTaxDue;
+  const handleComboboxOpenChange = (index: number, open: boolean) => {
+    setComboboxOpenStates(prev => {
+      const newStates = [...prev];
+      newStates[index] = open;
+      return newStates;
+    });
+  };
+
+  const showResultsCard = (Number(watchedGrossIncome) || 0) > 0 || calculationResults.finalCorporationTaxDue !== initialCalculationResults.finalCorporationTaxDue;
 
   const faqItems = [
     {
@@ -398,13 +422,56 @@ export default function CorporationTaxPage() {
                       )}
                     />
                   </div>
-                  <FormField
+
+                  {/* Gross Income Section with Period Selection */}
+                  <div className="space-y-2">
+                    <Label className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Income Input</Label>
+                    <Select value={incomeInputPeriod} onValueChange={(value: "annually" | "quarterly" | "monthly") => setIncomeInputPeriod(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select income input period" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="annually">Annual Income</SelectItem>
+                        <SelectItem value="quarterly">Quarterly Income</SelectItem>
+                        <SelectItem value="monthly">Average Monthly Income</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {incomeInputPeriod === "annually" && (
+                    <FormItem>
+                      <FormLabel>Annual Gross Income (TT$)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="e.g., 500000" value={annualIncomeInput} onChange={(e) => setAnnualIncomeInput(e.target.value)} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                  {incomeInputPeriod === "quarterly" && (
+                    <FormItem>
+                      <FormLabel>Quarterly Gross Income (TT$)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="e.g., 125000" value={quarterlyIncomeInput} onChange={(e) => setQuarterlyIncomeInput(e.target.value)} />
+                      </FormControl>
+                      <FormDescription className="text-xs">This will be annualized (x4) for calculations.</FormDescription>
+                    </FormItem>
+                  )}
+                  {incomeInputPeriod === "monthly" && (
+                    <FormItem>
+                      <FormLabel>Average Monthly Gross Income (TT$)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" placeholder="e.g., 41667" value={monthlyIncomeInput} onChange={(e) => setMonthlyIncomeInput(e.target.value)} />
+                      </FormControl>
+                      <FormDescription className="text-xs">This will be annualized (x12) for calculations.</FormDescription>
+                    </FormItem>
+                  )}
+                   <FormField
                     control={form.control}
                     name="grossIncome"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Gross Income (TT$)</FormLabel>
-                        <FormControl><Input type="number" step="0.01" placeholder="e.g., 500000" {...field} value={field.value ?? ""} /></FormControl>
+                      <FormItem className="mt-2">
+                        <FormLabel className="flex items-center font-semibold"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Annualized Gross Income (TT$)</FormLabel>
+                        <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50 font-bold" /></FormControl>
+                        <FormDescription className="text-xs">Auto-calculated based on your input period.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -417,7 +484,7 @@ export default function CorporationTaxPage() {
                     <CardTitle className="text-xl text-primary flex items-center">
                         <Receipt className="mr-2 h-5 w-5" /> Operating Expenses
                     </CardTitle>
-                    <CardDescription>Enter your company's operating expenses for the tax year.</CardDescription>
+                    <CardDescription>Enter your company's operating expenses for the tax year. The total will automatically update "Allowable Deductions".</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {fields.map((item, index) => (
@@ -428,20 +495,63 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                           <FormItem>
                             {index === 0 && <FormLabel className="text-xs">Expense Type</FormLabel>}
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="h-9 text-xs">
-                                  <SelectValue placeholder="Select expense type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {expenseOptionsList.map(option => (
-                                  <SelectItem key={option.value} value={option.value} className="text-xs">
-                                    {option.category} - {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <Popover open={comboboxOpenStates[index]} onOpenChange={(open) => handleComboboxOpenChange(index, open)}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    role="combobox"
+                                    className={cn(
+                                      "w-full justify-between h-9 text-xs",
+                                      !field.value && "text-muted-foreground"
+                                    )}
+                                  >
+                                    {field.value
+                                      ? expenseOptionsList.find(
+                                          (option) => option.value === field.value
+                                        )?.label || field.value 
+                                      : "Select or type expense..."}
+                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                                <Command>
+                                  <CommandInput 
+                                    placeholder="Search or type custom..." 
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    className="h-9 text-xs"
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>No predefined expense found. Your typed text will be used.</CommandEmpty>
+                                    <CommandGroup>
+                                      {expenseOptionsList.map((option) => (
+                                        <CommandItem
+                                          value={option.value}
+                                          key={option.value}
+                                          onSelect={() => {
+                                            form.setValue(`dynamicOperatingExpenses.${index}.expenseType`, option.value);
+                                            handleComboboxOpenChange(index, false);
+                                          }}
+                                          className="text-xs"
+                                        >
+                                          <Check
+                                            className={cn(
+                                              "mr-2 h-4 w-4",
+                                              option.value === field.value
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            )}
+                                          />
+                                          {option.category} - {option.label}
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
                             <FormMessage className="text-xs" />
                           </FormItem>
                         )}
@@ -459,6 +569,7 @@ export default function CorporationTaxPage() {
                                 placeholder="e.g., 1000"
                                 {...field}
                                 value={field.value ?? ""}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                 className="h-9 text-xs"
                               />
                             </FormControl>
@@ -502,17 +613,17 @@ export default function CorporationTaxPage() {
                         name="allowableDeductions"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="flex items-center"><Sigma className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50" /></FormControl>
-                            <FormDescription>Sum of detailed operating expenses. Also includes capital allowances, specific reliefs, etc., not detailed above.</FormDescription>
+                            <FormLabel className="flex items-center font-semibold"><Sigma className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
+                            <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50 font-bold" /></FormControl>
+                            <FormDescription>Sum of detailed operating expenses.</FormDescription>
                             <FormMessage />
                         </FormItem>
                         )}
                     />
                     <div className="p-3 bg-muted/50 rounded-md">
-                        <FormLabel className="flex items-center mb-1 font-semibold">Chargeable Income (Auto-Calculated)</FormLabel>
+                        <FormLabel className="flex items-center mb-1 font-semibold">Chargeable Income (Before Other Income/Loss)</FormLabel>
                         <p className="text-lg font-bold text-primary">${formatCurrency(chargeableIncomeAutoCalculated)}</p>
-                        <FormDescription className="mt-1">Gross Income - Total Allowable Deductions</FormDescription>
+                        <FormDescription className="mt-1">Annualized Gross Income - Total Allowable Deductions</FormDescription>
                     </div>
                     <FormField
                         control={form.control}
@@ -520,7 +631,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Other Income (e.g., Dividends, Royalties) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -531,7 +642,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><TrendingDown className="mr-2 h-4 w-4 text-muted-foreground" />Loss Carried Forward (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -542,7 +653,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Business Levy Paid (for offset) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -553,7 +664,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Tax Credits Claimed (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
                             <FormDescription>E.g., investment tax credits.</FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -572,6 +683,14 @@ export default function CorporationTaxPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-muted-foreground">Annualized Gross Income:</span>
+                  <span className="font-semibold text-lg">${formatCurrency(Number(watchedGrossIncome) || 0)}</span>
+                </div>
+                 <div className="flex justify-between items-center">
+                  <span className="font-medium text-muted-foreground">Total Allowable Deductions:</span>
+                  <span className="font-semibold text-lg">${formatCurrency(Number(watchedAllowableDeductions) || 0)}</span>
+                </div>
                 <div className="flex justify-between items-center">
                   <span className="font-medium text-muted-foreground">Chargeable Income (Gross - Total Deductions):</span>
                   <span className="font-semibold text-lg">${formatCurrency(calculationResults.chargeableIncomeBeforeAdjustments)}</span>

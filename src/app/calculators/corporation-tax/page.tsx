@@ -41,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import { 
   Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
-  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, ChevronsUpDown, Check
+  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, Check, ChevronsUpDown
 } from "lucide-react";
 import { getYear } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -167,7 +167,7 @@ export default function CorporationTaxPage() {
   
   const [incomeInputPeriod, setIncomeInputPeriod] = React.useState<"annually" | "quarterly" | "monthly">("annually");
   const [annualIncomeInput, setAnnualIncomeInput] = React.useState<string>("");
-  const [quarterlyIncomeInput, setQuarterlyIncomeInput] = React.useState<string>("");
+  const [quarterlyIncomes, setQuarterlyIncomes] = React.useState<string[]>(Array(4).fill(""));
   const [monthlyIncomes, setMonthlyIncomes] = React.useState<string[]>(Array(12).fill(""));
 
 
@@ -192,18 +192,16 @@ export default function CorporationTaxPage() {
   });
 
   const watchedDynamicExpenses = form.watch("dynamicOperatingExpenses");
-  const watchedGrossIncome = form.watch("grossIncome");
-
-
+  
   React.useEffect(() => {
     if (incomeInputPeriod === "monthly") {
       setAnnualIncomeInput("");
-      setQuarterlyIncomeInput("");
+      setQuarterlyIncomes(Array(4).fill(""));
     } else if (incomeInputPeriod === "quarterly") {
       setAnnualIncomeInput("");
       setMonthlyIncomes(Array(12).fill(""));
     } else { // annually
-      setQuarterlyIncomeInput("");
+      setQuarterlyIncomes(Array(4).fill(""));
       setMonthlyIncomes(Array(12).fill(""));
     }
   }, [incomeInputPeriod]);
@@ -213,14 +211,14 @@ export default function CorporationTaxPage() {
     if (incomeInputPeriod === "annually") {
       annualized = Number(annualIncomeInput) || 0;
     } else if (incomeInputPeriod === "quarterly") {
-      annualized = (Number(quarterlyIncomeInput) || 0) * 4;
+      annualized = quarterlyIncomes.reduce((sum, income) => sum + (Number(income) || 0), 0);
     } else if (incomeInputPeriod === "monthly") {
       annualized = monthlyIncomes.reduce((sum, income) => sum + (Number(income) || 0), 0);
     }
     if (form.getValues("grossIncome") !== annualized) {
         form.setValue("grossIncome", annualized, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     }
-  }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomeInput, monthlyIncomes, form]);
+  }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomes, monthlyIncomes, form]);
 
 
   React.useEffect(() => {
@@ -236,6 +234,7 @@ export default function CorporationTaxPage() {
   
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
+  const watchedGrossIncome = form.watch("grossIncome");
   const watchedAllowableDeductions = form.watch("allowableDeductions");
   const watchedOtherIncome = form.watch("otherIncome");
   const watchedLossCarriedForward = form.watch("lossCarriedForward");
@@ -294,7 +293,7 @@ export default function CorporationTaxPage() {
     watchedLossCarriedForward, 
     watchedBusinessLevyPaid, 
     watchedTaxCreditsClaimed,
-    calculationResults // Keep calculationResults in dependency array
+    calculationResults 
   ]);
 
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
@@ -442,7 +441,7 @@ export default function CorporationTaxPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="annually">Annual Income</SelectItem>
-                        <SelectItem value="quarterly">Quarterly Income</SelectItem>
+                        <SelectItem value="quarterly">Quarterly Incomes (4 Quarters)</SelectItem>
                         <SelectItem value="monthly">Monthly Incomes (12 months)</SelectItem>
                       </SelectContent>
                     </Select>
@@ -457,13 +456,30 @@ export default function CorporationTaxPage() {
                     </FormItem>
                   )}
                   {incomeInputPeriod === "quarterly" && (
-                    <FormItem>
-                      <FormLabel>Quarterly Gross Income (TT$)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" placeholder="e.g., 125000" value={quarterlyIncomeInput} onChange={(e) => setQuarterlyIncomeInput(e.target.value)} />
-                      </FormControl>
-                      <FormDescription className="text-xs">This will be annualized (x4) for calculations.</FormDescription>
-                    </FormItem>
+                     <div className="space-y-4">
+                      <Label className="font-semibold">Quarterly Gross Incomes (TT$)</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+                        {quarterlyIncomes.map((income, index) => (
+                          <FormItem key={`quarter-${index}`}>
+                            <Label htmlFor={`quarter-${index}-income`} className="text-xs text-muted-foreground">Quarter {index + 1}</Label>
+                            <Input
+                              id={`quarter-${index}-income`}
+                              type="number"
+                              step="0.01"
+                              placeholder="e.g., 125000"
+                              value={income}
+                              onChange={(e) => {
+                                const newQuarterlyIncomes = [...quarterlyIncomes];
+                                newQuarterlyIncomes[index] = e.target.value;
+                                setQuarterlyIncomes(newQuarterlyIncomes);
+                              }}
+                              className="h-9 text-xs"
+                            />
+                          </FormItem>
+                        ))}
+                      </div>
+                      <FormDescription className="text-xs">Enter income for each of the 4 quarters. The sum will be used as the annualized income.</FormDescription>
+                    </div>
                   )}
                   {incomeInputPeriod === "monthly" && (
                     <div className="space-y-4">
@@ -784,5 +800,3 @@ export default function CorporationTaxPage() {
     </div>
   );
 }
-
-    

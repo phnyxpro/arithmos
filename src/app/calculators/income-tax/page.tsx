@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label"; // Added this import
 import { FileText as FileTextIcon, CircleUser, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle } from "lucide-react";
 import { getYear } from 'date-fns';
 
@@ -324,4 +325,3 @@ export default function IncomeTaxPage() {
   );
 }
 
-    

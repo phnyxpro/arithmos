@@ -36,7 +36,7 @@ import {
   Leaf,
   Building,
   User,
-  House as HomeIcon, // Renamed to avoid conflict if 'House' is used elsewhere
+  House as HomeIcon,
   ReceiptText,
   Linkedin,
   Facebook,
@@ -60,11 +60,11 @@ import {
   Truck,
   FileBox,
   Stamp,
-  Building2, // Using Building2 for Rental Yield
+  Building2,
   ShieldAlert,
   Network,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"; // Removed DialogDescription as it's not used
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
@@ -267,7 +267,6 @@ export default function LandingPage() {
     currentOpenState: boolean,
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
-    // Only trigger review if the dialog was actually open and is now being closed
     const wasOpen = (
         (calculatorName === "Basic Time Calculator" && isBasicTimeCalcOpen) ||
         (calculatorName === "PAYE, NIS & HS Calculator" && isPayrollCalcOpen) ||
@@ -347,7 +346,6 @@ export default function LandingPage() {
       onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey),
       calculatorIdentifier: "Levy Calculator",
     },
-    // New Calculators
     {
       icon: Cigarette,
       title: "Excise Duty Calculator",
@@ -357,7 +355,7 @@ export default function LandingPage() {
       calculatorIdentifier: "Excise Duty Calculator",
     },
     {
-      icon: TrendingDown, // Placeholder, consider UsersIcon or a specific salary icon
+      icon: TrendingDown, 
       title: "Gross to Net Salary Calculator",
       description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.",
       ctaText: "Calculate Net Salary",
@@ -453,7 +451,7 @@ export default function LandingPage() {
       calculatorIdentifier: "Cash Flow Projection Calculator",
     },
     {
-      icon: TrendingDown, // Reusing, consider specific depreciation icon if available
+      icon: TrendingDown,
       title: "Depreciation Calculator",
       description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.",
       ctaText: "Calculate Depreciation",
@@ -493,7 +491,7 @@ export default function LandingPage() {
       calculatorIdentifier: "Stamp Duty Calculator",
     },
     {
-      icon: HomeIcon, 
+      icon: HomeIcon,
       title: "Property Tax Calculator",
       description: "Estimate annual property tax obligations.",
       ctaText: "Estimate Property Tax",
@@ -501,7 +499,7 @@ export default function LandingPage() {
       calculatorIdentifier: "Property Tax Calculator",
     },
     {
-      icon: Building2, 
+      icon: Building2,
       title: "Rental Yield Calculator",
       description: "Calculate returns on rental property investments.",
       ctaText: "Calculate Yield",
@@ -528,14 +526,12 @@ export default function LandingPage() {
 
   const HeroIcon = heroContentData.icon;
 
-  const detailedCalculatorList: Array<CalculatorCardData & {id: string}> = [
+  const detailedCalculatorList: Array<CalculatorCardData & {id: string, name: string}> = [
     { id: "time", name: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Open Calculator", title: "Basic Time Calculator", calculatorIdentifier: "Basic Time Calculator" },
     { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator", title: "PAYE, NIS & HS Calculator", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
     { id: "simple-vat", name: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Open Calculator", title: "Simple VAT Calculator", calculatorIdentifier: "Simple VAT Calculator" },
     { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator", title: "Voluntary NIS Contribution", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
-    { id: "levy-dialog", name: "Levy Calculator (Dialog)", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Open Calculator", title: "Levy Calculator", calculatorIdentifier: "Levy Calculator" },
-    
-    // New detailed list entries
+    { id: "levy-dialog", name: "Levy Calculator", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Open Calculator", title: "Levy Calculator", calculatorIdentifier: "Levy Calculator" },
     { id: "excise-duty", name: "Excise Duty Calculator", description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.", icon: Cigarette, onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey), ctaText: "Open Calculator", title: "Excise Duty Calculator", calculatorIdentifier: "Excise Duty Calculator" },
     { id: "gross-to-net", name: "Gross to Net Salary Calculator", description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey), ctaText: "Open Calculator", title: "Gross to Net Salary Calculator", calculatorIdentifier: "Gross to Net Salary Calculator" },
     { id: "overtime-pay", name: "Overtime Pay Calculator", description: "Compute overtime pay accurately for hourly paid workers.", icon: AlarmClock, onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey), ctaText: "Open Calculator", title: "Overtime Pay Calculator", calculatorIdentifier: "Overtime Pay Calculator" },
@@ -554,12 +550,11 @@ export default function LandingPage() {
     { id: "freight-ship", name: "Freight & Shipping Cost Calculator", description: "Estimate total landed costs, including shipping, insurance, and duties.", icon: Truck, onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey), ctaText: "Open Calculator", title: "Freight & Shipping Cost Calculator", calculatorIdentifier: "Freight & Shipping Cost Calculator" },
     { id: "cif-calc", name: "Cost, Insurance, and Freight (CIF) Calculator", description: "Compute total import costs for accurate pricing and profit analysis.", icon: FileBox, onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey), ctaText: "Open Calculator", title: "Cost, Insurance, and Freight (CIF) Calculator", calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator" },
     { id: "stamp-duty", name: "Stamp Duty Calculator", description: "Determine stamp duty payable on property transfers.", icon: Stamp, onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey), ctaText: "Open Calculator", title: "Stamp Duty Calculator", calculatorIdentifier: "Stamp Duty Calculator" },
-    { id: "prop-tax-dialog", name: "Property Tax Calculator (Dialog)", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Open Calculator", title: "Property Tax Calculator", calculatorIdentifier: "Property Tax Calculator" },
+    { id: "prop-tax-dialog", name: "Property Tax Calculator", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Open Calculator", title: "Property Tax Calculator", calculatorIdentifier: "Property Tax Calculator" },
     { id: "rental-yield", name: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Open Calculator", title: "Rental Yield Calculator", calculatorIdentifier: "Rental Yield Calculator" },
     { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Open Calculator", title: "AML Compliance Risk Assessment Calculator", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
     { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Open Calculator", title: "FATCA & CRS Compliance Calculator", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
 
-    // Links to existing full pages
     { id: "business-levy-page", name: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page", title: "Business Levy (Full Page)", calculatorIdentifier: "Business Levy (Full Page)" },
     { id: "green-fund", name: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page", title: "Green Fund Levy (Full Page)", calculatorIdentifier: "Green Fund Levy (Full Page)" },
     { id: "corp-tax", name: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page", title: "Corporation Tax Calculator", calculatorIdentifier: "Corporation Tax Calculator" },
@@ -603,7 +598,6 @@ export default function LandingPage() {
       toast({ title: "Opening Google Calendar", description: `Adding reminder for "${deadline.name}".` });
     } else if (type === 'outlook') {
       const outlookAllDayStartDate = format(eventDate, "yyyy-MM-dd");
-      // Outlook web typically uses the same start and end for all-day events, or calculates based on start.
       const outlookUrl = `https://outlook.live.com/calendar/0/action/compose?rru=addevent&path=/calendar/action/compose&subject=${encodeURIComponent(eventTitle)}&startdt=${outlookAllDayStartDate}&enddt=${outlookAllDayStartDate}&allday=true&body=${encodeURIComponent(eventDescription)}`;
       window.open(outlookUrl, '_blank');
       toast({ title: "Opening Outlook Calendar", description: `Adding reminder for "${deadline.name}".` });
@@ -719,7 +713,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Start With Our Most Popular Calculators
           </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2"> {/* Changed lg:grid-cols-4 to lg:grid-cols-2 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {coreCalculators.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -748,7 +742,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-       {/* Explore All Our Calculators - Moved and changed to Accordion */}
+       {/* Explore All Our Calculators */}
       <section id="learn-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
@@ -1169,3 +1163,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

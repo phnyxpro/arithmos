@@ -38,6 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label"; // Added Label import
 import { 
   Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
   Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, ChevronsUpDown, Check
@@ -219,12 +220,11 @@ export default function CorporationTaxPage() {
         form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false, shouldDirty: true, shouldTouch: true });
       }
     }
-  }, [watchedDynamicExpenses, form]);
+  }, [watchedDynamicExpenses, form, JSON.stringify(watchedDynamicExpenses)]); 
   
   // Effect for main tax calculation
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
-  // watchedGrossIncome is already defined above
   const watchedAllowableDeductions = form.watch("allowableDeductions");
   const watchedOtherIncome = form.watch("otherIncome");
   const watchedLossCarriedForward = form.watch("lossCarriedForward");

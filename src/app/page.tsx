@@ -1,9 +1,11 @@
+
 // src/app/page.tsx
 "use client";
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Accordion,
   AccordionContent,
@@ -24,13 +26,18 @@ import {
   DollarSign,
   Users as UsersIcon,
   Clock,
+  BarChart3,
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
+  FileText,
   BookOpen,
   Bell,
+  Users,
+  Linkedin,
+  Facebook,
   FileHeart,
   Banknote,
   Leaf,
@@ -38,8 +45,6 @@ import {
   User,
   House as HomeIcon,
   ReceiptText,
-  Linkedin,
-  Facebook,
   Download,
   Mail,
   CalendarPlus,
@@ -64,7 +69,7 @@ import {
   ShieldAlert,
   Network,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
 import { SimplifiedPayrollCalculator } from '@/components/calculators/SimplifiedPayrollCalculator';
 import { SimplifiedLevyCalculator } from '@/components/calculators/SimplifiedLevyCalculator';
@@ -106,6 +111,7 @@ interface HeroContent {
   secondarySubheadline: string;
   primaryCtaText: string;
   primaryCtaLink: string;
+  backgroundImageUrl: string;
 }
 
 const heroContentData: HeroContent = {
@@ -115,6 +121,7 @@ const heroContentData: HeroContent = {
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
+  backgroundImageUrl: "https://firebasestorage.googleapis.com/v0/b/wage-wiz.firebasestorage.app/o/hero-taxes.webp?alt=media&token=37c7b6ac-f45e-4c1c-b33f-7381fb55244d",
 };
 
 interface CalculatorCardData {
@@ -191,12 +198,16 @@ const resourceGuides: ResourceGuide[] = [
 export default function LandingPage() {
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [basicTimeCalcKey, setBasicTimeCalcKey] = React.useState(0);
+
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
   const [payrollCalcKey, setPayrollCalcKey] = React.useState(0);
+
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
+
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
+
   const [isSimpleVatCalcOpen, setIsSimpleVatCalcOpen] = React.useState(false);
   const [simpleVatCalcKey, setSimpleVatCalcKey] = React.useState(0);
 
@@ -305,255 +316,34 @@ export default function LandingPage() {
   };
 
 
-  const coreCalculators: CalculatorCardData[] = [
-    {
-      icon: Clock,
-      title: "Basic Time Calculator",
-      description: "For daily-paid workers to track work hours & pay.",
-      ctaText: "Track Hours & Earnings",
-      onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey),
-      calculatorIdentifier: "Basic Time Calculator",
-    },
-    {
-      icon: UsersIcon,
-      title: "PAYE, NIS & HS Calculator",
-      description: "Determine monthly statutory deductions live.",
-      ctaText: "Estimate Deductions",
-      onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey),
-      calculatorIdentifier: "PAYE, NIS & HS Calculator",
-    },
-     {
-      icon: Percent,
-      title: "Simple VAT Calculator",
-      description: "Quickly add or remove 12.5% VAT from a price.",
-      ctaText: "Calculate VAT",
-      onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey),
-      calculatorIdentifier: "Simple VAT Calculator",
-    },
-    {
-      icon: FileHeart,
-      title: "Voluntary NIS Contribution",
-      description: "Estimate your NIS contributions as a self-employed individual.",
-      ctaText: "Estimate Voluntary NIS",
-      onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey),
-      calculatorIdentifier: "Voluntary NIS Contribution Calculator",
-    },
-    {
-      icon: Banknote,
-      title: "Levy Calculator",
-      description: "Estimate Business Levy and Green Fund Levy from gross income.",
-      ctaText: "Estimate Levies",
-      onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey),
-      calculatorIdentifier: "Levy Calculator",
-    },
-    {
-      icon: Cigarette,
-      title: "Excise Duty Calculator",
-      description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.",
-      ctaText: "Calculate Excise Duty",
-      onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey),
-      calculatorIdentifier: "Excise Duty Calculator",
-    },
-    {
-      icon: TrendingDown, 
-      title: "Gross to Net Salary Calculator",
-      description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.",
-      ctaText: "Calculate Net Salary",
-      onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey),
-      calculatorIdentifier: "Gross to Net Salary Calculator",
-    },
-    {
-      icon: AlarmClock,
-      title: "Overtime Pay Calculator",
-      description: "Compute overtime pay accurately for hourly paid workers.",
-      ctaText: "Calculate Overtime",
-      onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey),
-      calculatorIdentifier: "Overtime Pay Calculator",
-    },
-    {
-      icon: Gift,
-      title: "Bonus & Commission Calculator",
-      description: "Determine tax impacts of bonuses or commissions.",
-      ctaText: "Assess Tax Impact",
-      onClick: () => openCalculatorDialog(setIsBonusCommCalcOpen, setBonusCommCalcKey),
-      calculatorIdentifier: "Bonus & Commission Calculator",
-    },
-    {
-      icon: Plane,
-      title: "Vacation Pay Calculator",
-      description: "Easily estimate accrued vacation pay entitlements.",
-      ctaText: "Estimate Vacation Pay",
-      onClick: () => openCalculatorDialog(setIsVacationPayCalcOpen, setVacationPayCalcKey),
-      calculatorIdentifier: "Vacation Pay Calculator",
-    },
-    {
-      icon: Landmark,
-      title: "Loan Interest & Amortisation Calculator",
-      description: "Calculate loan repayments (monthly, quarterly, annually).",
-      ctaText: "View Amortisation",
-      onClick: () => openCalculatorDialog(setIsLoanAmortCalcOpen, setLoanAmortCalcKey),
-      calculatorIdentifier: "Loan Interest & Amortisation Calculator",
-    },
-    {
-      icon: HomeIcon,
-      title: "Mortgage Calculator",
-      description: "Calculate mortgage repayments, including down payments and interest.",
-      ctaText: "Estimate Mortgage",
-      onClick: () => openCalculatorDialog(setIsMortgageCalcOpen, setMortgageCalcKey),
-      calculatorIdentifier: "Mortgage Calculator",
-    },
-    {
-      icon: PiggyBank,
-      title: "Savings & Investment Calculator",
-      description: "Project returns from savings accounts, fixed deposits, and investment products.",
-      ctaText: "Project Returns",
-      onClick: () => openCalculatorDialog(setIsSavingsInvestCalcOpen, setSavingsInvestCalcKey),
-      calculatorIdentifier: "Savings & Investment Calculator",
-    },
-    {
-      icon: Coins,
-      title: "Currency Exchange Calculator",
-      description: "Real-time currency conversion for international transactions.",
-      ctaText: "Convert Currency",
-      onClick: () => openCalculatorDialog(setIsCurrencyExCalcOpen, setCurrencyExCalcKey),
-      calculatorIdentifier: "Currency Exchange Calculator",
-    },
-    {
-      icon: PercentCircle,
-      title: "Simple Interest Calculator",
-      description: "Quickly calculate simple interest amounts for short-term loans or deposits.",
-      ctaText: "Calculate Interest",
-      onClick: () => openCalculatorDialog(setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey),
-      calculatorIdentifier: "Simple Interest Calculator",
-    },
-    {
-      icon: Target,
-      title: "Markup & Margin Calculator",
-      description: "Accurately determine product/service pricing and profit margins.",
-      ctaText: "Calculate Pricing",
-      onClick: () => openCalculatorDialog(setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey),
-      calculatorIdentifier: "Markup & Margin Calculator",
-    },
-    {
-      icon: LineChart,
-      title: "Break-even Analysis Calculator",
-      description: "Determine sales needed to cover fixed and variable expenses.",
-      ctaText: "Analyze Break-even",
-      onClick: () => openCalculatorDialog(setIsBreakEvenCalcOpen, setBreakEvenCalcKey),
-      calculatorIdentifier: "Break-even Analysis Calculator",
-    },
-    {
-      icon: AreaChart,
-      title: "Cash Flow Projection Calculator",
-      description: "Forecast monthly or quarterly cash flows easily.",
-      ctaText: "Project Cash Flow",
-      onClick: () => openCalculatorDialog(setIsCashFlowProjCalcOpen, setCashFlowProjCalcKey),
-      calculatorIdentifier: "Cash Flow Projection Calculator",
-    },
-    {
-      icon: TrendingDown,
-      title: "Depreciation Calculator",
-      description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.",
-      ctaText: "Calculate Depreciation",
-      onClick: () => openCalculatorDialog(setIsDepreciationCalcOpen, setDepreciationCalcKey),
-      calculatorIdentifier: "Depreciation Calculator",
-    },
-    {
-      icon: Ship,
-      title: "Tariff & Customs Duty Calculator",
-      description: "Quickly calculate import duties based on HS codes and tariff schedules.",
-      ctaText: "Calculate Duties",
-      onClick: () => openCalculatorDialog(setIsTariffDutyCalcOpen, setTariffDutyCalcKey),
-      calculatorIdentifier: "Tariff & Customs Duty Calculator",
-    },
-    {
-      icon: Truck,
-      title: "Freight & Shipping Cost Calculator",
-      description: "Estimate total landed costs, including shipping, insurance, and duties.",
-      ctaText: "Estimate Landed Costs",
-      onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey),
-      calculatorIdentifier: "Freight & Shipping Cost Calculator",
-    },
-    {
-      icon: FileBox,
-      title: "Cost, Insurance, and Freight (CIF) Calculator",
-      description: "Compute total import costs for accurate pricing and profit analysis.",
-      ctaText: "Calculate CIF",
-      onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey),
-      calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator",
-    },
-    {
-      icon: Stamp,
-      title: "Stamp Duty Calculator",
-      description: "Determine stamp duty payable on property transfers.",
-      ctaText: "Calculate Stamp Duty",
-      onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey),
-      calculatorIdentifier: "Stamp Duty Calculator",
-    },
-    {
-      icon: HomeIcon,
-      title: "Property Tax Calculator",
-      description: "Estimate annual property tax obligations.",
-      ctaText: "Estimate Property Tax",
-      onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey),
-      calculatorIdentifier: "Property Tax Calculator",
-    },
-    {
-      icon: Building2,
-      title: "Rental Yield Calculator",
-      description: "Calculate returns on rental property investments.",
-      ctaText: "Calculate Yield",
-      onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey),
-      calculatorIdentifier: "Rental Yield Calculator",
-    },
-    {
-      icon: ShieldAlert,
-      title: "AML Compliance Risk Assessment Calculator",
-      description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.",
-      ctaText: "Assess AML Risk",
-      onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey),
-      calculatorIdentifier: "AML Compliance Risk Assessment Calculator",
-    },
-    {
-      icon: Network,
-      title: "FATCA & CRS Compliance Calculator",
-      description: "Assess and report obligations under FATCA & CRS regulations.",
-      ctaText: "Assess FATCA/CRS",
-      onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey),
-      calculatorIdentifier: "FATCA & CRS Compliance Calculator",
-    },
-  ];
-
-  const HeroIcon = heroContentData.icon;
-
   const detailedCalculatorList: Array<CalculatorCardData & {id: string, name: string}> = [
-    { id: "time", name: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Open Calculator", title: "Basic Time Calculator", calculatorIdentifier: "Basic Time Calculator" },
-    { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Open Calculator", title: "PAYE, NIS & HS Calculator", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
-    { id: "simple-vat", name: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Open Calculator", title: "Simple VAT Calculator", calculatorIdentifier: "Simple VAT Calculator" },
-    { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Open Calculator", title: "Voluntary NIS Contribution", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
-    { id: "levy-dialog", name: "Levy Calculator", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Open Calculator", title: "Levy Calculator", calculatorIdentifier: "Levy Calculator" },
-    { id: "excise-duty", name: "Excise Duty Calculator", description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.", icon: Cigarette, onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey), ctaText: "Open Calculator", title: "Excise Duty Calculator", calculatorIdentifier: "Excise Duty Calculator" },
-    { id: "gross-to-net", name: "Gross to Net Salary Calculator", description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey), ctaText: "Open Calculator", title: "Gross to Net Salary Calculator", calculatorIdentifier: "Gross to Net Salary Calculator" },
-    { id: "overtime-pay", name: "Overtime Pay Calculator", description: "Compute overtime pay accurately for hourly paid workers.", icon: AlarmClock, onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey), ctaText: "Open Calculator", title: "Overtime Pay Calculator", calculatorIdentifier: "Overtime Pay Calculator" },
-    { id: "bonus-commission", name: "Bonus & Commission Calculator", description: "Determine tax impacts of bonuses or commissions.", icon: Gift, onClick: () => openCalculatorDialog(setIsBonusCommCalcOpen, setBonusCommCalcKey), ctaText: "Open Calculator", title: "Bonus & Commission Calculator", calculatorIdentifier: "Bonus & Commission Calculator" },
-    { id: "vacation-pay", name: "Vacation Pay Calculator", description: "Easily estimate accrued vacation pay entitlements.", icon: Plane, onClick: () => openCalculatorDialog(setIsVacationPayCalcOpen, setVacationPayCalcKey), ctaText: "Open Calculator", title: "Vacation Pay Calculator", calculatorIdentifier: "Vacation Pay Calculator" },
-    { id: "loan-amort", name: "Loan Interest & Amortisation Calculator", description: "Calculate loan repayments (monthly, quarterly, annually).", icon: Landmark, onClick: () => openCalculatorDialog(setIsLoanAmortCalcOpen, setLoanAmortCalcKey), ctaText: "Open Calculator", title: "Loan Interest & Amortisation Calculator", calculatorIdentifier: "Loan Interest & Amortisation Calculator" },
-    { id: "mortgage", name: "Mortgage Calculator", description: "Calculate mortgage repayments, including down payments and interest.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsMortgageCalcOpen, setMortgageCalcKey), ctaText: "Open Calculator", title: "Mortgage Calculator", calculatorIdentifier: "Mortgage Calculator" },
-    { id: "savings-invest", name: "Savings & Investment Calculator", description: "Project returns from savings accounts, fixed deposits, and investment products.", icon: PiggyBank, onClick: () => openCalculatorDialog(setIsSavingsInvestCalcOpen, setSavingsInvestCalcKey), ctaText: "Open Calculator", title: "Savings & Investment Calculator", calculatorIdentifier: "Savings & Investment Calculator" },
-    { id: "currency-ex", name: "Currency Exchange Calculator", description: "Real-time currency conversion for international transactions.", icon: Coins, onClick: () => openCalculatorDialog(setIsCurrencyExCalcOpen, setCurrencyExCalcKey), ctaText: "Open Calculator", title: "Currency Exchange Calculator", calculatorIdentifier: "Currency Exchange Calculator" },
-    { id: "simple-interest", name: "Simple Interest Calculator", description: "Quickly calculate simple interest amounts for short-term loans or deposits.", icon: PercentCircle, onClick: () => openCalculatorDialog(setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey), ctaText: "Open Calculator", title: "Simple Interest Calculator", calculatorIdentifier: "Simple Interest Calculator" },
-    { id: "markup-margin", name: "Markup & Margin Calculator", description: "Accurately determine product/service pricing and profit margins.", icon: Target, onClick: () => openCalculatorDialog(setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey), ctaText: "Open Calculator", title: "Markup & Margin Calculator", calculatorIdentifier: "Markup & Margin Calculator" },
-    { id: "break-even", name: "Break-even Analysis Calculator", description: "Determine sales needed to cover fixed and variable expenses.", icon: LineChart, onClick: () => openCalculatorDialog(setIsBreakEvenCalcOpen, setBreakEvenCalcKey), ctaText: "Open Calculator", title: "Break-even Analysis Calculator", calculatorIdentifier: "Break-even Analysis Calculator" },
-    { id: "cash-flow-proj", name: "Cash Flow Projection Calculator", description: "Forecast monthly or quarterly cash flows easily.", icon: AreaChart, onClick: () => openCalculatorDialog(setIsCashFlowProjCalcOpen, setCashFlowProjCalcKey), ctaText: "Open Calculator", title: "Cash Flow Projection Calculator", calculatorIdentifier: "Cash Flow Projection Calculator" },
-    { id: "depreciation", name: "Depreciation Calculator", description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsDepreciationCalcOpen, setDepreciationCalcKey), ctaText: "Open Calculator", title: "Depreciation Calculator", calculatorIdentifier: "Depreciation Calculator" },
-    { id: "tariff-duty", name: "Tariff & Customs Duty Calculator", description: "Quickly calculate import duties based on HS codes and tariff schedules.", icon: Ship, onClick: () => openCalculatorDialog(setIsTariffDutyCalcOpen, setTariffDutyCalcKey), ctaText: "Open Calculator", title: "Tariff & Customs Duty Calculator", calculatorIdentifier: "Tariff & Customs Duty Calculator" },
-    { id: "freight-ship", name: "Freight & Shipping Cost Calculator", description: "Estimate total landed costs, including shipping, insurance, and duties.", icon: Truck, onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey), ctaText: "Open Calculator", title: "Freight & Shipping Cost Calculator", calculatorIdentifier: "Freight & Shipping Cost Calculator" },
-    { id: "cif-calc", name: "Cost, Insurance, and Freight (CIF) Calculator", description: "Compute total import costs for accurate pricing and profit analysis.", icon: FileBox, onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey), ctaText: "Open Calculator", title: "Cost, Insurance, and Freight (CIF) Calculator", calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator" },
-    { id: "stamp-duty", name: "Stamp Duty Calculator", description: "Determine stamp duty payable on property transfers.", icon: Stamp, onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey), ctaText: "Open Calculator", title: "Stamp Duty Calculator", calculatorIdentifier: "Stamp Duty Calculator" },
-    { id: "prop-tax-dialog", name: "Property Tax Calculator", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Open Calculator", title: "Property Tax Calculator", calculatorIdentifier: "Property Tax Calculator" },
-    { id: "rental-yield", name: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Open Calculator", title: "Rental Yield Calculator", calculatorIdentifier: "Rental Yield Calculator" },
-    { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Open Calculator", title: "AML Compliance Risk Assessment Calculator", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
-    { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Open Calculator", title: "FATCA & CRS Compliance Calculator", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
+    { id: "time", name: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Track Hours & Earnings", title: "Basic Time Calculator", calculatorIdentifier: "Basic Time Calculator" },
+    { id: "paye", name: "PAYE + NIS + HS (Payroll)", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Estimate Deductions", title: "PAYE, NIS & HS Calculator", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
+    { id: "voluntary-nis", name: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Estimate Voluntary NIS", title: "Voluntary NIS Contribution", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
+    { id: "levy-dialog", name: "Levy Calculator", description: "Estimate Business Levy and Green Fund Levy from gross income, with options for monthly, quarterly, or annual income input. Displayed in a quick dialog.", icon: Banknote, onClick: () => openCalculatorDialog(setIsLevyCalcOpen, setLevyCalcKey), ctaText: "Estimate Levies", title: "Levy Calculator", calculatorIdentifier: "Levy Calculator" },
+    { id: "simple-vat", name: "Simple VAT Calculator", description: "Quickly add or remove 12.5% VAT from a price, specifying if the input is VAT inclusive or exclusive.", icon: Percent, onClick: () => openCalculatorDialog(setIsSimpleVatCalcOpen, setSimpleVatCalcKey), ctaText: "Calculate VAT", title: "Simple VAT Calculator", calculatorIdentifier: "Simple VAT Calculator" },
+    { id: "excise-duty", name: "Excise Duty Calculator", description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.", icon: Cigarette, onClick: () => openCalculatorDialog(setIsExciseDutyCalcOpen, setExciseDutyCalcKey), ctaText: "Calculate Excise Duty", title: "Excise Duty Calculator", calculatorIdentifier: "Excise Duty Calculator" },
+    { id: "gross-to-net", name: "Gross to Net Salary Calculator", description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsGrossToNetCalcOpen, setGrossToNetCalcKey), ctaText: "Calculate Net Salary", title: "Gross to Net Salary Calculator", calculatorIdentifier: "Gross to Net Salary Calculator" },
+    { id: "overtime-pay", name: "Overtime Pay Calculator", description: "Compute overtime pay accurately for hourly paid workers.", icon: AlarmClock, onClick: () => openCalculatorDialog(setIsOvertimePayCalcOpen, setOvertimePayCalcKey), ctaText: "Calculate Overtime", title: "Overtime Pay Calculator", calculatorIdentifier: "Overtime Pay Calculator" },
+    { id: "bonus-commission", name: "Bonus & Commission Calculator", description: "Determine tax impacts of bonuses or commissions.", icon: Gift, onClick: () => openCalculatorDialog(setIsBonusCommCalcOpen, setBonusCommCalcKey), ctaText: "Assess Tax Impact", title: "Bonus & Commission Calculator", calculatorIdentifier: "Bonus & Commission Calculator" },
+    { id: "vacation-pay", name: "Vacation Pay Calculator", description: "Easily estimate accrued vacation pay entitlements.", icon: Plane, onClick: () => openCalculatorDialog(setIsVacationPayCalcOpen, setVacationPayCalcKey), ctaText: "Estimate Vacation Pay", title: "Vacation Pay Calculator", calculatorIdentifier: "Vacation Pay Calculator" },
+    { id: "loan-amort", name: "Loan Interest & Amortisation Calculator", description: "Calculate loan repayments (monthly, quarterly, annually).", icon: Landmark, onClick: () => openCalculatorDialog(setIsLoanAmortCalcOpen, setLoanAmortCalcKey), ctaText: "View Amortisation", title: "Loan Interest & Amortisation Calculator", calculatorIdentifier: "Loan Interest & Amortisation Calculator" },
+    { id: "mortgage", name: "Mortgage Calculator", description: "Calculate mortgage repayments, including down payments and interest.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsMortgageCalcOpen, setMortgageCalcKey), ctaText: "Estimate Mortgage", title: "Mortgage Calculator", calculatorIdentifier: "Mortgage Calculator" },
+    { id: "savings-invest", name: "Savings & Investment Calculator", description: "Project returns from savings accounts, fixed deposits, and investment products.", icon: PiggyBank, onClick: () => openCalculatorDialog(setIsSavingsInvestCalcOpen, setSavingsInvestCalcKey), ctaText: "Project Returns", title: "Savings & Investment Calculator", calculatorIdentifier: "Savings & Investment Calculator" },
+    { id: "currency-ex", name: "Currency Exchange Calculator", description: "Real-time currency conversion for international transactions.", icon: Coins, onClick: () => openCalculatorDialog(setIsCurrencyExCalcOpen, setCurrencyExCalcKey), ctaText: "Convert Currency", title: "Currency Exchange Calculator", calculatorIdentifier: "Currency Exchange Calculator" },
+    { id: "simple-interest", name: "Simple Interest Calculator", description: "Quickly calculate simple interest amounts for short-term loans or deposits.", icon: PercentCircle, onClick: () => openCalculatorDialog(setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey), ctaText: "Calculate Interest", title: "Simple Interest Calculator", calculatorIdentifier: "Simple Interest Calculator" },
+    { id: "markup-margin", name: "Markup & Margin Calculator", description: "Accurately determine product/service pricing and profit margins.", icon: Target, onClick: () => openCalculatorDialog(setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey), ctaText: "Calculate Pricing", title: "Markup & Margin Calculator", calculatorIdentifier: "Markup & Margin Calculator" },
+    { id: "break-even", name: "Break-even Analysis Calculator", description: "Determine sales needed to cover fixed and variable expenses.", icon: LineChart, onClick: () => openCalculatorDialog(setIsBreakEvenCalcOpen, setBreakEvenCalcKey), ctaText: "Analyze Break-even", title: "Break-even Analysis Calculator", calculatorIdentifier: "Break-even Analysis Calculator" },
+    { id: "cash-flow-proj", name: "Cash Flow Projection Calculator", description: "Forecast monthly or quarterly cash flows easily.", icon: AreaChart, onClick: () => openCalculatorDialog(setIsCashFlowProjCalcOpen, setCashFlowProjCalcKey), ctaText: "Project Cash Flow", title: "Cash Flow Projection Calculator", calculatorIdentifier: "Cash Flow Projection Calculator" },
+    { id: "depreciation", name: "Depreciation Calculator", description: "Calculate depreciation using methods (Straight Line, Reducing Balance) according to tax rules.", icon: TrendingDown, onClick: () => openCalculatorDialog(setIsDepreciationCalcOpen, setDepreciationCalcKey), ctaText: "Calculate Depreciation", title: "Depreciation Calculator", calculatorIdentifier: "Depreciation Calculator" },
+    { id: "tariff-duty", name: "Tariff & Customs Duty Calculator", description: "Quickly calculate import duties based on HS codes and tariff schedules.", icon: Ship, onClick: () => openCalculatorDialog(setIsTariffDutyCalcOpen, setTariffDutyCalcKey), ctaText: "Calculate Duties", title: "Tariff & Customs Duty Calculator", calculatorIdentifier: "Tariff & Customs Duty Calculator" },
+    { id: "freight-ship", name: "Freight & Shipping Cost Calculator", description: "Estimate total landed costs, including shipping, insurance, and duties.", icon: Truck, onClick: () => openCalculatorDialog(setIsFreightShipCalcOpen, setFreightShipCalcKey), ctaText: "Estimate Landed Costs", title: "Freight & Shipping Cost Calculator", calculatorIdentifier: "Freight & Shipping Cost Calculator" },
+    { id: "cif-calc", name: "Cost, Insurance, and Freight (CIF) Calculator", description: "Compute total import costs for accurate pricing and profit analysis.", icon: FileBox, onClick: () => openCalculatorDialog(setIsCIFCalcOpen, setCIFCalcKey), ctaText: "Calculate CIF", title: "Cost, Insurance, and Freight (CIF) Calculator", calculatorIdentifier: "Cost, Insurance, and Freight (CIF) Calculator" },
+    { id: "stamp-duty", name: "Stamp Duty Calculator", description: "Determine stamp duty payable on property transfers.", icon: Stamp, onClick: () => openCalculatorDialog(setIsStampDutyCalcOpen, setStampDutyCalcKey), ctaText: "Calculate Stamp Duty", title: "Stamp Duty Calculator", calculatorIdentifier: "Stamp Duty Calculator" },
+    { id: "prop-tax-dialog", name: "Property Tax Calculator", description: "Estimate annual property tax obligations.", icon: HomeIcon, onClick: () => openCalculatorDialog(setIsPropertyTaxDialogCalcOpen, setPropertyTaxDialogCalcKey), ctaText: "Estimate Property Tax", title: "Property Tax Calculator", calculatorIdentifier: "Property Tax Calculator" },
+    { id: "rental-yield", name: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Calculate Yield", title: "Rental Yield Calculator", calculatorIdentifier: "Rental Yield Calculator" },
+    { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Assess AML Risk", title: "AML Compliance Risk Assessment Calculator", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
+    { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Assess FATCA/CRS", title: "FATCA & CRS Compliance Calculator", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
 
     { id: "business-levy-page", name: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page", title: "Business Levy (Full Page)", calculatorIdentifier: "Business Levy (Full Page)" },
     { id: "green-fund", name: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page", title: "Green Fund Levy (Full Page)", calculatorIdentifier: "Green Fund Levy (Full Page)" },
@@ -563,9 +353,25 @@ export default function LandingPage() {
     { id: "vat-calc-page", name: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page", title: "VAT Calculator (Full Page)", calculatorIdentifier: "VAT Calculator (Full Page)" },
   ];
 
+  const coreCalculators = detailedCalculatorList.slice(0, 5); // Show first 5 as "popular"
 
-  const firstHalfCalculators = detailedCalculatorList.slice(0, Math.ceil(detailedCalculatorList.length / 2));
-  const secondHalfCalculators = detailedCalculatorList.slice(Math.ceil(detailedCalculatorList.length / 2));
+  const HeroIcon = heroContentData.icon;
+
+  const upcomingTickerItems = React.useMemo(() => {
+    return deadlineItems
+      .filter(item => item.status !== "Completed")
+      .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
+      .slice(0, 5);
+  }, []);
+
+  const handleSubmitReview = (calculatorName: string, rating: number) => {
+    console.log(`Review for ${calculatorName}: ${rating} stars`);
+    toast({
+      title: "Thank You!",
+      description: `You rated the ${calculatorName} ${rating} star(s).`,
+    });
+    setCalculatorToReview(null);
+  };
 
   const handleAddToCalendar = React.useCallback((deadline: DeadlineItem, type: 'google' | 'outlook' | 'ics') => {
     const eventDate = parseISO(deadline.nextDueDate);
@@ -631,22 +437,6 @@ export default function LandingPage() {
       toast({ title: "ICS File Downloading", description: `Import the file for "${deadline.name}" into your calendar.` });
     }
   }, [toast]);
-
-  const upcomingTickerItems = React.useMemo(() => {
-    return deadlineItems
-      .filter(item => item.status !== "Completed")
-      .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
-      .slice(0, 5);
-  }, []);
-
-  const handleSubmitReview = (calculatorName: string, rating: number) => {
-    console.log(`Review for ${calculatorName}: ${rating} stars`);
-    toast({
-      title: "Thank You!",
-      description: `You rated the ${calculatorName} ${rating} star(s).`,
-    });
-    setCalculatorToReview(null);
-  };
 
 
   return (
@@ -714,7 +504,7 @@ export default function LandingPage() {
             Start With Our Most Popular Calculators
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coreCalculators.map((calc) => (
+            {detailedCalculatorList.map((calc) => (
               <Card key={calc.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
                   <div className="flex items-center mb-3">
@@ -738,65 +528,6 @@ export default function LandingPage() {
                 </CardFooter>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-       {/* Explore All Our Calculators */}
-      <section id="learn-calculators" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Explore All Our Calculators
-          </h2>
-          <div className="grid md:grid-cols-2 gap-x-8">
-            <Accordion type="single" collapsible className="w-full">
-              {firstHalfCalculators.map((calc) => (
-                <AccordionItem value={calc.id} key={calc.id}>
-                  <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
-                    <div className="flex items-center">
-                      {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-accent flex-shrink-0" />}
-                      {calc.name}
-                    </div>
-                  </AccordionTrigger>
-                   <AccordionContent className="text-muted-foreground leading-relaxed">
-                    <p className="mb-3">{calc.description}</p>
-                    {calc.onClick ? (
-                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0 h-auto">
-                            {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
-                        </Button>
-                    ) : (
-                        <Button asChild variant="link" className="text-accent p-0 h-auto">
-                            <Link href={calc.ctaLink || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
-                        </Button>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-            <Accordion type="single" collapsible className="w-full">
-              {secondHalfCalculators.map((calc) => (
-                <AccordionItem value={calc.id} key={calc.id}>
-                  <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
-                     <div className="flex items-center">
-                      {calc.icon && <calc.icon className="mr-3 h-5 w-5 text-accent flex-shrink-0" />}
-                      {calc.name}
-                    </div>
-                  </AccordionTrigger>
-                   <AccordionContent className="text-muted-foreground leading-relaxed">
-                    <p className="mb-3">{calc.description}</p>
-                     {calc.onClick ? (
-                        <Button onClick={calc.onClick} variant="link" className="text-accent p-0 h-auto">
-                            {calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/>
-                        </Button>
-                    ) : (
-                        <Button asChild variant="link" className="text-accent p-0 h-auto">
-                            <Link href={calc.ctaLink || "#"}>{calc.ctaText} <ArrowRight className="ml-1 h-4 w-4"/></Link>
-                        </Button>
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
           </div>
         </div>
       </section>

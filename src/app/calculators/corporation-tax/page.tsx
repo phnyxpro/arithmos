@@ -301,7 +301,7 @@ export default function CorporationTaxPage() {
     watchedLossCarriedForward, 
     watchedBusinessLevyPaid, 
     watchedTaxCreditsClaimed,
-    calculationResults // Keep this to avoid re-running if results are already set by this effect
+    calculationResults 
   ]);
 
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
@@ -492,7 +492,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
      {
       value: "item-adjustments",
-      trigger: "1. Adjustments to Net Income (Profit)",
+      trigger: "Adjustments to Net Income (Profit)",
       content: (<>
         <p className="text-sm text-muted-foreground">These items are either added back or deducted from accounting profit to arrive at the taxable profit:</p>
         <h4 className="font-semibold text-sm mt-2">➕ Additions to Profit</h4>
@@ -513,7 +513,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
     {
       value: "item-offsets",
-      trigger: "2. Tax Offsets (Credits)",
+      trigger: "Tax Offsets (Credits)",
       content: (<>
         <p className="text-sm text-muted-foreground">Corporation Tax liabilities may be offset by:</p>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-4">
@@ -526,7 +526,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
     {
       value: "item-capital-allowances",
-      trigger: "3. Capital Allowances (Wear and Tear Allowances)",
+      trigger: "Capital Allowances (Wear and Tear Allowances)",
       content: (<>
         <p className="text-sm text-muted-foreground">Replace accounting depreciation with official capital allowances for assets including:</p>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-4">
@@ -540,7 +540,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
     {
       value: "item-loss-relief",
-      trigger: "4. Loss Relief",
+      trigger: "Loss Relief",
       content: (<>
         <p className="text-sm text-muted-foreground">Businesses can claim offsets from losses carried forward from prior tax years, reducing the taxable profit:</p>
         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-4">
@@ -551,7 +551,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
     {
       value: "item-dta",
-      trigger: "5. Double Taxation Relief",
+      trigger: "Double Taxation Relief",
       content: (<>
         <p className="text-sm text-muted-foreground">If Trinidad and Tobago has Double Taxation Agreements (DTAs) with other countries, taxes already paid abroad can offset local Corporation Tax liabilities.</p>
         <p className="text-sm text-muted-foreground">Examples:</p>
@@ -563,12 +563,12 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     },
     {
       value: "item-transfer-pricing",
-      trigger: "6. Adjustments for Related-Party Transactions (Transfer Pricing)",
+      trigger: "Adjustments for Related-Party Transactions (Transfer Pricing)",
       content: <p className="text-sm text-muted-foreground">Ensuring arm’s length pricing for goods and services provided between related entities.</p>
     },
     {
       value: "item-withholding",
-      trigger: "7. Withholding Taxes (if applicable)",
+      trigger: "Withholding Taxes (if applicable)",
       content: <p className="text-sm text-muted-foreground">Deduction or credit for withholding taxes already deducted on income received (e.g., royalties, dividends, management fees).</p>
     },
      {
@@ -866,7 +866,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {/* Accordion was here, now moved to Information & Resources */}
+                  
                   <FormField
                       control={form.control}
                       name="allowableDeductions"
@@ -1030,3 +1030,4 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     </div>
   );
 }
+

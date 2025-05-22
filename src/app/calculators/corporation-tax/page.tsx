@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, useFieldArray, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -38,7 +38,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Sigma } from "lucide-react";
+import { 
+  Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
+  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma
+} from "lucide-react";
 import { getYear } from 'date-fns';
 
 const currentYear = getYear(new Date());
@@ -47,32 +50,108 @@ const taxYearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - i).toS
 const companyTypeOptions = [
   { value: "ordinary", label: "Ordinary Company", rate: 0.30 },
   { value: "banking_petrochemical", label: "Banking / Petrochemical Co.", rate: 0.35 },
-  { value: "life_insurance", label: "Life Insurance Co.", rate: 0.15 },
+  { value: "life_insurance", label: "Life Insurance Co.", rate: 0.15 }, // Simplified, actual is tiered
   { value: "general_insurance", label: "General Insurance Co.", rate: 0.30 },
   { value: "petroleum_production_std", label: "Petroleum Production (Standard PPT)", rate: 0.50 },
   { value: "petroleum_production_deep_sea", label: "Petroleum Production (Deep Sea)", rate: 0.30 },
-  { value: "sme_listed", label: "SME (Listed on Stock Exchange)", rate: 0.10 }, 
+  { value: "sme_listed", label: "SME (Listed on Stock Exchange)", rate: 0.10 }, // Simplified, actual is tiered
   { value: "sez_company", label: "Special Economic Zone Co.", rate: 0.01 },
 ];
 
-const operatingExpensesSchema = z.object({
-  bankServiceCharges: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  salaries: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  advertisingAndPromotion: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  rent: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  creativeSubscriptions: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  training: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  officeExpenses: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  administrativeExpenses: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-  depreciation: z.coerce.number().min(0, "Must be positive.").optional().default(0),
-});
+const expenseOptionsList = [
+  // Payroll & Employee Benefits
+  { category: "Payroll & Employee Benefits", value: "Salaries & Wages", label: "Salaries & Wages" },
+  { category: "Payroll & Employee Benefits", value: "Bonuses & Commissions", label: "Bonuses & Commissions" },
+  { category: "Payroll & Employee Benefits", value: "Employee Health Insurance", label: "Employee Health Insurance" },
+  { category: "Payroll & Employee Benefits", value: "Pension Contributions", label: "Pension Contributions" },
+  { category: "Payroll & Employee Benefits", value: "Employer Taxes (PAYE, NIS, Health Surcharge)", label: "Employer Taxes (PAYE, NIS, HS)" },
+  { category: "Payroll & Employee Benefits", value: "Training & Development Costs", label: "Training & Development Costs" },
+  { category: "Payroll & Employee Benefits", value: "Employee Allowances", label: "Employee Allowances" },
+  // Office & Administrative Expenses
+  { category: "Office & Administrative Expenses", value: "Office Rent or Lease", label: "Office Rent or Lease" },
+  { category: "Office & Administrative Expenses", value: "Utilities (electricity, water, internet)", label: "Utilities" },
+  { category: "Office & Administrative Expenses", value: "Office Supplies & Stationery", label: "Office Supplies & Stationery" },
+  { category: "Office & Administrative Expenses", value: "Office Equipment", label: "Office Equipment" },
+  { category: "Office & Administrative Expenses", value: "Repairs & Maintenance", label: "Repairs & Maintenance" },
+  { category: "Office & Administrative Expenses", value: "Postage & Courier Services", label: "Postage & Courier Services" },
+  { category: "Office & Administrative Expenses", value: "Cleaning & Janitorial Services", label: "Cleaning & Janitorial Services" },
+  // Professional & Consulting Fees
+  { category: "Professional & Consulting Fees", value: "Legal Fees", label: "Legal Fees" },
+  { category: "Professional & Consulting Fees", value: "Accounting & Auditing Fees", label: "Accounting & Auditing Fees" },
+  { category: "Professional & Consulting Fees", value: "Consulting & Advisory Services", label: "Consulting & Advisory Services" },
+  { category: "Professional & Consulting Fees", value: "IT & Software Support", label: "IT & Software Support" },
+  { category: "Professional & Consulting Fees", value: "Recruitment & Placement Fees", label: "Recruitment & Placement Fees" },
+  // Marketing & Advertising
+  { category: "Marketing & Advertising", value: "Digital Advertising", label: "Digital Advertising" },
+  { category: "Marketing & Advertising", value: "Print & Media Advertising", label: "Print & Media Advertising" },
+  { category: "Marketing & Advertising", value: "Promotional Materials", label: "Promotional Materials" },
+  { category: "Marketing & Advertising", value: "Branding & Design Services", label: "Branding & Design Services" },
+  { category: "Marketing & Advertising", value: "Market Research", label: "Market Research" },
+  { category: "Marketing & Advertising", value: "Sponsorship & Events", label: "Sponsorship & Events" },
+  // Travel & Entertainment
+  { category: "Travel & Entertainment", value: "Business Travel Expenses", label: "Business Travel Expenses" },
+  { category: "Travel & Entertainment", value: "Mileage & Vehicle Expenses", label: "Mileage & Vehicle Expenses" },
+  { category: "Travel & Entertainment", value: "Entertainment (business meals, client hospitality)", label: "Entertainment" },
+  { category: "Travel & Entertainment", value: "Conference & Seminar Fees", label: "Conference & Seminar Fees" },
+  { category: "Travel & Entertainment", value: "Staff Meetings & Retreats", label: "Staff Meetings & Retreats" },
+  // Technology & IT Expenses
+  { category: "Technology & IT Expenses", value: "Software & Subscription Licenses", label: "Software & Subscription Licenses" },
+  { category: "Technology & IT Expenses", value: "Cloud Services & Hosting", label: "Cloud Services & Hosting" },
+  { category: "Technology & IT Expenses", value: "Website & Domain Hosting", label: "Website & Domain Hosting" },
+  { category: "Technology & IT Expenses", value: "Computer Hardware & Mobile Devices", label: "Computer Hardware & Mobile Devices" },
+  { category: "Technology & IT Expenses", value: "IT Infrastructure & Network Expenses", label: "IT Infrastructure & Network Expenses" },
+  // Insurance
+  { category: "Insurance", value: "General Liability Insurance", label: "General Liability Insurance" },
+  { category: "Insurance", value: "Property Insurance", label: "Property Insurance" },
+  { category: "Insurance", value: "Workers’ Compensation", label: "Workers’ Compensation" },
+  { category: "Insurance", value: "Professional Liability Insurance", label: "Professional Liability Insurance" },
+  { category: "Insurance", value: "Directors & Officers (D&O) Insurance", label: "Directors & Officers (D&O) Insurance" },
+  // Financial Expenses
+  { category: "Financial Expenses", value: "Bank Charges & Fees", label: "Bank Charges & Fees" },
+  { category: "Financial Expenses", value: "Interest Expense (loans, overdrafts)", label: "Interest Expense" },
+  { category: "Financial Expenses", value: "Merchant Service Fees (payment processing)", label: "Merchant Service Fees" },
+  { category: "Financial Expenses", value: "Foreign Exchange Losses/Gains", label: "Foreign Exchange Losses/Gains" },
+  // Taxes & Regulatory Fees
+  { category: "Taxes & Regulatory Fees", value: "Business Levy", label: "Business Levy (Paid)" },
+  { category: "Taxes & Regulatory Fees", value: "Green Fund Levy", label: "Green Fund Levy (Paid)" },
+  { category: "Taxes & Regulatory Fees", value: "Corporation Tax", label: "Corporation Tax (Installments)" },
+  { category: "Taxes & Regulatory Fees", value: "VAT Payments", label: "VAT Payments (Net)" },
+  { category: "Taxes & Regulatory Fees", value: "Licenses & Permits", label: "Licenses & Permits" },
+  { category: "Taxes & Regulatory Fees", value: "Fines & Penalties", label: "Fines & Penalties (If allowable)" },
+  // Cost of Goods Sold (COGS)
+  { category: "Cost of Goods Sold (COGS)", value: "Raw Materials & Supplies", label: "Raw Materials & Supplies" },
+  { category: "Cost of Goods Sold (COGS)", value: "Inventory Costs", label: "Inventory Costs" },
+  { category: "Cost of Goods Sold (COGS)", value: "Manufacturing & Production Expenses", label: "Manufacturing & Production Expenses" },
+  { category: "Cost of Goods Sold (COGS)", value: "Direct Labour Costs", label: "Direct Labour Costs" },
+  { category: "Cost of Goods Sold (COGS)", value: "Freight & Shipping Costs", label: "Freight & Shipping Costs" },
+  // Depreciation & Amortisation
+  { category: "Depreciation & Amortisation", value: "Depreciation of Equipment & Machinery", label: "Depreciation - Equipment & Machinery" },
+  { category: "Depreciation & Amortisation", value: "Depreciation of Buildings", label: "Depreciation - Buildings" },
+  { category: "Depreciation & Amortisation", value: "Amortisation of Intangible Assets", label: "Amortisation - Intangible Assets" },
+  // Research & Development
+  { category: "Research & Development", value: "Product Development Expenses", label: "Product Development Expenses" },
+  { category: "Research & Development", value: "Laboratory & Testing Costs", label: "Laboratory & Testing Costs" },
+  { category: "Research & Development", value: "Prototype & Sample Production", label: "Prototype & Sample Production" },
+  // Miscellaneous Expenses
+  { category: "Miscellaneous Expenses", value: "Donations & Charitable Contributions", label: "Donations & Charitable Contributions" },
+  { category: "Miscellaneous Expenses", value: "Membership & Subscriptions", label: "Membership & Subscriptions" },
+  { category: "Miscellaneous Expenses", value: "Staff Welfare & Gifts", label: "Staff Welfare & Gifts" },
+  { category: "Miscellaneous Expenses", value: "Contingency Expenses", label: "Contingency Expenses" },
+  { category: "Miscellaneous Expenses", value: "Other Operating Expense", label: "Other Operating Expense" },
+];
+
 
 const corporationTaxFormSchema = z.object({
   taxYear: z.string({ required_error: "Tax year is required." }),
   companyType: z.string({ required_error: "Company type is required." }),
   grossIncome: z.coerce.number({ required_error: "Gross income is required." }).min(0, "Gross income must be positive."),
-  operatingExpenses: operatingExpensesSchema.optional(),
-  allowableDeductions: z.coerce.number().min(0, "Deductions must be positive.").optional().default(0), // This will be auto-populated
+  dynamicOperatingExpenses: z.array(
+    z.object({
+      expenseType: z.string().min(1, "Please select an expense type."),
+      expenseValue: z.coerce.number({ invalid_type_error: "Must be a number" }).min(0, "Value must be positive.").optional().default(0),
+    })
+  ).optional(),
+  allowableDeductions: z.coerce.number().min(0, "Deductions must be positive.").optional().default(0),
   otherIncome: z.coerce.number().min(0, "Other income must be positive.").optional().default(0),
   lossCarriedForward: z.coerce.number().min(0, "Loss must be positive.").optional().default(0),
   businessLevyPaid: z.coerce.number().min(0, "Business Levy paid must be positive.").optional().default(0),
@@ -91,19 +170,6 @@ const initialCalculationResults = {
   finalCorporationTaxDue: 0,
 };
 
-const operatingExpenseFields = [
-  { name: "bankServiceCharges", label: "Bank Service Charges", icon: Receipt },
-  { name: "salaries", label: "Salaries & Wages", icon: Users },
-  { name: "advertisingAndPromotion", label: "Advertising & Promotion", icon: Megaphone },
-  { name: "rent", label: "Rent Expense", icon: Home },
-  { name: "creativeSubscriptions", label: "Creative Subscriptions", icon: Palette },
-  { name: "training", label: "Training & Development", icon: School },
-  { name: "officeExpenses", label: "Office Supplies & Expenses", icon: BriefcaseIcon },
-  { name: "administrativeExpenses", label: "General Administrative Expenses", icon: Archive },
-  { name: "depreciation", label: "Depreciation Expense", icon: TrendingDown },
-];
-
-
 export default function CorporationTaxPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
@@ -114,17 +180,7 @@ export default function CorporationTaxPage() {
       taxYear: currentYear.toString(),
       companyType: "ordinary",
       grossIncome: undefined,
-      operatingExpenses: {
-        bankServiceCharges: 0,
-        salaries: 0,
-        advertisingAndPromotion: 0,
-        rent: 0,
-        creativeSubscriptions: 0,
-        training: 0,
-        officeExpenses: 0,
-        administrativeExpenses: 0,
-        depreciation: 0,
-      },
+      dynamicOperatingExpenses: [],
       allowableDeductions: 0,
       otherIncome: 0,
       lossCarriedForward: 0,
@@ -133,38 +189,23 @@ export default function CorporationTaxPage() {
     },
   });
 
-  const watchedOperatingExpenses = form.watch("operatingExpenses");
-  
-  React.useEffect(() => {
-    if (watchedOperatingExpenses) {
-      const {
-        bankServiceCharges,
-        salaries,
-        advertisingAndPromotion,
-        rent,
-        creativeSubscriptions,
-        training,
-        officeExpenses,
-        administrativeExpenses,
-        depreciation,
-      } = watchedOperatingExpenses;
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "dynamicOperatingExpenses",
+  });
 
-      const totalOpEx =
-        (Number(bankServiceCharges) || 0) +
-        (Number(salaries) || 0) +
-        (Number(advertisingAndPromotion) || 0) +
-        (Number(rent) || 0) +
-        (Number(creativeSubscriptions) || 0) +
-        (Number(training) || 0) +
-        (Number(officeExpenses) || 0) +
-        (Number(administrativeExpenses) || 0) +
-        (Number(depreciation) || 0);
-      
+  const watchedDynamicExpenses = form.watch("dynamicOperatingExpenses");
+
+  React.useEffect(() => {
+    if (watchedDynamicExpenses) {
+      const totalOpEx = watchedDynamicExpenses.reduce((sum, item) => {
+        return sum + (Number(item.expenseValue) || 0);
+      }, 0);
       if (form.getValues("allowableDeductions") !== totalOpEx) {
         form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false });
       }
     }
-  }, [watchedOperatingExpenses, form]);
+  }, [watchedDynamicExpenses, form]);
   
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
@@ -228,13 +269,11 @@ export default function CorporationTaxPage() {
     calculationResults // Added calculationResults to dep array for conditional set
   ]);
 
-
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
     const gross = Number(form.watch("grossIncome")) || 0;
     const deductions = Number(form.watch("allowableDeductions")) || 0;
     return Math.max(0, gross - deductions);
   }, [form.watch("grossIncome"), form.watch("allowableDeductions")]);
-
 
   const handleExportSummary = () => {
     console.log("Export Summary Clicked. Data:", form.getValues(), "Results:", calculationResults);
@@ -247,7 +286,6 @@ export default function CorporationTaxPage() {
 
   const grossIncomeValue = Number(form.watch("grossIncome")) || 0;
   const showResultsCard = grossIncomeValue > 0 || calculationResults.finalCorporationTaxDue !== initialCalculationResults.finalCorporationTaxDue;
-
 
   const faqItems = [
     {
@@ -377,30 +415,78 @@ export default function CorporationTaxPage() {
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                     <CardTitle className="text-xl text-primary flex items-center">
-                        <TrendingDown className="mr-2 h-5 w-5" /> Operating Expenses
+                        <Receipt className="mr-2 h-5 w-5" /> Operating Expenses
                     </CardTitle>
                     <CardDescription>Enter your company's operating expenses for the tax year.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {operatingExpenseFields.map(opExField => (
-                         <FormField
-                            key={opExField.name}
-                            control={form.control}
-                            name={`operatingExpenses.${opExField.name}` as any}
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="flex items-center text-sm">
-                                    {React.createElement(opExField.icon, { className: "mr-2 h-4 w-4 text-muted-foreground" })}
-                                    {opExField.label} (TT$)
-                                </FormLabel>
-                                <FormControl>
-                                <Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    ))}
+                  {fields.map((item, index) => (
+                    <div key={item.id} className="grid grid-cols-[1fr_auto_auto] gap-2 items-end border-b pb-2 last:border-b-0 last:pb-0">
+                      <FormField
+                        control={form.control}
+                        name={`dynamicOperatingExpenses.${index}.expenseType`}
+                        render={({ field }) => (
+                          <FormItem>
+                            {index === 0 && <FormLabel className="text-xs">Expense Type</FormLabel>}
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-9 text-xs">
+                                  <SelectValue placeholder="Select expense type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {expenseOptionsList.map(option => (
+                                  <SelectItem key={option.value} value={option.value} className="text-xs">
+                                    {option.category} - {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`dynamicOperatingExpenses.${index}.expenseValue`}
+                        render={({ field }) => (
+                          <FormItem>
+                            {index === 0 && <FormLabel className="text-xs">Value (TT$)</FormLabel>}
+                            <FormControl>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                placeholder="e.g., 1000"
+                                {...field}
+                                value={field.value ?? ""}
+                                className="h-9 text-xs"
+                              />
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 mt-auto"
+                        onClick={() => remove(index)}
+                        aria-label="Remove expense"
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => append({ expenseType: "", expenseValue: 0 })}
+                    className="w-full mt-2"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Add Expense Line
+                  </Button>
                 </CardContent>
               </Card>
               
@@ -416,7 +502,7 @@ export default function CorporationTaxPage() {
                         name="allowableDeductions"
                         render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="flex items-center"><TrendingDown className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
+                            <FormLabel className="flex items-center"><Sigma className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
                             <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50" /></FormControl>
                             <FormDescription>Sum of detailed operating expenses. Also includes capital allowances, specific reliefs, etc., not detailed above.</FormDescription>
                             <FormMessage />
@@ -551,7 +637,5 @@ export default function CorporationTaxPage() {
     </div>
   );
 }
-
-    
 
     

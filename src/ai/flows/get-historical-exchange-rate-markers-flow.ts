@@ -13,7 +13,6 @@ import { ai } from '@/ai/genkit';
 import {
   GetHistoricalExchangeRateMarkersInputSchema,
   GetHistoricalExchangeRateMarkersOutputSchema,
-  HistoricalRateMarkerSchema, // Though the type HistoricalRateMarker is used, the schema itself is part of the output
 } from '@/ai/schemas/currency-schemas';
 
 // Re-export types for easier consumption by client components
@@ -29,7 +28,12 @@ Provide these markers for approximately the start of each year, going back for t
 For example, if it's early 2025 and {{numberOfYears}} is 3, provide markers for early 2025, early 2024, and early 2023.
 The date for each marker should be in YYYY-MM-DD format (e.g., "2023-01-15" for early January 2023).
 
-For each marker object, provide the exchange rates as direct properties. For example, if USD is a target currency, include a field "usdRate" with the value (1 {{baseCurrency}} = X USD). If EUR is a target, include "eurRate", if GBP is a target, include "gbpRate", and if CAD is a target, include "cadRate".
+For each marker object, provide the exchange rates as direct properties. For example:
+- If USD is a target currency, include a field "usdRate" with the value (1 {{baseCurrency}} = X USD).
+- If EUR is a target, include "eurRate".
+- If GBP is a target, include "gbpRate".
+- If CAD is a target, include "cadRate".
+- If AUD is a target, include "audRate".
 If a rate for a specific target currency for a given year/marker is not available, omit that specific rate field (e.g., omit 'eurRate' if unavailable for that marker).
 
 Example of a single marker in the 'markers' array:
@@ -37,9 +41,10 @@ Example of a single marker in the 'markers' array:
   "date": "2023-01-10",
   "usdRate": 0.148,
   "eurRate": 0.135,
-  "gbpRate": 0.120
+  "gbpRate": 0.120,
+  "cadRate": 0.195,
+  "audRate": 0.210
 }
-(If CAD was also a target, it would be "cadRate": value)
 
 Return the data as a list of these marker objects.
 Include a general disclaimer that these rates are indicative, AI-generated estimates for illustrative purposes only, not precise historical financial data, and subject to limitations of AI knowledge.

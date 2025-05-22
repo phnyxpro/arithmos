@@ -53,8 +53,31 @@ const currencyOptions = [
   { value: "EUR", label: "EUR - Euro" },
   { value: "GBP", label: "GBP - British Pound Sterling" },
   { value: "CAD", label: "CAD - Canadian Dollar" },
+  { value: "JPY", label: "JPY - Japanese Yen" },
+  { value: "AUD", label: "AUD - Australian Dollar" },
+  { value: "CHF", label: "CHF - Swiss Franc" },
+  { value: "CNY", label: "CNY - Chinese Yuan Renminbi" },
+  { value: "HKD", label: "HKD - Hong Kong Dollar" },
+  { value: "NZD", label: "NZD - New Zealand Dollar" },
+  { value: "SEK", label: "SEK - Swedish Krona" },
+  { value: "KRW", label: "KRW - South Korean Won" },
+  { value: "SGD", label: "SGD - Singapore Dollar" },
+  { value: "NOK", label: "NOK - Norwegian Krone" },
+  { value: "MXN", label: "MXN - Mexican Peso" },
+  { value: "INR", label: "INR - Indian Rupee" },
+  { value: "RUB", label: "RUB - Russian Ruble" },
+  { value: "ZAR", label: "ZAR - South African Rand" },
+  { value: "BRL", label: "BRL - Brazilian Real" },
   { value: "JMD", label: "JMD - Jamaican Dollar" },
   { value: "BBD", label: "BBD - Barbadian Dollar" },
+  { value: "GYD", label: "GYD - Guyanese Dollar" },
+  { value: "SRD", label: "SRD - Surinamese Dollar" },
+  { value: "XCD", label: "XCD - East Caribbean Dollar" },
+  { value: "ANG", label: "ANG - Netherlands Antillean Guilder" },
+  { value: "AWG", label: "AWG - Aruban Florin" },
+  { value: "KYD", label: "KYD - Cayman Islands Dollar" },
+  { value: "BSD", label: "BSD - Bahamian Dollar" },
+  { value: "BMD", label: "BMD - Bermudian Dollar" },
 ];
 
 const initialConversionResults = {
@@ -68,6 +91,7 @@ const chartConfig = {
   eurRate: { label: "EUR", color: "hsl(var(--chart-2))" },
   gbpRate: { label: "GBP", color: "hsl(var(--chart-3))" },
   cadRate: { label: "CAD", color: "hsl(var(--chart-4))" },
+  audRate: { label: "AUD", color: "hsl(var(--chart-5))" },
 } satisfies ChartConfig;
 
 
@@ -197,7 +221,7 @@ export function CurrencyExchangeCalculator() {
     try {
         const input: GetHistoricalExchangeRateMarkersInput = {
             baseCurrency: "TTD",
-            targetCurrencies: ["USD", "EUR", "GBP"], // Ensure these match the fields in HistoricalRateMarkerSchema
+            targetCurrencies: ["USD", "EUR", "GBP", "CAD", "AUD"], 
             numberOfYears: 5,
         };
         const result: GetHistoricalExchangeRateMarkersOutput = await getHistoricalExchangeRateMarkers(input);
@@ -265,6 +289,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
     eurRate: marker.eurRate,
     gbpRate: marker.gbpRate,
     cadRate: marker.cadRate, 
+    audRate: marker.audRate,
   }));
 
 
@@ -458,43 +483,45 @@ Disclaimer: Exchange rates are indicative and subject to change.
             {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length > 0 && (
               <div className="h-[350px] w-full bg-muted/30 rounded-md p-4">
                 <ChartContainer config={chartConfig} className="w-full h-full">
-                  <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="date" 
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      tickFormatter={(value) => value} 
-                    />
-                    <YAxis 
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      tickFormatter={(value) => value.toFixed(3)}
-                      domain={['dataMin - 0.005', 'auto']}
-                      width={45}
-                    />
-                    <ChartTooltip 
-                      cursor={true} 
-                      content={<ChartTooltipContent indicator="line" labelKey="date" />} 
-                    />
-                    <ChartLegend content={<ChartLegendContent />} />
-                    {Object.keys(chartConfig).filter(currencyKey => 
-                        transformedHistoricalDataForChart.some(d => d[currencyKey as keyof typeof d] !== undefined && d[currencyKey as keyof typeof d] !== null)
-                    ).map((currencyKey) => (
-                        <Line 
-                            key={currencyKey}
-                            dataKey={currencyKey} 
-                            type="monotone" 
-                            stroke={`var(--color-${currencyKey})`}
-                            strokeWidth={2} 
-                            dot={true} 
-                            name={(chartConfig as any)[currencyKey]?.label || currencyKey.replace('Rate','').toUpperCase()}
-                            connectNulls={true}
-                        />
-                    ))}
-                  </LineChart>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis 
+                        dataKey="date" 
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={(value) => value} 
+                      />
+                      <YAxis 
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        tickFormatter={(value) => value.toFixed(3)}
+                        domain={['dataMin - 0.005', 'auto']}
+                        width={45}
+                      />
+                      <ChartTooltip 
+                        cursor={true} 
+                        content={<ChartTooltipContent indicator="line" labelKey="date" />} 
+                      />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      {Object.keys(chartConfig).filter(currencyKey => 
+                          transformedHistoricalDataForChart.some(d => d[currencyKey as keyof typeof d] !== undefined && d[currencyKey as keyof typeof d] !== null)
+                      ).map((currencyKey) => (
+                          <Line 
+                              key={currencyKey}
+                              dataKey={currencyKey} 
+                              type="monotone" 
+                              stroke={`var(--color-${currencyKey})`}
+                              strokeWidth={2} 
+                              dot={true} 
+                              name={(chartConfig as any)[currencyKey]?.label || currencyKey.replace('Rate','').toUpperCase()}
+                              connectNulls={true}
+                          />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
                 </ChartContainer>
               </div>
             )}

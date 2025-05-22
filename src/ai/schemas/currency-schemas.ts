@@ -43,19 +43,20 @@ export const HistoricalRateMarkerSchema = z.object({
   eurRate: z.number().optional().describe("Rate for EUR, if requested: 1 unit of base currency = X EUR."),
   gbpRate: z.number().optional().describe("Rate for GBP, if requested: 1 unit of base currency = X GBP."),
   cadRate: z.number().optional().describe("Rate for CAD, if requested: 1 unit of base currency = X CAD."),
+  audRate: z.number().optional().describe("Rate for AUD, if requested: 1 unit of base currency = X AUD."),
   // Add other common currencies if frequently needed, or keep the prompt flexible.
 });
 export type HistoricalRateMarker = z.infer<typeof HistoricalRateMarkerSchema>;
 
 export const GetHistoricalExchangeRateMarkersInputSchema = z.object({
   baseCurrency: z.string().length(3, 'Base currency code must be 3 characters.'),
-  targetCurrencies: z.array(z.string().length(3)).min(1, "At least one target currency is required (e.g., USD, EUR, GBP)."),
+  targetCurrencies: z.array(z.string().length(3)).min(1, "At least one target currency is required (e.g., USD, EUR, GBP, CAD, AUD)."),
   numberOfYears: z.number().int().min(1).max(10).describe("Number of years back to get markers for."),
 });
 export type GetHistoricalExchangeRateMarkersInput = z.infer<typeof GetHistoricalExchangeRateMarkersInputSchema>;
 
 export const GetHistoricalExchangeRateMarkersOutputSchema = z.object({
-  markers: z.array(HistoricalRateMarkerSchema).describe("A list of historical exchange rate markers, with rates as direct properties like usdRate, eurRate."),
+  markers: z.array(HistoricalRateMarkerSchema).describe("A list of historical exchange rate markers, with rates as direct properties like usdRate, eurRate, gbpRate, cadRate, audRate."),
   aiDisclaimer: z.string().optional().describe('Disclaimer from the AI about the indicative and approximate nature of the historical data.'),
 });
 export type GetHistoricalExchangeRateMarkersOutput = z.infer<typeof GetHistoricalExchangeRateMarkersOutputSchema>;

@@ -38,7 +38,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
-import { Label } from "@/components/ui/label"; // Added Label import
+import { Label } from "@/components/ui/label";
 import { 
   Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
   Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, ChevronsUpDown, Check
@@ -165,11 +165,11 @@ export default function CorporationTaxPage() {
   const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
   const [comboboxOpenStates, setComboboxOpenStates] = React.useState<boolean[]>([]);
   
-  // State for periodic income input
   const [incomeInputPeriod, setIncomeInputPeriod] = React.useState<"annually" | "quarterly" | "monthly">("annually");
   const [annualIncomeInput, setAnnualIncomeInput] = React.useState<string>("");
   const [quarterlyIncomeInput, setQuarterlyIncomeInput] = React.useState<string>("");
-  const [monthlyIncomeInput, setMonthlyIncomeInput] = React.useState<string>("");
+  const [monthlyIncomes, setMonthlyIncomes] = React.useState<string[]>(Array(12).fill(""));
+
 
   const form = useForm<CorporationTaxFormData>({
     resolver: zodResolver(corporationTaxFormSchema),
@@ -194,7 +194,20 @@ export default function CorporationTaxPage() {
   const watchedDynamicExpenses = form.watch("dynamicOperatingExpenses");
   const watchedGrossIncome = form.watch("grossIncome");
 
-  // Effect for annualizing income
+
+  React.useEffect(() => {
+    if (incomeInputPeriod === "monthly") {
+      setAnnualIncomeInput("");
+      setQuarterlyIncomeInput("");
+    } else if (incomeInputPeriod === "quarterly") {
+      setAnnualIncomeInput("");
+      setMonthlyIncomes(Array(12).fill(""));
+    } else { // annually
+      setQuarterlyIncomeInput("");
+      setMonthlyIncomes(Array(12).fill(""));
+    }
+  }, [incomeInputPeriod]);
+
   React.useEffect(() => {
     let annualized = 0;
     if (incomeInputPeriod === "annually") {
@@ -202,15 +215,14 @@ export default function CorporationTaxPage() {
     } else if (incomeInputPeriod === "quarterly") {
       annualized = (Number(quarterlyIncomeInput) || 0) * 4;
     } else if (incomeInputPeriod === "monthly") {
-      annualized = (Number(monthlyIncomeInput) || 0) * 12;
+      annualized = monthlyIncomes.reduce((sum, income) => sum + (Number(income) || 0), 0);
     }
     if (form.getValues("grossIncome") !== annualized) {
         form.setValue("grossIncome", annualized, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     }
-  }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomeInput, monthlyIncomeInput, form]);
+  }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomeInput, monthlyIncomes, form]);
 
 
-  // Effect for total operating expenses
   React.useEffect(() => {
     if (watchedDynamicExpenses) {
       const totalOpEx = watchedDynamicExpenses.reduce((sum, item) => {
@@ -222,7 +234,6 @@ export default function CorporationTaxPage() {
     }
   }, [watchedDynamicExpenses, form, JSON.stringify(watchedDynamicExpenses)]); 
   
-  // Effect for main tax calculation
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
   const watchedAllowableDeductions = form.watch("allowableDeductions");
@@ -283,7 +294,7 @@ export default function CorporationTaxPage() {
     watchedLossCarriedForward, 
     watchedBusinessLevyPaid, 
     watchedTaxCreditsClaimed,
-    calculationResults 
+    calculationResults // Keep calculationResults in dependency array
   ]);
 
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
@@ -423,9 +434,8 @@ export default function CorporationTaxPage() {
                     />
                   </div>
 
-                  {/* Gross Income Section with Period Selection */}
                   <div className="space-y-2">
-                    <Label className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Income Input</Label>
+                    <Label className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Income Input Period</Label>
                     <Select value={incomeInputPeriod} onValueChange={(value: "annually" | "quarterly" | "monthly") => setIncomeInputPeriod(value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select income input period" />
@@ -433,7 +443,7 @@ export default function CorporationTaxPage() {
                       <SelectContent>
                         <SelectItem value="annually">Annual Income</SelectItem>
                         <SelectItem value="quarterly">Quarterly Income</SelectItem>
-                        <SelectItem value="monthly">Average Monthly Income</SelectItem>
+                        <SelectItem value="monthly">Monthly Incomes (12 months)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -456,14 +466,32 @@ export default function CorporationTaxPage() {
                     </FormItem>
                   )}
                   {incomeInputPeriod === "monthly" && (
-                    <FormItem>
-                      <FormLabel>Average Monthly Gross Income (TT$)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" placeholder="e.g., 41667" value={monthlyIncomeInput} onChange={(e) => setMonthlyIncomeInput(e.target.value)} />
-                      </FormControl>
-                      <FormDescription className="text-xs">This will be annualized (x12) for calculations.</FormDescription>
-                    </FormItem>
+                    <div className="space-y-4">
+                      <Label className="font-semibold">Monthly Gross Incomes (TT$)</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
+                        {monthlyIncomes.map((income, index) => (
+                          <FormItem key={`month-${index}`}>
+                            <Label htmlFor={`month-${index}-income`} className="text-xs text-muted-foreground">Month {index + 1}</Label>
+                            <Input
+                              id={`month-${index}-income`}
+                              type="number"
+                              step="0.01"
+                              placeholder="e.g., 41667"
+                              value={income}
+                              onChange={(e) => {
+                                const newMonthlyIncomes = [...monthlyIncomes];
+                                newMonthlyIncomes[index] = e.target.value;
+                                setMonthlyIncomes(newMonthlyIncomes);
+                              }}
+                              className="h-9 text-xs"
+                            />
+                          </FormItem>
+                        ))}
+                      </div>
+                      <FormDescription className="text-xs">Enter income for each of the 12 months. The sum will be used as the annualized income.</FormDescription>
+                    </div>
                   )}
+
                    <FormField
                     control={form.control}
                     name="grossIncome"
@@ -569,7 +597,7 @@ export default function CorporationTaxPage() {
                                 placeholder="e.g., 1000"
                                 {...field}
                                 value={field.value ?? ""}
-                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                 className="h-9 text-xs"
                               />
                             </FormControl>
@@ -621,7 +649,7 @@ export default function CorporationTaxPage() {
                         )}
                     />
                     <div className="p-3 bg-muted/50 rounded-md">
-                        <FormLabel className="flex items-center mb-1 font-semibold">Chargeable Income (Before Other Income/Loss)</FormLabel>
+                        <Label className="flex items-center mb-1 font-semibold">Chargeable Income (Before Other Income/Loss)</Label>
                         <p className="text-lg font-bold text-primary">${formatCurrency(chargeableIncomeAutoCalculated)}</p>
                         <FormDescription className="mt-1">Annualized Gross Income - Total Allowable Deductions</FormDescription>
                     </div>
@@ -631,7 +659,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Other Income (e.g., Dividends, Royalties) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -642,7 +670,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><TrendingDown className="mr-2 h-4 w-4 text-muted-foreground" />Loss Carried Forward (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -653,7 +681,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Business Levy Paid (for offset) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
                             <FormMessage />
                         </FormItem>
                         )}
@@ -664,7 +692,7 @@ export default function CorporationTaxPage() {
                         render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Tax Credits Claimed (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value))} /></FormControl>
+                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
                             <FormDescription>E.g., investment tax credits.</FormDescription>
                             <FormMessage />
                         </FormItem>

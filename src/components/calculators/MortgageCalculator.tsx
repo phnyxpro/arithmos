@@ -1,3 +1,4 @@
+
 // src/components/calculators/MortgageCalculator.tsx
 "use client";
 
@@ -21,8 +22,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Home as HomeIcon, DollarSign, Percent as PercentIcon, CalendarDays, Calculator, Copy, Trash2, Landmark } from 'lucide-react';
+import { Home as HomeIcon, DollarSign, Percent as PercentIcon, CalendarDays, Calculator, Copy, Trash2, Landmark, RefreshCw, AlertTriangle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { getIndicativeMortgageRates, type MortgageRateInfo } from '@/ai/flows/get-mortgage-rates-flow';
+import { Skeleton } from '@/components/ui/skeleton';
+
 
 const initialCalculationResults = {
   loanAmountDisplay: "0.00",
@@ -31,14 +35,6 @@ const initialCalculationResults = {
   totalCostDisplay: "0.00",
 };
 
-const sampleBankRates = [
-  { institution: "First Citizens Bank (FCB)", rateRange: "3.00% - 5.50%*", notes: "Rates vary by loan amount, term, and creditworthiness." },
-  { institution: "Republic Bank Limited (RBL)", rateRange: "3.25% - 5.75%*", notes: "Special offers may apply." },
-  { institution: "Scotiabank Trinidad & Tobago", rateRange: "3.15% - 5.60%*", notes: "Subject to change without notice." },
-  { institution: "RBC Royal Bank (Trinidad & Tobago)", rateRange: "3.30% - 5.80%*", notes: "Check website for current promotions." },
-  { institution: "Trinidad & Tobago Mortgage Finance (TTMF)", rateRange: "2.00% - 5.00%*", notes: "Specific eligibility criteria apply." },
-];
-
 export function MortgageCalculator() {
   const { toast } = useToast();
 
@@ -46,12 +42,44 @@ export function MortgageCalculator() {
   const [downPayment, setDownPayment] = useState<string>("");
   const [downPaymentType, setDownPaymentType] = useState<"amount" | "percent">("amount");
   const [interestRate, setInterestRate] = useState<string>("");
-  const [loanTerm, setLoanTerm] = useState<string>("25"); // Default to 25 years
+  const [loanTerm, setLoanTerm] = useState<string>("25"); 
 
   const [calculationResults, setCalculationResults] = useState(initialCalculationResults);
 
+  const [fetchedBankRates, setFetchedBankRates] = useState<MortgageRateInfo[] | null>(null);
+  const [isFetchingRates, setIsFetchingRates] = useState<boolean>(false);
+  const [fetchRatesError, setFetchRatesError] = useState<string | null>(null);
+  const [aiDisclaimer, setAiDisclaimer] = useState<string>("");
+
   const formatCurrency = (num: number) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const parseNum = (val: string) => parseFloat(val) || 0;
+
+  const fetchMortgageRatesFromAI = useCallback(async () => {
+    setIsFetchingRates(true);
+    setFetchRatesError(null);
+    setFetchedBankRates(null); // Clear previous rates
+    try {
+      const result = await getIndicativeMortgageRates();
+      if (result && result.rates) {
+        setFetchedBankRates(result.rates);
+        setAiDisclaimer(result.aiDisclaimer || "Rates are indicative. Verify with institutions.");
+      } else {
+        setFetchRatesError("AI did not return rates in the expected format.");
+         setAiDisclaimer("Could not fetch current indicative rates. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error fetching mortgage rates:", error);
+      setFetchRatesError("Failed to fetch indicative mortgage rates. Please try again.");
+      setAiDisclaimer("Could not fetch current indicative rates. Please try again later.");
+    } finally {
+      setIsFetchingRates(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMortgageRatesFromAI();
+  }, [fetchMortgageRatesFromAI]);
+
 
   const handleCalculateMortgage = useCallback(() => {
     const numPropertyPrice = parseNum(propertyPrice);
@@ -65,18 +93,18 @@ export function MortgageCalculator() {
     if (downPaymentType === "percent") {
       numActualDownPayment = numPropertyPrice * (parseNum(downPayment) / 100);
     }
-
+    
     if (numActualDownPayment > numPropertyPrice) {
         toast({
             title: "Warning",
-            description: "Down payment cannot exceed property price. Using property price as loan amount of 0.",
+            description: "Down payment cannot exceed property price. Loan amount will be zero.",
             variant: "default"
         });
-        setCalculationResults({
+         setCalculationResults({
             loanAmountDisplay: formatCurrency(0),
             monthlyPaymentDisplay: formatCurrency(0),
             totalInterestPaidDisplay: formatCurrency(0),
-            totalCostDisplay: formatCurrency(numPropertyPrice),
+            totalCostDisplay: formatCurrency(numPropertyPrice), // Total cost is just the property price
         });
         return;
     }
@@ -90,13 +118,17 @@ export function MortgageCalculator() {
             loanAmountDisplay: formatCurrency(0),
             monthlyPaymentDisplay: formatCurrency(0),
             totalInterestPaidDisplay: formatCurrency(0),
-            totalCostDisplay: formatCurrency(numPropertyPrice), // Total cost is just the property price if no loan
+            totalCostDisplay: formatCurrency(numPropertyPrice), 
         });
         return;
     }
     
     if (numAnnualInterestRate <= 0 || numLoanTermYears <= 0) {
-      setCalculationResults(prev => ({ ...prev, loanAmountDisplay: formatCurrency(numLoanAmount), monthlyPaymentDisplay: "0.00", totalInterestPaidDisplay:"0.00", totalCostDisplay: formatCurrency(numLoanAmount) }));
+      setCalculationResults(prev => ({ 
+        ...initialCalculationResults, 
+        loanAmountDisplay: formatCurrency(numLoanAmount),
+        totalCostDisplay: formatCurrency(numLoanAmount), // If no interest/term, total cost is loan amount
+      }));
       return;
     }
 
@@ -106,8 +138,8 @@ export function MortgageCalculator() {
     let monthlyPayment = 0;
     if (monthlyInterestRate > 0) {
         monthlyPayment = numLoanAmount * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) / (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
-    } else { // 0% interest rate
-        monthlyPayment = numLoanAmount / numberOfPayments;
+    } else { 
+        monthlyPayment = numberOfPayments > 0 ? numLoanAmount / numberOfPayments : 0;
     }
     
     const totalCost = monthlyPayment * numberOfPayments;
@@ -123,22 +155,10 @@ export function MortgageCalculator() {
   }, [propertyPrice, downPayment, downPaymentType, interestRate, loanTerm, toast]);
   
   useEffect(() => {
-    // Auto-calculate if all relevant fields have some value, to provide live feedback
-    if (propertyPrice && downPayment && interestRate && loanTerm) {
+    if (propertyPrice || downPayment || interestRate || loanTerm) { // Calculate if any relevant input has a value
       handleCalculateMortgage();
     } else {
-      // Reset if essential fields are missing but allow loan amount to show if property price and DP are entered
-      const numPropertyPrice = parseNum(propertyPrice);
-      let numActualDownPayment = parseNum(downPayment);
-       if (downPaymentType === "percent" && numPropertyPrice > 0) {
-        numActualDownPayment = numPropertyPrice * (parseNum(downPayment) / 100);
-      }
-      const numLoanAmount = Math.max(0, numPropertyPrice - numActualDownPayment);
-      
-      setCalculationResults(prev => ({
-        ...initialCalculationResults,
-        loanAmountDisplay: (numPropertyPrice > 0 && downPayment) ? formatCurrency(numLoanAmount) : "0.00",
-      }));
+      setCalculationResults(initialCalculationResults);
     }
   }, [propertyPrice, downPayment, downPaymentType, interestRate, loanTerm, handleCalculateMortgage]);
 
@@ -182,25 +202,24 @@ Disclaimer: This is an estimate. Does not include property taxes, insurance (PIT
   return (
     <div className="py-4 w-full">
       <Card className="border-none shadow-none">
-        {/* CardHeader is part of the Dialog in page.tsx */}
         <CardContent className="space-y-4 p-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label htmlFor="propertyPrice" className="flex items-center text-sm">
+              <Label htmlFor="propertyPriceMortgage" className="flex items-center text-sm">
                 <HomeIcon className="mr-2 h-4 w-4 text-muted-foreground" /> Property Price (TTD)
               </Label>
               <Input
-                id="propertyPrice" type="number" step="0.01" placeholder="e.g., 1500000"
+                id="propertyPriceMortgage" type="number" step="0.01" placeholder="e.g., 1500000"
                 value={propertyPrice} onChange={(e) => setPropertyPrice(e.target.value)}
                 className="h-9 text-sm"
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="loanTerm" className="flex items-center text-sm">
+              <Label htmlFor="loanTermMortgage" className="flex items-center text-sm">
                 <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" /> Loan Term (Years)
               </Label>
               <Input
-                id="loanTerm" type="number" step="1" placeholder="e.g., 25"
+                id="loanTermMortgage" type="number" step="1" placeholder="e.g., 25"
                 value={loanTerm} onChange={(e) => setLoanTerm(e.target.value)}
                 className="h-9 text-sm"
               />
@@ -209,20 +228,20 @@ Disclaimer: This is an estimate. Does not include property taxes, insurance (PIT
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
             <div className="space-y-1">
-              <Label htmlFor="downPayment" className="flex items-center text-sm">
+              <Label htmlFor="downPaymentMortgage" className="flex items-center text-sm">
                 <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" /> Down Payment
               </Label>
               <Input
-                id="downPayment" type="number" step="0.01" 
+                id="downPaymentMortgage" type="number" step="0.01" 
                 placeholder={downPaymentType === 'amount' ? "e.g., 150000" : "e.g., 10 for 10%"}
                 value={downPayment} onChange={(e) => setDownPayment(e.target.value)}
                 className="h-9 text-sm"
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="downPaymentType" className="text-sm sr-only">Down Payment Type</Label>
+              <Label htmlFor="downPaymentTypeMortgage" className="text-sm sr-only">Down Payment Type</Label>
               <Select value={downPaymentType} onValueChange={(value: "amount" | "percent") => setDownPaymentType(value)}>
-                <SelectTrigger id="downPaymentType" className="h-9 text-sm">
+                <SelectTrigger id="downPaymentTypeMortgage" className="h-9 text-sm">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -234,11 +253,11 @@ Disclaimer: This is an estimate. Does not include property taxes, insurance (PIT
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="interestRate" className="flex items-center text-sm">
+            <Label htmlFor="interestRateMortgage" className="flex items-center text-sm">
               <PercentIcon className="mr-2 h-4 w-4 text-muted-foreground" /> Annual Interest Rate (%)
             </Label>
             <Input
-              id="interestRate" type="number" step="0.01" placeholder="e.g., 3.5"
+              id="interestRateMortgage" type="number" step="0.01" placeholder="e.g., 3.5"
               value={interestRate} onChange={(e) => setInterestRate(e.target.value)}
               className="h-9 text-sm"
             />
@@ -271,32 +290,54 @@ Disclaimer: This is an estimate. Does not include property taxes, insurance (PIT
           </Button>
         </CardFooter>
         <p className="text-xs text-muted-foreground text-center mt-4">
-          Disclaimer: This estimate calculates Principal & Interest (P&I) only. It does not include property taxes, homeowner's insurance (often part of PITI), mortgage insurance, or other potential closing costs and fees. Rates are for illustrative purposes.
+          Disclaimer: This estimate calculates Principal & Interest (P&I) only. It does not include property taxes, insurance (often part of PITI), or other potential closing costs and fees. Rates are for illustrative purposes.
         </p>
       </Card>
 
       <Card className="mt-8 w-full">
         <CardHeader>
-          <CardTitle className="text-xl text-primary flex items-center">
-            <Landmark className="mr-2 h-5 w-5" /> Indicative Mortgage Rates from Local Institutions
+          <CardTitle className="text-xl text-primary flex items-center justify-between">
+            <div className="flex items-center">
+              <Landmark className="mr-2 h-5 w-5" /> Indicative Mortgage Rates
+            </div>
+            <Button variant="outline" size="sm" onClick={fetchMortgageRatesFromAI} disabled={isFetchingRates}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${isFetchingRates ? 'animate-spin' : ''}`} />
+              {isFetchingRates ? 'Refreshing...' : 'Refresh Rates'}
+            </Button>
           </CardTitle>
           <CardDescription>
-            The rates below are examples and not live data. Please contact financial institutions directly for current rates and terms.
+            The rates below are indicative and obtained via AI. Please contact financial institutions directly for current rates and terms.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {sampleBankRates.map((bank) => (
-            <div key={bank.institution} className="p-3 border rounded-md bg-muted/30">
-              <h4 className="font-semibold text-sm text-foreground">{bank.institution}</h4>
-              <p className="text-xs text-primary">Sample Rate Range: {bank.rateRange}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{bank.notes}</p>
+          {isFetchingRates && (
+            <div className="space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
-          ))}
-          <p className="text-xs text-muted-foreground pt-2">*Rates are illustrative and subject to change based on market conditions, individual credit profiles, loan-to-value ratios, and specific bank policies. Always verify directly with the institution.</p>
+          )}
+          {fetchRatesError && !isFetchingRates && (
+            <div className="text-destructive p-3 border border-destructive/50 rounded-md flex items-center">
+              <AlertTriangle className="mr-2 h-5 w-5" /> {fetchRatesError}
+            </div>
+          )}
+          {!isFetchingRates && !fetchRatesError && fetchedBankRates && fetchedBankRates.length > 0 && (
+            fetchedBankRates.map((bank, index) => (
+              <div key={index} className="p-3 border rounded-md bg-muted/30">
+                <h4 className="font-semibold text-sm text-foreground">{bank.institution}</h4>
+                <p className="text-xs text-primary">Indicative Rate Range: {bank.rateRange}</p>
+                {bank.notes && <p className="text-xs text-muted-foreground mt-0.5">{bank.notes}</p>}
+              </div>
+            ))
+          )}
+           {!isFetchingRates && !fetchRatesError && fetchedBankRates && fetchedBankRates.length === 0 && (
+            <p className="text-sm text-muted-foreground">No indicative rates were returned by the AI at this time. You can try refreshing.</p>
+           )}
+          <p className="text-xs text-muted-foreground pt-2 font-semibold">AI Disclaimer: {aiDisclaimer || "Rates are indicative. Verify with institutions."}</p>
+          <p className="text-xs text-muted-foreground pt-1">*Our Disclaimer: The rates provided by the AI are for informational purposes only, are not guaranteed to be accurate or current, and are subject to change based on market conditions, individual credit profiles, loan-to-value ratios, and specific bank policies. Always verify directly with the financial institution.</p>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-    

@@ -14,8 +14,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import {
   Clock,
-  Users,
+  Users as UsersIconLucide, // Renamed to avoid conflict with User icon
   Banknote,
   Leaf,
   Building,
@@ -34,12 +43,13 @@ import {
   Factory,
   Sun,
   Moon,
+  Menu, // Added Menu icon
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 const calculatorNavItems = [
   { href: "/calculators/time-calculator", label: "Time Calculator", Icon: Clock },
-  { href: "/calculators/payroll", label: "PAYE, NIS & HS (Payroll)", Icon: Users },
+  { href: "/calculators/payroll", label: "PAYE, NIS & HS (Payroll)", Icon: UsersIconLucide },
   { href: "/calculators/business-levy", label: "Business Levy", Icon: Banknote },
   { href: "/calculators/green-fund-levy", label: "Green Fund Levy", Icon: Leaf },
   { href: "/calculators/corporation-tax", label: "Corporation Tax", Icon: Building },
@@ -56,6 +66,7 @@ const accountingNavItems = [
 ];
 
 const knowledgeBaseNavItems = [
+    { href: "/knowledge-base", label: "All Articles", Icon: Library },
     { href: "/knowledge-base/property-tax", label: "Property Tax Act", Icon: House },
     { href: "/knowledge-base/vat", label: "VAT Act", Icon: ReceiptText },
     { href: "/knowledge-base/income-corporation-tax", label: "Income & Corp. Tax Act", Icon: Building },
@@ -83,6 +94,7 @@ const userNavItems: UserNavItem[] = [
 export default function Header() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -94,13 +106,15 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-header text-header-foreground shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-[hsl(var(--header-background)/0.95)] text-header-foreground shadow-sm backdrop-blur-sm supports-[backdrop-filter]:bg-[hsl(var(--header-background)/0.80)]">
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <AppLogo className="h-8 w-8 text-header-foreground" />
           <span className="font-bold text-xl text-header-foreground sm:inline-block">TaxTT</span>
         </Link>
-        <nav className="ml-auto flex items-center space-x-1 md:space-x-2">
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-1 md:space-x-2 ml-auto">
           {mainNavItems.map((item) => (
             <Link
               key={item.label}
@@ -166,13 +180,6 @@ export default function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
-               <DropdownMenuItem asChild>
-                  <Link href="/knowledge-base" className="flex items-center w-full">
-                    <Library className="mr-2 h-4 w-4" />
-                    <span>All Articles</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator/>
               {knowledgeBaseNavItems.map((item) => (
                 <DropdownMenuItem key={item.label} asChild>
                   <Link href={item.href} className="flex items-center w-full">
@@ -183,7 +190,8 @@ export default function Header() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
+          
+          {/* User Menu Dropdown - Stays part of desktop nav or general right-aligned items */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -205,7 +213,6 @@ export default function Header() {
                 }
                 if (item.type === "themeToggle") {
                   if (!mounted) {
-                    // Render a placeholder or null to avoid hydration mismatch
                     return (
                       <DropdownMenuItem key={`user-item-${index}`} disabled>
                         <Sun className="mr-2 h-4 w-4" /> 
@@ -222,7 +229,6 @@ export default function Header() {
                     </DropdownMenuItem>
                   );
                 }
-                // Default is "item" type
                 if (item.nonInteractive) {
                   return (
                     <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
@@ -243,7 +249,143 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
+
+        {/* Mobile Navigation Trigger */}
+        <div className="md:hidden ml-auto flex items-center">
+           <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10"
+              >
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[340px] bg-sidebar text-sidebar-foreground">
+              <SheetHeader className="mb-4">
+                <SheetTitle className="text-sidebar-primary flex items-center">
+                  <AppLogo className="h-7 w-7 mr-2" />
+                  TaxTT Menu
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col space-y-2 text-sm">
+                {mainNavItems.map((item) => (
+                  <Link
+                    key={`mobile-${item.label}`}
+                    href={item.href}
+                    className="block px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <Separator className="my-2 bg-sidebar-border" />
+                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Calculators</div>
+                {calculatorNavItems.map((item) => (
+                  <Link
+                    key={`mobile-calc-${item.label}`}
+                    href={item.href}
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <item.Icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Link>
+                ))}
+                <Separator className="my-2 bg-sidebar-border" />
+                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Accounting</div>
+                {accountingNavItems.map((item) => (
+                  <Link
+                    key={`mobile-acc-${item.label}`}
+                    href={item.href}
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <item.Icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Link>
+                ))}
+                <Separator className="my-2 bg-sidebar-border" />
+                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Knowledge Base</div>
+                {knowledgeBaseNavItems.map((item) => (
+                  <Link
+                    key={`mobile-kb-${item.label}`}
+                    href={item.href}
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <item.Icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+          {/* User Menu still needs to be accessible on mobile, placing it after the sheet trigger */}
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative h-9 w-9 rounded-full p-0 ml-2 text-header-foreground hover:text-header-foreground hover:bg-header-foreground/10"
+              >
+                <UserIcon className="h-5 w-5 text-header-foreground" />
+                <span className="sr-only">Open user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-popover text-popover-foreground">
+              {userNavItems.map((item, index) => {
+                if (item.type === "label") {
+                  return <DropdownMenuLabel key={`mobile-user-item-${index}`}>{item.label}</DropdownMenuLabel>;
+                }
+                if (item.type === "separator") {
+                  return <DropdownMenuSeparator key={`mobile-user-item-${index}`} />;
+                }
+                if (item.type === "themeToggle") {
+                  if (!mounted) {
+                    return (
+                      <DropdownMenuItem key={`mobile-user-item-${index}`} disabled>
+                        <Sun className="mr-2 h-4 w-4" /> 
+                        <span>Loading theme...</span>
+                      </DropdownMenuItem>
+                    );
+                  }
+                  const CurrentIcon = resolvedTheme === 'dark' ? Sun : Moon;
+                  const currentLabel = resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+                  return (
+                    <DropdownMenuItem key={`mobile-user-item-${index}`} onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
+                      <CurrentIcon className="mr-2 h-4 w-4" />
+                      <span>{currentLabel}</span>
+                    </DropdownMenuItem>
+                  );
+                }
+                if (item.nonInteractive) {
+                  return (
+                    <DropdownMenuItem key={`mobile-user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
+                       {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
+                       <span>{item.label}</span>
+                    </DropdownMenuItem>
+                  );
+                }
+                return (
+                  <DropdownMenuItem key={`mobile-user-item-${index}`} asChild>
+                    <Link href={item.href || "#"} className="flex items-center w-full">
+                      {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
+                      <span>{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
       </div>
     </header>
   );
 }
+
+
+    

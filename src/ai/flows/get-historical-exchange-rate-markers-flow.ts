@@ -13,9 +13,10 @@ import { ai } from '@/ai/genkit';
 import {
   GetHistoricalExchangeRateMarkersInputSchema,
   GetHistoricalExchangeRateMarkersOutputSchema,
-  HistoricalRateMarkerSchema,
+  HistoricalRateMarkerSchema, // Though the type HistoricalRateMarker is used, the schema itself is part of the output
 } from '@/ai/schemas/currency-schemas';
 
+// Re-export types for easier consumption by client components
 export type { GetHistoricalExchangeRateMarkersInput, GetHistoricalExchangeRateMarkersOutput, HistoricalRateMarker } from '@/ai/schemas/currency-schemas';
 
 const getHistoricalMarkersPrompt = ai.definePrompt({
@@ -23,15 +24,25 @@ const getHistoricalMarkersPrompt = ai.definePrompt({
   input: { schema: GetHistoricalExchangeRateMarkersInputSchema },
   output: { schema: GetHistoricalExchangeRateMarkersOutputSchema },
   prompt: `You are a financial data assistant.
-Please provide indicative historical exchange rate markers for {{baseCurrency}} against the following target currencies: {{#each targetCurrencies}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
+Please provide indicative historical exchange rate markers for {{baseCurrency}} against the target currencies: {{#each targetCurrencies}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
 Provide these markers for approximately the start of each year, going back for the last {{numberOfYears}} years from the current year.
 For example, if it's early 2025 and {{numberOfYears}} is 3, provide markers for early 2025, early 2024, and early 2023.
-The date should be in YYYY-MM-DD format (e.g., "2023-01-15" for early January 2023).
-For each date marker, provide the exchange rates as "1 unit of {{baseCurrency}} = X units of target currency".
+The date for each marker should be in YYYY-MM-DD format (e.g., "2023-01-15" for early January 2023).
 
-Return the data as a list of objects, each conforming to the HistoricalRateMarker schema.
+For each marker object, provide the exchange rates as direct properties. For example, if USD is a target currency, include a field "usdRate" with the value (1 {{baseCurrency}} = X USD). If EUR is a target, include "eurRate", if GBP is a target, include "gbpRate", and if CAD is a target, include "cadRate".
+If a rate for a specific target currency for a given year/marker is not available, omit that specific rate field (e.g., omit 'eurRate' if unavailable for that marker).
+
+Example of a single marker in the 'markers' array:
+{
+  "date": "2023-01-10",
+  "usdRate": 0.148,
+  "eurRate": 0.135,
+  "gbpRate": 0.120
+}
+(If CAD was also a target, it would be "cadRate": value)
+
+Return the data as a list of these marker objects.
 Include a general disclaimer that these rates are indicative, AI-generated estimates for illustrative purposes only, not precise historical financial data, and subject to limitations of AI knowledge.
-If data for a specific currency or year is unavailable, omit it from the results or use a reasonable placeholder like 0 if the schema requires it, and note the limitation in the disclaimer.
 Do not invent precise daily rates; broad yearly markers are sufficient.
 `,
 });

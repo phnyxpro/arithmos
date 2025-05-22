@@ -43,7 +43,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-} from "recharts"; // Removed Tooltip, Legend from here as they are used via Chart components
+} from "recharts";
 import type { ChartConfig } from "@/components/ui/chart";
 
 
@@ -64,11 +64,10 @@ const initialConversionResults = {
 };
 
 const chartConfig = {
-  USD: { label: "USD", color: "hsl(var(--chart-1))" },
-  EUR: { label: "EUR", color: "hsl(var(--chart-2))" },
-  GBP: { label: "GBP", color: "hsl(var(--chart-3))" },
-  CAD: { label: "CAD", color: "hsl(var(--chart-4))" }, // Added for consistency if needed
-  JMD: { label: "JMD", color: "hsl(var(--chart-5))" }, // Added for consistency if needed
+  usdRate: { label: "USD", color: "hsl(var(--chart-1))" },
+  eurRate: { label: "EUR", color: "hsl(var(--chart-2))" },
+  gbpRate: { label: "GBP", color: "hsl(var(--chart-3))" },
+  cadRate: { label: "CAD", color: "hsl(var(--chart-4))" },
 } satisfies ChartConfig;
 
 
@@ -198,7 +197,7 @@ export function CurrencyExchangeCalculator() {
     try {
         const input: GetHistoricalExchangeRateMarkersInput = {
             baseCurrency: "TTD",
-            targetCurrencies: ["USD", "EUR", "GBP"],
+            targetCurrencies: ["USD", "EUR", "GBP"], // Ensure these match the fields in HistoricalRateMarkerSchema
             numberOfYears: 5,
         };
         const result: GetHistoricalExchangeRateMarkersOutput = await getHistoricalExchangeRateMarkers(input);
@@ -262,9 +261,10 @@ Disclaimer: Exchange rates are indicative and subject to change.
 
   const transformedHistoricalDataForChart = historicalMarkersData.map(marker => ({
     date: new Date(marker.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }),
-    USD: marker.rates.USD,
-    EUR: marker.rates.EUR,
-    GBP: marker.rates.GBP,
+    usdRate: marker.usdRate,
+    eurRate: marker.eurRate,
+    gbpRate: marker.gbpRate,
+    cadRate: marker.cadRate, 
   }));
 
 
@@ -458,7 +458,7 @@ Disclaimer: Exchange rates are indicative and subject to change.
             {!isLoadingHistoricalData && !historicalDataError && transformedHistoricalDataForChart.length > 0 && (
               <div className="h-[350px] w-full bg-muted/30 rounded-md p-4">
                 <ChartContainer config={chartConfig} className="w-full h-full">
-                  <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
+                  <LineChart data={transformedHistoricalDataForChart} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis 
                       dataKey="date" 
@@ -472,14 +472,17 @@ Disclaimer: Exchange rates are indicative and subject to change.
                       axisLine={false}
                       tickMargin={8}
                       tickFormatter={(value) => value.toFixed(3)}
-                      domain={['dataMin - 0.005', 'dataMax + 0.005']} // Adjusted domain for tighter fit
+                      domain={['dataMin - 0.005', 'auto']}
+                      width={45}
                     />
                     <ChartTooltip 
                       cursor={true} 
                       content={<ChartTooltipContent indicator="line" labelKey="date" />} 
                     />
                     <ChartLegend content={<ChartLegendContent />} />
-                    {Object.keys(chartConfig).filter(key => transformedHistoricalDataForChart[0]?.[key] !== undefined).map((currencyKey) => (
+                    {Object.keys(chartConfig).filter(currencyKey => 
+                        transformedHistoricalDataForChart.some(d => d[currencyKey as keyof typeof d] !== undefined && d[currencyKey as keyof typeof d] !== null)
+                    ).map((currencyKey) => (
                         <Line 
                             key={currencyKey}
                             dataKey={currencyKey} 
@@ -487,7 +490,8 @@ Disclaimer: Exchange rates are indicative and subject to change.
                             stroke={`var(--color-${currencyKey})`}
                             strokeWidth={2} 
                             dot={true} 
-                            name={(chartConfig as any)[currencyKey]?.label || currencyKey.toUpperCase()}
+                            name={(chartConfig as any)[currencyKey]?.label || currencyKey.replace('Rate','').toUpperCase()}
+                            connectNulls={true}
                         />
                     ))}
                   </LineChart>
@@ -509,3 +513,4 @@ Disclaimer: Exchange rates are indicative and subject to change.
     </div>
   );
 }
+

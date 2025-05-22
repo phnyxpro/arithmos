@@ -781,72 +781,153 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                     <CardTitle className="text-xl text-primary flex items-center">
-                        <DollarSign className="mr-2 h-5 w-5" />Adjustments & Offsets
+                        <DollarSign className="mr-2 h-5 w-5" />Adjustments &amp; Offsets
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="allowableDeductions"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center font-semibold"><Sigma className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50 font-bold" /></FormControl>
-                            <FormDescription>Sum of detailed operating expenses.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <div className="p-3 bg-muted/50 rounded-md">
-                        <Label className="flex items-center mb-1 font-semibold">Chargeable Income (Before Other Income/Loss)</Label>
-                        <p className="text-lg font-bold text-primary">${formatCurrency(chargeableIncomeAutoCalculated)}</p>
-                        <FormDescription className="mt-1">Annualized Gross Income - Total Allowable Deductions</FormDescription>
-                    </div>
-                    <FormField
-                        control={form.control}
-                        name="otherIncome"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Other Income (e.g., Dividends, Royalties) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="lossCarriedForward"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center"><TrendingDown className="mr-2 h-4 w-4 text-muted-foreground" />Loss Carried Forward (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="businessLevyPaid"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Business Levy Paid (for offset) (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="taxCreditsClaimed"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Tax Credits Claimed (TT$)</FormLabel>
-                            <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
-                            <FormDescription>E.g., investment tax credits.</FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
+                  <Accordion type="single" collapsible className="w-full mb-6">
+                    <AccordionItem value="item-adjustments">
+                      <AccordionTrigger>1. Adjustments to Net Income (Profit)</AccordionTrigger>
+                      <AccordionContent className="space-y-2">
+                        <p className="text-sm text-muted-foreground">These items are either added back or deducted from accounting profit to arrive at the taxable profit:</p>
+                        <h4 className="font-semibold text-sm">➕ Additions to Profit</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-4">
+                          <li>Depreciation Expense: Replace accounting depreciation with tax capital allowances.</li>
+                          <li>Non-deductible Expenses: Personal or non-business-related expenses, Entertainment (beyond permitted limit), Donations (without tax exemption status), Fines and penalties.</li>
+                          <li>Provisions and Reserves: (e.g., provision for doubtful debts, general provisions).</li>
+                          <li>Amortisation of Non-taxable Items (e.g., goodwill amortisation).</li>
+                          <li>Capital Expenditures: Capital expenses incorrectly recorded as operating expenses.</li>
+                        </ul>
+                        <h4 className="font-semibold text-sm mt-2">➖ Deductions from Profit</h4>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-4">
+                          <li>Capital Allowances (Wear and Tear Allowance): Deduction based on official capital allowance rates.</li>
+                          <li>Tax-exempt Income: Income from sources specifically exempted from corporation tax (e.g., dividends from resident companies).</li>
+                          <li>Previously Taxed Income: Avoiding double taxation of previously taxed amounts.</li>
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-offsets">
+                      <AccordionTrigger>2. Tax Offsets (Credits)</AccordionTrigger>
+                      <AccordionContent className="space-y-1 text-sm text-muted-foreground">
+                        <p>Corporation Tax liabilities may be offset by:</p>
+                        <ul className="list-disc list-inside pl-4">
+                          <li>Business Levy Paid: Deduction of the Business Levy already paid during the tax year.</li>
+                          <li>Quarterly Installments Already Paid: Quarterly payments made towards your annual tax liability.</li>
+                          <li>Foreign Tax Credits: Taxes paid on income earned abroad (subject to Double Taxation Agreements).</li>
+                          <li>Green Fund Levy: Although the Green Fund Levy itself isn’t offsettable, tracking it separately ensures correct tax accounting.</li>
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-capital-allowances">
+                      <AccordionTrigger>3. Capital Allowances (Wear and Tear Allowances)</AccordionTrigger>
+                      <AccordionContent className="space-y-1 text-sm text-muted-foreground">
+                        <p>Replace accounting depreciation with official capital allowances for assets including:</p>
+                        <ul className="list-disc list-inside pl-4">
+                          <li>Machinery and Equipment</li>
+                          <li>Motor Vehicles</li>
+                          <li>Computer Hardware and Software</li>
+                          <li>Buildings (Industrial and Commercial)</li>
+                        </ul>
+                        <p>These allowances reduce taxable income.</p>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-loss-relief">
+                      <AccordionTrigger>4. Loss Relief</AccordionTrigger>
+                      <AccordionContent className="space-y-1 text-sm text-muted-foreground">
+                         <p>Businesses can claim offsets from losses carried forward from prior tax years, reducing the taxable profit:</p>
+                        <ul className="list-disc list-inside pl-4">
+                          <li>Carry-forward Losses: Business losses from previous years can offset future profits.</li>
+                          <li>Group Relief (if applicable): Transfer of losses within a corporate group structure.</li>
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="item-dta">
+                      <AccordionTrigger>5. Double Taxation Relief</AccordionTrigger>
+                      <AccordionContent className="space-y-1 text-sm text-muted-foreground">
+                        <p>If Trinidad and Tobago has Double Taxation Agreements (DTAs) with other countries, taxes already paid abroad can offset local Corporation Tax liabilities.</p>
+                        <p>Examples:</p>
+                        <ul className="list-disc list-inside pl-4">
+                          <li>Income from CARICOM states</li>
+                          <li>Income from countries with DTAs (e.g., Canada, USA, UK)</li>
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-transfer-pricing">
+                      <AccordionTrigger>6. Adjustments for Related-Party Transactions (Transfer Pricing)</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground">
+                        Ensuring arm’s length pricing for goods and services provided between related entities.
+                      </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-withholding">
+                      <AccordionTrigger>7. Withholding Taxes (if applicable)</AccordionTrigger>
+                      <AccordionContent className="text-sm text-muted-foreground">
+                        Deduction or credit for withholding taxes already deducted on income received (e.g., royalties, dividends, management fees).
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <FormField
+                      control={form.control}
+                      name="allowableDeductions"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel className="flex items-center font-semibold"><Sigma className="mr-2 h-4 w-4 text-muted-foreground" />Total Allowable Deductions (TT$)</FormLabel>
+                          <FormControl><Input type="number" step="0.01" {...field} value={field.value ?? ""} readOnly className="bg-muted/50 font-bold" /></FormControl>
+                          <FormDescription>Sum of detailed operating expenses.</FormDescription>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <div className="p-3 bg-muted/50 rounded-md">
+                      <Label className="flex items-center mb-1 font-semibold">Chargeable Income (Before Other Income/Loss)</Label>
+                      <p className="text-lg font-bold text-primary">${formatCurrency(chargeableIncomeAutoCalculated)}</p>
+                      <FormDescription className="mt-1">Annualized Gross Income - Total Allowable Deductions</FormDescription>
+                  </div>
+                  <FormField
+                      control={form.control}
+                      name="otherIncome"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Other Income (e.g., Dividends, Royalties) (TT$)</FormLabel>
+                          <FormControl><Input type="number" step="0.01" placeholder="e.g., 10000" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <FormField
+                      control={form.control}
+                      name="lossCarriedForward"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel className="flex items-center"><TrendingDown className="mr-2 h-4 w-4 text-muted-foreground" />Loss Carried Forward (TT$)</FormLabel>
+                          <FormControl><Input type="number" step="0.01" placeholder="e.g., 5000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <FormField
+                      control={form.control}
+                      name="businessLevyPaid"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Business Levy Paid (for offset) (TT$)</FormLabel>
+                          <FormControl><Input type="number" step="0.01" placeholder="e.g., 1500 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
+                  <FormField
+                      control={form.control}
+                      name="taxCreditsClaimed"
+                      render={({ field }) => (
+                      <FormItem>
+                          <FormLabel className="flex items-center"><DollarSign className="mr-2 h-4 w-4 text-muted-foreground" />Tax Credits Claimed (TT$)</FormLabel>
+                          <FormControl><Input type="number" step="0.01" placeholder="e.g., 1000 (optional)" {...field} value={field.value ?? ""} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl>
+                          <FormDescription>E.g., investment tax credits.</FormDescription>
+                          <FormMessage />
+                      </FormItem>
+                      )}
+                  />
                 </CardContent>
               </Card>
             </form>
@@ -948,6 +1029,8 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     </div>
   );
 }
+
+    
 
     
 

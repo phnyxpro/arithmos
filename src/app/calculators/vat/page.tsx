@@ -68,6 +68,9 @@ export default function VatCalculatorPage() {
     const priceExcl = parseFloat(priceExcludingVat);
     if (isNaN(priceExcl) || priceExcl < 0) {
       toast({ title: "Invalid Input", description: "Please enter a valid price excluding VAT.", variant: "destructive" });
+      setCalculatedVatAmount(null);
+      setResultPriceExcludingVat(null);
+      setResultPriceIncludingVat(null);
       return;
     }
     const vat = priceExcl * VAT_RATE;
@@ -75,7 +78,7 @@ export default function VatCalculatorPage() {
     setCalculatedVatAmount(formatCurrency(vat));
     setResultPriceExcludingVat(formatCurrency(priceExcl));
     setResultPriceIncludingVat(formatCurrency(priceIncl));
-    setPriceIncludingVat(priceIncl.toFixed(2)); // Optionally update the other input
+    setPriceIncludingVat(priceIncl.toFixed(2));
     toast({ title: "VAT Calculated", description: "Calculated from price excluding VAT." });
   };
 
@@ -83,6 +86,9 @@ export default function VatCalculatorPage() {
     const priceIncl = parseFloat(priceIncludingVat);
     if (isNaN(priceIncl) || priceIncl < 0) {
       toast({ title: "Invalid Input", description: "Please enter a valid price including VAT.", variant: "destructive" });
+      setCalculatedVatAmount(null);
+      setResultPriceExcludingVat(null);
+      setResultPriceIncludingVat(null);
       return;
     }
     const priceExcl = priceIncl / (1 + VAT_RATE);
@@ -90,7 +96,7 @@ export default function VatCalculatorPage() {
     setCalculatedVatAmount(formatCurrency(vat));
     setResultPriceExcludingVat(formatCurrency(priceExcl));
     setResultPriceIncludingVat(formatCurrency(priceIncl));
-    setPriceExcludingVat(priceExcl.toFixed(2)); // Optionally update the other input
+    setPriceExcludingVat(priceExcl.toFixed(2));
     toast({ title: "VAT Calculated", description: "Calculated from price including VAT." });
   };
 
@@ -167,7 +173,7 @@ export default function VatCalculatorPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start"> {/* Changed items-end to items-start */}
                 <div className="space-y-2">
                   <Label htmlFor="priceExcludingVat" className="flex items-center mb-1">
                     Price Excluding VAT (TT$)
@@ -213,26 +219,18 @@ export default function VatCalculatorPage() {
               </Button>
             </CardFooter>
           </Card>
-        </CardContent>
-      </Card>
 
-      {/* VAT Registration & Deregistration Card */}
-      <Card className="w-full max-w-3xl shadow-xl rounded-xl mb-8">
-        <CardHeader>
-          <CardTitle className="text-xl text-primary flex items-center">
-            <SquarePen className="mr-2 h-5 w-5" /> VAT Registration & Deregistration
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* VAT Registration Eligibility Checker */}
-          <div>
-            <h4 className="font-semibold text-md mb-2 flex items-center">
-              <CircleCheckBig className="mr-2 h-5 w-5 text-primary" />VAT Registration Eligibility Checker
-            </h4>
-            <p className="text-sm text-muted-foreground mb-2">
-              Determine if you meet the VAT registration threshold (TT$600,000 in a 12-month period).
-            </p>
-            <div className="space-y-3 p-3 border rounded-md bg-muted/50">
+          {/* VAT Registration Eligibility Checker Card */}
+          <Card className="shadow-md rounded-lg">
+            <CardHeader>
+              <CardTitle className="text-xl text-primary flex items-center">
+                <CircleCheckBig className="mr-2 h-5 w-5" />VAT Registration Eligibility Checker
+              </CardTitle>
+              <CardDescription>
+                 Determine if you meet the VAT registration threshold (TT$600,000 in a 12-month period).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div>
                 <Label htmlFor="businessType" className="text-sm">Business Type</Label>
                 <Select value={businessType} onValueChange={setBusinessType}>
@@ -255,82 +253,89 @@ export default function VatCalculatorPage() {
                   className="mt-1"
                 />
               </div>
-              <div className="flex gap-2">
-                <Button onClick={handleCheckEligibility} className="bg-accent hover:bg-accent/90 flex-1">Check Eligibility</Button>
-                <Button variant="outline" onClick={handleClearEligibilityFields} className="flex-1">
-                  <Trash2 className="mr-2 h-4 w-4" /> Clear
-                </Button>
-              </div>
+              <Button onClick={handleCheckEligibility} className="bg-accent hover:bg-accent/90 w-full">Check Eligibility</Button>
               {eligibilityResult && (
                 <div className={`mt-3 p-2 rounded-md text-sm ${eligibilityResult.startsWith("Registration Required") ? "bg-primary/10 text-primary" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"}`}>
                   {eligibilityResult}
                 </div>
               )}
-            </div>
-          </div>
-          <Separator />
-          {/* VAT Registration Guide */}
-          <div className="space-y-2">
-            <h4 className="font-semibold text-md mb-2 flex items-center">
-              <FileText className="mr-2 h-5 w-5 text-primary" />VAT Registration Guide
-            </h4>
-            <h5 className="font-semibold mt-2">Introduction</h5>
-            <p className="text-sm">
-              The Value Added Tax Act, #37/89 requires most businesses and many organizations in Trinidad and Tobago to:
-            </p>
-            <ul className="list-disc pl-5 mt-1 text-sm space-y-1 text-muted-foreground">
-              <li>Register with the VAT Administration Centre.</li>
-              <li>Collect tax at twelve and a half per cent (12.5%) on supply of goods and prescribed services.</li>
-              <li>Remit the Net VAT collected to the Cashiers Unit, Inland Revenue Division.</li>
-              <li>File a VAT return.</li>
-            </ul>
-            <h5 className="font-semibold mt-3">Do I Need One?</h5>
-            <p className="text-sm text-muted-foreground">
-              All persons making commercial supplies of $600,000 (as of 1/1/2023) or more in the preceding twelve-month period or having evidence (in the sales forecast) supplies will exceed $600,000 in a twelve (12) month period must apply for VAT Registration.
-            </p>
-            <h5 className="font-semibold mt-3">What is needed?</h5>
-            <p className="text-sm text-muted-foreground">The following, depending on the business type (click to expand):</p>
-            <Accordion type="single" collapsible className="w-full mt-1">
-              <AccordionItem value="sole-prop">
-                <AccordionTrigger>Sole Proprietors</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>Completed VAT Application Form.</li>
-                    <li>Copy of Board of Inland Revenue (BIR) File Number.</li>
-                    <li>Copy of Certificate of Registration of Business Name.</li>
-                    <li>Valid form of identification (National ID, Passport, or Driver's Permit).</li>
-                    <li>Evidence of $600,000 in commercial supplies or realistic sales forecast.</li>
-                    <li>Copy of bank statement or letter from bank.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="company-partnership">
-                <AccordionTrigger>Companies/Partnerships/Other Organizations</AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground">
-                   <ul className="list-disc pl-5 space-y-1">
-                    <li>Completed VAT Application Form.</li>
-                    <li>Copy of Board of Inland Revenue (BIR) File Number.</li>
-                    <li>Copy of Certificate of Incorporation/Continuance and Articles of Incorporation/Continuance (for companies).</li>
-                    <li>Copy of Partnership Agreement (for partnerships).</li>
-                    <li>Copy of relevant registration documents for other organizations.</li>
-                    <li>Valid form of identification for directors/partners/authorized officers.</li>
-                    <li>Evidence of $600,000 in commercial supplies or realistic sales forecast.</li>
-                    <li>Copy of bank statement or letter from bank.</li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <Separator />
-          {/* VAT Deregistration Process */}
-          <div>
-            <h4 className="font-semibold text-md mb-2 flex items-center">
-              <SquarePen className="mr-2 h-5 w-5 text-primary" />VAT Deregistration Process
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              Guidance on how businesses can cancel their VAT registration if they no longer meet the threshold or cease operations. This typically involves submission of relevant forms and documentation to the IRD, including final VAT returns and payments.
-            </p>
-          </div>
+            </CardContent>
+             <CardFooter>
+                <Button variant="outline" onClick={handleClearEligibilityFields} className="w-full text-sm">
+                    <Trash2 className="mr-2 h-4 w-4" /> Clear Eligibility Fields
+                </Button>
+            </CardFooter>
+          </Card>
+
+          {/* VAT Registration & Deregistration Guide Card */}
+          <Card className="shadow-md rounded-lg">
+            <CardHeader>
+              <CardTitle className="text-xl text-primary flex items-center">
+                <FileText className="mr-2 h-5 w-5" />VAT Registration &amp; Deregistration Guide
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* VAT Registration Guide */}
+              <div className="space-y-2">
+                <h5 className="font-semibold mt-2">Introduction</h5>
+                <p className="text-sm text-muted-foreground">
+                  The Value Added Tax Act, #37/89 requires most businesses and many organizations in Trinidad and Tobago to:
+                </p>
+                <ul className="list-disc pl-5 mt-1 text-sm space-y-1 text-muted-foreground">
+                  <li>Register with the VAT Administration Centre.</li>
+                  <li>Collect tax at twelve and a half per cent (12.5%) on supply of goods and prescribed services.</li>
+                  <li>Remit the Net VAT collected to the Cashiers Unit, Inland Revenue Division.</li>
+                  <li>File a VAT return.</li>
+                </ul>
+                <h5 className="font-semibold mt-3">Do I Need One?</h5>
+                <p className="text-sm text-muted-foreground">
+                  All persons making commercial supplies of $600,000 (as of 1/1/2023) or more in the preceding twelve-month period or having evidence (in the sales forecast) supplies will exceed $600,000 in a twelve (12) month period must apply for VAT Registration.
+                </p>
+                <h5 className="font-semibold mt-3">What is needed?</h5>
+                <p className="text-sm text-muted-foreground">The following, depending on the business type (click to expand):</p>
+                <Accordion type="single" collapsible className="w-full mt-1">
+                  <AccordionItem value="sole-prop">
+                    <AccordionTrigger>Sole Proprietors</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground">
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Completed VAT Application Form.</li>
+                        <li>Copy of Board of Inland Revenue (BIR) File Number.</li>
+                        <li>Copy of Certificate of Registration of Business Name.</li>
+                        <li>Valid form of identification (National ID, Passport, or Driver's Permit).</li>
+                        <li>Evidence of $600,000 in commercial supplies or realistic sales forecast.</li>
+                        <li>Copy of bank statement or letter from bank.</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="company-partnership">
+                    <AccordionTrigger>Companies/Partnerships/Other Organizations</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground">
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Completed VAT Application Form.</li>
+                        <li>Copy of Board of Inland Revenue (BIR) File Number.</li>
+                        <li>Copy of Certificate of Incorporation/Continuance and Articles of Incorporation/Continuance (for companies).</li>
+                        <li>Copy of Partnership Agreement (for partnerships).</li>
+                        <li>Copy of relevant registration documents for other organizations.</li>
+                        <li>Valid form of identification for directors/partners/authorized officers.</li>
+                        <li>Evidence of $600,000 in commercial supplies or realistic sales forecast.</li>
+                        <li>Copy of bank statement or letter from bank.</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+              <Separator />
+              {/* VAT Deregistration Process */}
+              <div>
+                <h4 className="font-semibold text-md mb-2 flex items-center pt-2">
+                  <SquarePen className="mr-2 h-5 w-5 text-primary" />VAT Deregistration Process
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Guidance on how businesses can cancel their VAT registration if they no longer meet the threshold or cease operations. This typically involves submission of relevant forms and documentation to the IRD, including final VAT returns and payments.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </CardContent>
       </Card>
 

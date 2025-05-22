@@ -43,7 +43,7 @@ import {
   Mail,
   CalendarPlus,
   Percent,
-  Cigarette, 
+  Cigarette,
   AlarmClock,
   Gift,
   Plane,
@@ -66,6 +66,11 @@ import {
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
+  BarChart3,
+  CheckCircle2,
+  ThumbsUp,
+  FileText as FileTextIcon,
+  ListChecks,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -127,9 +132,9 @@ interface CalculatorCardData {
   ctaText: string;
   ctaLink?: string;
   onClick?: () => void;
-  calculatorIdentifier: string; 
-  id: string; 
-  name: string; 
+  calculatorIdentifier: string;
+  id: string;
+  name: string;
 }
 
 interface BenefitItem {
@@ -275,46 +280,45 @@ export default function LandingPage() {
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     let wasOpen = false;
-    // Determine if the specific dialog being closed was indeed open
     switch (calculatorName) {
-        case "Basic Time Calculator": wasOpen = isBasicTimeCalcOpen; break;
-        case "PAYE, NIS & HS Calculator": wasOpen = isPayrollCalcOpen; break;
-        case "Voluntary NIS Contribution Calculator": wasOpen = isVoluntaryNisCalcOpen; break;
-        case "Levy Calculator": wasOpen = isLevyCalcOpen; break;
-        case "Simple VAT Calculator": wasOpen = isSimpleVatCalcOpen; break;
-        case "Excise Duty Calculator": wasOpen = isExciseDutyCalcOpen; break;
-        case "Gross to Net Salary Calculator": wasOpen = isGrossToNetCalcOpen; break;
-        case "Overtime Pay Calculator": wasOpen = isOvertimePayCalcOpen; break;
-        case "Bonus & Commission Calculator": wasOpen = isBonusCommCalcOpen; break;
-        case "Vacation Pay Calculator": wasOpen = isVacationPayCalcOpen; break;
-        case "Loan Interest & Amortisation Calculator": wasOpen = isLoanAmortCalcOpen; break;
-        case "Mortgage Calculator": wasOpen = isMortgageCalcOpen; break;
-        case "Savings & Investment Calculator": wasOpen = isSavingsInvestCalcOpen; break;
-        case "Currency Exchange Calculator": wasOpen = isCurrencyExCalcOpen; break;
-        case "Simple Interest Calculator": wasOpen = isSimpleInterestCalcOpen; break;
-        case "Markup & Margin Calculator": wasOpen = isMarkupMarginCalcOpen; break;
-        case "Break-even Analysis Calculator": wasOpen = isBreakEvenCalcOpen; break;
-        case "Cash Flow Projection Calculator": wasOpen = isCashFlowProjCalcOpen; break;
-        case "Depreciation Calculator": wasOpen = isDepreciationCalcOpen; break;
-        case "Tariff & Customs Duty Calculator": wasOpen = isTariffDutyCalcOpen; break;
-        case "Freight & Shipping Cost Calculator": wasOpen = isFreightShipCalcOpen; break;
-        case "Cost, Insurance, and Freight (CIF) Calculator": wasOpen = isCIFCalcOpen; break;
-        case "Stamp Duty Calculator": wasOpen = isStampDutyCalcOpen; break;
-        case "Property Tax Calculator": wasOpen = isPropertyTaxDialogCalcOpen; break;
-        case "Rental Yield Calculator": wasOpen = isRentalYieldCalcOpen; break;
-        case "AML Compliance Risk Assessment Calculator": wasOpen = isAMLRiskCalcOpen; break;
-        case "FATCA & CRS Compliance Calculator": wasOpen = isFATCACRSCalcOpen; break;
-        default: break;
+      case "Basic Time Calculator": wasOpen = isBasicTimeCalcOpen; break;
+      case "PAYE, NIS & HS Calculator": wasOpen = isPayrollCalcOpen; break;
+      case "Voluntary NIS Contribution Calculator": wasOpen = isVoluntaryNisCalcOpen; break;
+      case "Levy Calculator": wasOpen = isLevyCalcOpen; break;
+      case "Simple VAT Calculator": wasOpen = isSimpleVatCalcOpen; break;
+      case "Excise Duty Calculator": wasOpen = isExciseDutyCalcOpen; break;
+      case "Gross to Net Salary Calculator": wasOpen = isGrossToNetCalcOpen; break;
+      case "Overtime Pay Calculator": wasOpen = isOvertimePayCalcOpen; break;
+      case "Bonus & Commission Calculator": wasOpen = isBonusCommCalcOpen; break;
+      case "Vacation Pay Calculator": wasOpen = isVacationPayCalcOpen; break;
+      case "Loan Interest & Amortisation Calculator": wasOpen = isLoanAmortCalcOpen; break;
+      case "Mortgage Calculator": wasOpen = isMortgageCalcOpen; break;
+      case "Savings & Investment Calculator": wasOpen = isSavingsInvestCalcOpen; break;
+      case "Currency Exchange Calculator": wasOpen = isCurrencyExCalcOpen; break;
+      case "Simple Interest Calculator": wasOpen = isSimpleInterestCalcOpen; break;
+      case "Markup & Margin Calculator": wasOpen = isMarkupMarginCalcOpen; break;
+      case "Break-even Analysis Calculator": wasOpen = isBreakEvenCalcOpen; break;
+      case "Cash Flow Projection Calculator": wasOpen = isCashFlowProjCalcOpen; break;
+      case "Depreciation Calculator": wasOpen = isDepreciationCalcOpen; break;
+      case "Tariff & Customs Duty Calculator": wasOpen = isTariffDutyCalcOpen; break;
+      case "Freight & Shipping Cost Calculator": wasOpen = isFreightShipCalcOpen; break;
+      case "Cost, Insurance, and Freight (CIF) Calculator": wasOpen = isCIFCalcOpen; break;
+      case "Stamp Duty Calculator": wasOpen = isStampDutyCalcOpen; break;
+      case "Property Tax Calculator": wasOpen = isPropertyTaxDialogCalcOpen; break;
+      case "Rental Yield Calculator": wasOpen = isRentalYieldCalcOpen; break;
+      case "AML Compliance Risk Assessment Calculator": wasOpen = isAMLRiskCalcOpen; break;
+      case "FATCA & CRS Compliance Calculator": wasOpen = isFATCACRSCalcOpen; break;
+      default: break;
     }
 
-    if (wasOpen && !currentOpenState) { 
-        setCalculatorToReview(calculatorName);
-        setIsReviewModalOpen(true);
+    if (wasOpen && !currentOpenState) {
+      setCalculatorToReview(calculatorName);
+      setIsReviewModalOpen(true);
     }
     setOpenState(currentOpenState);
   };
 
-  const detailedCalculatorList: CalculatorCardData[] = [
+ const allCalculatorsList: CalculatorCardData[] = [
     { id: "time", name: "Basic Time Calculator", title: "Basic Time Calculator", description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.", icon: Clock, onClick: () => openCalculatorDialog(setIsBasicTimeCalcOpen, setBasicTimeCalcKey), ctaText: "Track Hours & Earnings", calculatorIdentifier: "Basic Time Calculator" },
     { id: "paye", name: "PAYE + NIS + HS (Payroll)", title: "PAYE, NIS & HS Calculator", description: "Determines monthly statutory deductions for employees, including Pay As You Earn (PAYE) based on 25%/30% tax brackets, National Insurance Scheme (NIS) contributions (5.6% employee), and Health Surcharge based on weekly income thresholds.", icon: UsersIcon, onClick: () => openCalculatorDialog(setIsPayrollCalcOpen, setPayrollCalcKey), ctaText: "Estimate Deductions", calculatorIdentifier: "PAYE, NIS & HS Calculator" },
     { id: "voluntary-nis", name: "Voluntary NIS Contribution", title: "Voluntary NIS Contribution", description: "Calculates National Insurance Scheme (NIS) contributions for self-employed persons based on their declared monthly earnings and official NIBTT earnings classes.", icon: FileHeart, onClick: () => openCalculatorDialog(setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey), ctaText: "Estimate Voluntary NIS", calculatorIdentifier: "Voluntary NIS Contribution Calculator" },
@@ -342,7 +346,6 @@ export default function LandingPage() {
     { id: "rental-yield", name: "Rental Yield Calculator", title: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Calculate Yield", calculatorIdentifier: "Rental Yield Calculator" },
     { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", title: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Assess AML Risk", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
     { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", title: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Assess FATCA/CRS", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
-
     { id: "business-levy-page", name: "Business Levy (Full Page)", title: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page", calculatorIdentifier: "Business Levy (Full Page)" },
     { id: "green-fund", name: "Green Fund Levy (Full Page)", title: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page", calculatorIdentifier: "Green Fund Levy (Full Page)" },
     { id: "corp-tax", name: "Corporation Tax Calculator", title: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page", calculatorIdentifier: "Corporation Tax Calculator" },
@@ -350,7 +353,21 @@ export default function LandingPage() {
     { id: "property-tax-page", name: "Property Tax Estimator (Full Page)", title: "Property Tax Estimator (Full Page)", description: "Provides a conceptual estimate of property tax based on Annual Rental Value (ARV) and property type, using simplified rates (e.g., 3% for residential after a 10% ARV deduction).", icon: HomeIcon, href: "/calculators/property-tax", ctaText: "View Page", calculatorIdentifier: "Property Tax Estimator (Full Page)" },
     { id: "vat-calc-page", name: "VAT Calculator (Full Page)", title: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page", calculatorIdentifier: "VAT Calculator (Full Page)" },
   ];
-  
+
+  const calculatorsToExcludeFromPopular = [
+    "business-levy-page",
+    "green-fund",
+    "corp-tax",
+    "income-tax",
+    "property-tax-page",
+    "vat-calc-page"
+  ];
+
+  const coreCalculators = allCalculatorsList.filter(
+    calc => !calculatorsToExcludeFromPopular.includes(calc.id)
+  );
+
+
   const HeroIcon = heroContentData.icon;
 
   const upcomingTickerItems = React.useMemo(() => {
@@ -379,7 +396,7 @@ export default function LandingPage() {
       });
       return;
     }
-     if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
+    if (eventDate < new Date(new Date().setHours(0, 0, 0, 0)) && deadline.status !== "Completed") {
       toast({
         title: "Past Due Date",
         description: `Cannot set a reminder for "${deadline.name}" as the date is in the past.`,
@@ -390,7 +407,7 @@ export default function LandingPage() {
 
     const eventTitle = `Tax TT Reminder: ${deadline.name}`;
     const eventDescription = `Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`;
-    
+
     const googleStartDate = format(eventDate, "yyyyMMdd");
     const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd");
 
@@ -444,7 +461,7 @@ export default function LandingPage() {
       >
         <div className="container mx-auto px-4">
           <div className="flex flex-col items-center text-center">
-             <div className="w-full max-w-3xl">
+            <div className="w-full max-w-3xl">
               <div className="flex items-center justify-center mb-6">
                 <HeroIcon className="h-12 w-12 text-primary" />
               </div>
@@ -478,11 +495,11 @@ export default function LandingPage() {
               <div className="py-2 animate-marquee-scroll whitespace-nowrap flex">
                 {[...upcomingTickerItems, ...upcomingTickerItems].map((item, index) => (
                   <div key={`${item.id}-${index}`} className="flex items-center mx-4 px-3 py-1.5 bg-card/80 rounded-full shadow">
-                    <Bell className="h-4 w-4 text-accent mr-2" />
-                    <span className="text-sm font-medium text-card-foreground">
+                    <Bell className="h-4 w-4 text-primary-foreground mr-2" />
+                    <span className="text-sm font-medium text-primary-foreground">
                       {item.name}
                     </span>
-                    <span className="text-xs text-muted-foreground ml-1.5">
+                    <span className="text-xs text-primary-foreground/80 ml-1.5">
                       (Due: {format(parseISO(item.nextDueDate), "MMM d")})
                     </span>
                   </div>
@@ -500,7 +517,7 @@ export default function LandingPage() {
             Start With Our Most Popular Calculators
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {detailedCalculatorList.map((calc) => (
+            {coreCalculators.map((calc) => (
               <Card key={calc.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
                   <div className="flex items-center mb-3">
@@ -514,11 +531,11 @@ export default function LandingPage() {
                 <CardFooter>
                   {calc.onClick ? (
                     <Button onClick={calc.onClick} variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
-                      {calc.ctaText} <ArrowRight className="ml-2 h-4 w-4"/>
+                      {calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   ) : (
-                     <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
-                      <Link href={calc.ctaLink || "#"}>{calc.ctaText} <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                    <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
+                      <Link href={calc.ctaLink || "#"}>{calc.ctaText} <ArrowRight className="ml-2 h-4 w-4" /></Link>
                     </Button>
                   )}
                 </CardFooter>
@@ -528,8 +545,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-       {/* Why Choose Tax TT */}
-       <section id="why-tax-tt" className="py-16 lg:py-24">
+      {/* Why Choose Tax TT */}
+      <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Why Choose Tax TT?
@@ -561,20 +578,20 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {deadlineItems.map((item) => {
-                let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
-                if (item.status === "Urgent") badgeVariant = "destructive";
-                else if (item.status === "Upcoming") badgeVariant = "default";
-                else if (item.status === "Completed") badgeVariant = "outline";
+              let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+              if (item.status === "Urgent") badgeVariant = "destructive";
+              else if (item.status === "Upcoming") badgeVariant = "default";
+              else if (item.status === "Completed") badgeVariant = "outline";
 
-                const dueDate = parseISO(item.nextDueDate);
-                const isPast = dueDate < new Date(new Date().setHours(0,0,0,0)) && item.status !== "Completed";
+              const dueDate = parseISO(item.nextDueDate);
+              const isPast = dueDate < new Date(new Date().setHours(0, 0, 0, 0)) && item.status !== "Completed";
 
               return (
                 <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${isPast ? 'opacity-70' : ''}`}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg text-primary">{item.name}</CardTitle>
-                       <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
+                      <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
                         {isPast ? "Overdue" : item.status}
                       </Badge>
                     </div>
@@ -584,10 +601,10 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                       Due: {format(dueDate, "MMMM d, yyyy")}
+                      Due: {format(dueDate, "MMMM d, yyyy")}
                     </div>
                   </CardContent>
-                   <CardFooter className="pt-4 flex items-center justify-start space-x-1 sm:space-x-2">
+                  <CardFooter className="pt-4 flex items-center justify-start space-x-1 sm:space-x-2">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -597,9 +614,9 @@ export default function LandingPage() {
                       aria-label="Add to Google Calendar"
                       title="Add to Google Calendar"
                     >
-                      <CalendarPlus className="h-4 w-4"/>
+                      <CalendarPlus className="h-4 w-4" />
                     </Button>
-                     <Button
+                    <Button
                       variant="ghost"
                       size="icon"
                       className="h-7 w-7 text-primary hover:bg-primary/10"
@@ -608,7 +625,7 @@ export default function LandingPage() {
                       aria-label="Add to Outlook Calendar"
                       title="Add to Outlook Calendar"
                     >
-                      <Mail className="h-4 w-4"/>
+                      <Mail className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -619,7 +636,7 @@ export default function LandingPage() {
                       aria-label="Download ICS File for Apple/Other Calendars"
                       title="Download ICS for Apple/Other"
                     >
-                      <Download className="h-4 w-4"/>
+                      <Download className="h-4 w-4" />
                     </Button>
                   </CardFooter>
                 </Card>
@@ -647,7 +664,7 @@ export default function LandingPage() {
                 </CardContent>
                 <CardFooter>
                   <Button asChild variant="link" className="text-accent p-0 h-auto">
-                    <Link href={resource.href}>Read Guide <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                    <Link href={resource.href}>Read Guide <ArrowRight className="ml-1 h-4 w-4" /></Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -655,7 +672,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 text-center">
             <Button asChild size="lg" variant="outline" className="text-primary border-primary hover:bg-primary/10">
-                <Link href="/knowledge-base">Explore All Resources <ArrowRight className="ml-2 h-4 w-4"/></Link>
+              <Link href="/knowledge-base">Explore All Resources <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
           </div>
         </div>
@@ -664,17 +681,17 @@ export default function LandingPage() {
       {/* Footer Section */}
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-            <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">{heroContentData.headline}</h3>
-            <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
-                Your trusted partner for Trinidad & Tobago tax solutions.
-            </p>
-            <div className="text-xs text-primary-foreground/70">
-                <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
-            </div>
-             <p className="text-xs text-primary-foreground/60 mt-4">
-                © {new Date().getFullYear()} Tax TT. All rights reserved.
-            </p>
+          <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold mb-2">{heroContentData.headline}</h3>
+          <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
+            Your trusted partner for Trinidad & Tobago tax solutions.
+          </p>
+          <div className="text-xs text-primary-foreground/70">
+            <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
+          </div>
+          <p className="text-xs text-primary-foreground/60 mt-4">
+            © {new Date().getFullYear()} Tax TT. All rights reserved.
+          </p>
         </div>
       </footer>
 
@@ -682,7 +699,7 @@ export default function LandingPage() {
       <Dialog open={isBasicTimeCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Basic Time Calculator", open, setIsBasicTimeCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><Clock className="mr-2 h-6 w-6"/>Basic Time Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><Clock className="mr-2 h-6 w-6" />Basic Time Calculator</DialogTitle>
           </DialogHeader>
           <BasicTimeCalculator key={basicTimeCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
@@ -692,7 +709,7 @@ export default function LandingPage() {
       <Dialog open={isPayrollCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("PAYE, NIS & HS Calculator", open, setIsPayrollCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><UsersIcon className="mr-2 h-6 w-6"/>PAYE, NIS & HS Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><UsersIcon className="mr-2 h-6 w-6" />PAYE, NIS & HS Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedPayrollCalculator key={payrollCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
@@ -702,7 +719,7 @@ export default function LandingPage() {
       <Dialog open={isSimpleVatCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Simple VAT Calculator", open, setIsSimpleVatCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><Percent className="mr-2 h-6 w-6"/>Simple VAT Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><Percent className="mr-2 h-6 w-6" />Simple VAT Calculator</DialogTitle>
           </DialogHeader>
           <SimpleVatCalculator key={simpleVatCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
@@ -712,7 +729,7 @@ export default function LandingPage() {
       <Dialog open={isLevyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Levy Calculator", open, setIsLevyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6"/>Levy Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><Banknote className="mr-2 h-6 w-6" />Levy Calculator</DialogTitle>
           </DialogHeader>
           <SimplifiedLevyCalculator key={levyCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
@@ -722,7 +739,7 @@ export default function LandingPage() {
       <Dialog open={isVoluntaryNisCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Voluntary NIS Contribution Calculator", open, setIsVoluntaryNisCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-primary flex items-center"><FileHeart className="mr-2 h-6 w-6"/>Voluntary NIS Calculator</DialogTitle>
+            <DialogTitle className="text-2xl text-primary flex items-center"><FileHeart className="mr-2 h-6 w-6" />Voluntary NIS Calculator</DialogTitle>
           </DialogHeader>
           <VoluntaryNisCalculator key={voluntaryNisCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
@@ -731,7 +748,7 @@ export default function LandingPage() {
 
       <Dialog open={isExciseDutyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Excise Duty Calculator", open, setIsExciseDutyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Cigarette className="mr-2 h-6 w-6"/>Excise Duty Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Cigarette className="mr-2 h-6 w-6" />Excise Duty Calculator</DialogTitle></DialogHeader>
           <ExciseDutyCalculator key={exciseDutyCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -739,7 +756,7 @@ export default function LandingPage() {
 
       <Dialog open={isGrossToNetCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Gross to Net Salary Calculator", open, setIsGrossToNetCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><TrendingDown className="mr-2 h-6 w-6"/>Gross to Net Salary Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><TrendingDown className="mr-2 h-6 w-6" />Gross to Net Salary Calculator</DialogTitle></DialogHeader>
           <GrossToNetSalaryCalculator key={grossToNetCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -747,7 +764,7 @@ export default function LandingPage() {
 
       <Dialog open={isOvertimePayCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Overtime Pay Calculator", open, setIsOvertimePayCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><AlarmClock className="mr-2 h-6 w-6"/>Overtime Pay Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><AlarmClock className="mr-2 h-6 w-6" />Overtime Pay Calculator</DialogTitle></DialogHeader>
           <OvertimePayCalculator key={overtimePayCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -755,15 +772,15 @@ export default function LandingPage() {
 
       <Dialog open={isBonusCommCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Bonus & Commission Calculator", open, setIsBonusCommCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Gift className="mr-2 h-6 w-6"/>Bonus & Commission Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Gift className="mr-2 h-6 w-6" />Bonus & Commission Calculator</DialogTitle></DialogHeader>
           <BonusCommissionCalculator key={bonusCommCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
       </Dialog>
 
-       <Dialog open={isVacationPayCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Vacation Pay Calculator", open, setIsVacationPayCalcOpen)}>
+      <Dialog open={isVacationPayCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Vacation Pay Calculator", open, setIsVacationPayCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Plane className="mr-2 h-6 w-6"/>Vacation Pay Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Plane className="mr-2 h-6 w-6" />Vacation Pay Calculator</DialogTitle></DialogHeader>
           <VacationPayCalculator key={vacationPayCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -771,7 +788,7 @@ export default function LandingPage() {
 
       <Dialog open={isLoanAmortCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Loan Interest & Amortisation Calculator", open, setIsLoanAmortCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Landmark className="mr-2 h-6 w-6"/>Loan Interest & Amortisation Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Landmark className="mr-2 h-6 w-6" />Loan Interest & Amortisation Calculator</DialogTitle></DialogHeader>
           <LoanAmortisationCalculator key={loanAmortCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -779,7 +796,7 @@ export default function LandingPage() {
 
       <Dialog open={isMortgageCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Mortgage Calculator", open, setIsMortgageCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><HomeIcon className="mr-2 h-6 w-6"/>Mortgage Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><HomeIcon className="mr-2 h-6 w-6" />Mortgage Calculator</DialogTitle></DialogHeader>
           <MortgageCalculator key={mortgageCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -787,7 +804,7 @@ export default function LandingPage() {
 
       <Dialog open={isSavingsInvestCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Savings & Investment Calculator", open, setIsSavingsInvestCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><PiggyBank className="mr-2 h-6 w-6"/>Savings & Investment Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><PiggyBank className="mr-2 h-6 w-6" />Savings & Investment Calculator</DialogTitle></DialogHeader>
           <SavingsInvestmentCalculator key={savingsInvestCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -795,7 +812,7 @@ export default function LandingPage() {
 
       <Dialog open={isCurrencyExCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Currency Exchange Calculator", open, setIsCurrencyExCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Coins className="mr-2 h-6 w-6"/>Currency Exchange Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Coins className="mr-2 h-6 w-6" />Currency Exchange Calculator</DialogTitle></DialogHeader>
           <CurrencyExchangeCalculator key={currencyExCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -803,7 +820,7 @@ export default function LandingPage() {
 
       <Dialog open={isSimpleInterestCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Simple Interest Calculator", open, setIsSimpleInterestCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><PercentCircle className="mr-2 h-6 w-6"/>Simple Interest Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><PercentCircle className="mr-2 h-6 w-6" />Simple Interest Calculator</DialogTitle></DialogHeader>
           <SimpleInterestCalculator key={simpleInterestCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -811,7 +828,7 @@ export default function LandingPage() {
 
       <Dialog open={isMarkupMarginCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Markup & Margin Calculator", open, setIsMarkupMarginCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Target className="mr-2 h-6 w-6"/>Markup & Margin Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Target className="mr-2 h-6 w-6" />Markup & Margin Calculator</DialogTitle></DialogHeader>
           <MarkupMarginCalculator key={markupMarginCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -819,7 +836,7 @@ export default function LandingPage() {
 
       <Dialog open={isBreakEvenCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Break-even Analysis Calculator", open, setIsBreakEvenCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><LineChart className="mr-2 h-6 w-6"/>Break-even Analysis Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><LineChart className="mr-2 h-6 w-6" />Break-even Analysis Calculator</DialogTitle></DialogHeader>
           <BreakEvenCalculator key={breakEvenCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -827,7 +844,7 @@ export default function LandingPage() {
 
       <Dialog open={isCashFlowProjCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Cash Flow Projection Calculator", open, setIsCashFlowProjCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><AreaChart className="mr-2 h-6 w-6"/>Cash Flow Projection Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><AreaChart className="mr-2 h-6 w-6" />Cash Flow Projection Calculator</DialogTitle></DialogHeader>
           <CashFlowProjectionCalculator key={cashFlowProjCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -835,7 +852,7 @@ export default function LandingPage() {
 
       <Dialog open={isDepreciationCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Depreciation Calculator", open, setIsDepreciationCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><TrendingDown className="mr-2 h-6 w-6"/>Depreciation Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><TrendingDown className="mr-2 h-6 w-6" />Depreciation Calculator</DialogTitle></DialogHeader>
           <DepreciationCalculator key={depreciationCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -843,7 +860,7 @@ export default function LandingPage() {
 
       <Dialog open={isTariffDutyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Tariff & Customs Duty Calculator", open, setIsTariffDutyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Ship className="mr-2 h-6 w-6"/>Tariff & Customs Duty Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Ship className="mr-2 h-6 w-6" />Tariff & Customs Duty Calculator</DialogTitle></DialogHeader>
           <TariffCustomsDutyCalculator key={tariffDutyCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -851,7 +868,7 @@ export default function LandingPage() {
 
       <Dialog open={isFreightShipCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Freight & Shipping Cost Calculator", open, setIsFreightShipCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Truck className="mr-2 h-6 w-6"/>Freight & Shipping Cost Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Truck className="mr-2 h-6 w-6" />Freight & Shipping Cost Calculator</DialogTitle></DialogHeader>
           <FreightShippingCalculator key={freightShipCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -859,7 +876,7 @@ export default function LandingPage() {
 
       <Dialog open={isCIFCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Cost, Insurance, and Freight (CIF) Calculator", open, setIsCIFCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><FileBox className="mr-2 h-6 w-6"/>Cost, Insurance, and Freight (CIF) Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><FileBox className="mr-2 h-6 w-6" />Cost, Insurance, and Freight (CIF) Calculator</DialogTitle></DialogHeader>
           <CIFCalculator key={cifCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -867,7 +884,7 @@ export default function LandingPage() {
 
       <Dialog open={isStampDutyCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Stamp Duty Calculator", open, setIsStampDutyCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Stamp className="mr-2 h-6 w-6"/>Stamp Duty Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Stamp className="mr-2 h-6 w-6" />Stamp Duty Calculator</DialogTitle></DialogHeader>
           <StampDutyCalculator key={stampDutyCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -875,7 +892,7 @@ export default function LandingPage() {
 
       <Dialog open={isPropertyTaxDialogCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Property Tax Calculator", open, setIsPropertyTaxDialogCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><HomeIcon className="mr-2 h-6 w-6"/>Property Tax Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><HomeIcon className="mr-2 h-6 w-6" />Property Tax Calculator</DialogTitle></DialogHeader>
           <PropertyTaxDialogCalculator key={propertyTaxDialogCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -883,7 +900,7 @@ export default function LandingPage() {
 
       <Dialog open={isRentalYieldCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("Rental Yield Calculator", open, setIsRentalYieldCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Building2 className="mr-2 h-6 w-6"/>Rental Yield Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Building2 className="mr-2 h-6 w-6" />Rental Yield Calculator</DialogTitle></DialogHeader>
           <RentalYieldCalculator key={rentalYieldCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -891,7 +908,7 @@ export default function LandingPage() {
 
       <Dialog open={isAMLRiskCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("AML Compliance Risk Assessment Calculator", open, setIsAMLRiskCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><ShieldAlert className="mr-2 h-6 w-6"/>AML Compliance Risk Assessment Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><ShieldAlert className="mr-2 h-6 w-6" />AML Compliance Risk Assessment Calculator</DialogTitle></DialogHeader>
           <AMLRiskCalculator key={amlRiskCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>
@@ -899,7 +916,7 @@ export default function LandingPage() {
 
       <Dialog open={isFATCACRSCalcOpen} onOpenChange={(open) => handleCalculatorDialogClose("FATCA & CRS Compliance Calculator", open, setIsFATCACRSCalcOpen)}>
         <DialogContent className="w-[90vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Network className="mr-2 h-6 w-6"/>FATCA & CRS Compliance Calculator</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-2xl text-primary flex items-center"><Network className="mr-2 h-6 w-6" />FATCA & CRS Compliance Calculator</DialogTitle></DialogHeader>
           <FATCACRSCalculator key={fatcaCRSCalcKey} />
           <DialogClose asChild><Button type="button" variant="outline" className="mt-4 w-full">Close</Button></DialogClose>
         </DialogContent>

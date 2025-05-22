@@ -39,9 +39,9 @@ import {
 } from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
-import { 
-  Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle, 
-  Receipt, Users, Megaphone, Home, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, Check, ChevronsUpDown,
+import {
+  Building, FileText, CalendarDays, DollarSign, TrendingDown, Percent, Download, Info, AlertCircle,
+  Receipt, Users as UsersIcon, Megaphone, Home as HomeIcon, Palette, School, Briefcase as BriefcaseIcon, Archive, Plus, Trash2, Sigma, Check, ChevronsUpDown,
   Copy as CopyIcon, ChevronDown as ChevronDownIcon
 } from "lucide-react";
 import { getYear } from 'date-fns';
@@ -65,7 +65,7 @@ const companyTypeOptions = [
   { value: "general_insurance", label: "General Insurance Co.", rate: 0.30 },
   { value: "petroleum_production_std", label: "Petroleum Production (Standard PPT)", rate: 0.50 },
   { value: "petroleum_production_deep_sea", label: "Petroleum Production (Deep Sea)", rate: 0.30 },
-  { value: "sme_listed", label: "SME (Listed on Stock Exchange)", rate: 0.10 }, // Simplified, actual is tiered
+  { value: "sme_listed", label: "SME (Listed on Stock Exchange)", rate: 0.10 }, // Simplified, use 10% as placeholder for 0%/15% tiered
   { value: "sez_company", label: "Special Economic Zone Co.", rate: 0.01 },
 ];
 
@@ -183,7 +183,7 @@ export default function CorporationTaxPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState(initialCalculationResults);
   const [comboboxOpenStates, setComboboxOpenStates] = React.useState<boolean[]>([]);
-  
+
   const [incomeInputPeriod, setIncomeInputPeriod] = React.useState<"annually" | "quarterly" | "monthly">("annually");
   const [annualIncomeInput, setAnnualIncomeInput] = React.useState<string>("");
   const [quarterlyIncomes, setQuarterlyIncomes] = React.useState<string[]>(Array(4).fill(""));
@@ -200,7 +200,7 @@ export default function CorporationTaxPage() {
   });
 
   const watchedDynamicExpenses = form.watch("dynamicOperatingExpenses");
-  
+
   React.useEffect(() => {
     if (incomeInputPeriod === "monthly") {
       setAnnualIncomeInput("");
@@ -224,10 +224,9 @@ export default function CorporationTaxPage() {
       annualized = monthlyIncomes.reduce((sum, income) => sum + (Number(income) || 0), 0);
     }
     if (form.getValues("grossIncome") !== annualized) {
-        form.setValue("grossIncome", annualized, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      form.setValue("grossIncome", annualized, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     }
   }, [incomeInputPeriod, annualIncomeInput, quarterlyIncomes, monthlyIncomes, form]);
-
 
   React.useEffect(() => {
     if (watchedDynamicExpenses) {
@@ -238,8 +237,8 @@ export default function CorporationTaxPage() {
         form.setValue("allowableDeductions", totalOpEx, { shouldValidate: false, shouldDirty: true, shouldTouch: true });
       }
     }
-  }, [watchedDynamicExpenses, form, JSON.stringify(watchedDynamicExpenses)]); 
-  
+  }, [watchedDynamicExpenses, form, JSON.stringify(watchedDynamicExpenses)]);
+
   const watchedTaxYear = form.watch("taxYear");
   const watchedCompanyType = form.watch("companyType");
   const watchedGrossIncome = form.watch("grossIncome");
@@ -258,20 +257,20 @@ export default function CorporationTaxPage() {
     const taxCreditsClaimedNum = Number(watchedTaxCreditsClaimed) || 0;
 
     const selectedCompanyType = companyTypeOptions.find(opt => opt.value === watchedCompanyType);
-    
+
     if (!selectedCompanyType) {
       if (JSON.stringify(initialCalculationResults) !== JSON.stringify(calculationResults)) {
-        setCalculationResults(initialCalculationResults);
+         setCalculationResults(initialCalculationResults);
       }
       return;
     }
 
     let taxRate = selectedCompanyType.rate;
-    
+
     const initialChargeable = Math.max(0, grossIncomeNum - allowableDeductionsNum);
     const finalChargeable = Math.max(0, initialChargeable + otherIncomeNum - lossCarriedForwardNum);
     const taxBeforeOffsetsAndCredits = finalChargeable * taxRate;
-    
+
     const blOffset = Math.min(businessLevyPaidNum, taxBeforeOffsetsAndCredits);
     const taxAfterBLOffset = taxBeforeOffsetsAndCredits - blOffset;
 
@@ -287,21 +286,21 @@ export default function CorporationTaxPage() {
       taxCreditsApplied: creditsApplied,
       finalCorporationTaxDue: finalTax,
     };
-
+    
     if (JSON.stringify(newResults) !== JSON.stringify(calculationResults)) {
         setCalculationResults(newResults);
     }
 
   }, [
-    watchedTaxYear, 
-    watchedCompanyType, 
-    watchedGrossIncome, 
-    watchedAllowableDeductions, 
-    watchedOtherIncome, 
-    watchedLossCarriedForward, 
-    watchedBusinessLevyPaid, 
+    watchedTaxYear,
+    watchedCompanyType,
+    watchedGrossIncome,
+    watchedAllowableDeductions,
+    watchedOtherIncome,
+    watchedLossCarriedForward,
+    watchedBusinessLevyPaid,
     watchedTaxCreditsClaimed,
-    calculationResults 
+    calculationResults // Added to dependency array for conditional update
   ]);
 
   const chargeableIncomeAutoCalculated = React.useMemo(() => {
@@ -322,7 +321,7 @@ export default function CorporationTaxPage() {
       return newStates;
     });
   };
-  
+
   const handleClearFields = () => {
     form.reset(initialFormValues);
     setAnnualIncomeInput("");
@@ -341,15 +340,15 @@ export default function CorporationTaxPage() {
 
     let incomeDetails = "";
     if (incomeInputPeriod === "annually") {
-        incomeDetails = `Annual Gross Income: TT$ ${formatCurrency(Number(annualIncomeInput) || 0)}\n`;
+      incomeDetails = `Annual Gross Income: TT$ ${formatCurrency(Number(annualIncomeInput) || 0)}\n`;
     } else if (incomeInputPeriod === "quarterly") {
-        quarterlyIncomes.forEach((qIncome, i) => {
-            incomeDetails += `Quarter ${i + 1} Income: TT$ ${formatCurrency(Number(qIncome) || 0)}\n`;
-        });
+      quarterlyIncomes.forEach((qIncome, i) => {
+        incomeDetails += `Quarter ${i + 1} Income: TT$ ${formatCurrency(Number(qIncome) || 0)}\n`;
+      });
     } else if (incomeInputPeriod === "monthly") {
-        monthlyIncomes.forEach((mIncome, i) => {
-            incomeDetails += `Month ${i + 1} Income: TT$ ${formatCurrency(Number(mIncome) || 0)}\n`;
-        });
+      monthlyIncomes.forEach((mIncome, i) => {
+        incomeDetails += `Month ${i + 1} Income: TT$ ${formatCurrency(Number(mIncome) || 0)}\n`;
+      });
     }
     incomeDetails += `Annualized Gross Income: TT$ ${formatCurrency(formData.grossIncome)}\n`;
 
@@ -363,7 +362,7 @@ export default function CorporationTaxPage() {
       expenseDetails += "  None entered\n";
     }
     expenseDetails += `Total Allowable Deductions: TT$ ${formatCurrency(formData.allowableDeductions)}\n`;
-    
+
     const textToCopy = `
 CORPORATION TAX CALCULATION SUMMARY
 ---------------------------------
@@ -404,15 +403,15 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     ];
 
     if (incomeInputPeriod === "annually") {
-        csvRows.push(["Annual Gross Income (Input)", formatCurrency(Number(annualIncomeInput) || 0)]);
+      csvRows.push(["Annual Gross Income (Input)", formatCurrency(Number(annualIncomeInput) || 0)]);
     } else if (incomeInputPeriod === "quarterly") {
-        quarterlyIncomes.forEach((qIncome, i) => {
-            csvRows.push([`Quarter ${i + 1} Income`, formatCurrency(Number(qIncome) || 0)]);
-        });
+      quarterlyIncomes.forEach((qIncome, i) => {
+        csvRows.push([`Quarter ${i + 1} Income`, formatCurrency(Number(qIncome) || 0)]);
+      });
     } else if (incomeInputPeriod === "monthly") {
-        monthlyIncomes.forEach((mIncome, i) => {
-            csvRows.push([`Month ${i + 1} Income`, formatCurrency(Number(mIncome) || 0)]);
-        });
+      monthlyIncomes.forEach((mIncome, i) => {
+        csvRows.push([`Month ${i + 1} Income`, formatCurrency(Number(mIncome) || 0)]);
+      });
     }
     csvRows.push(["Annualized Gross Income", formatCurrency(formData.grossIncome)]);
 
@@ -423,12 +422,12 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
       });
     }
     csvRows.push(["Total Allowable Deductions", formatCurrency(formData.allowableDeductions)]);
-    
+
     csvRows.push(["Other Income", formatCurrency(formData.otherIncome)]);
     csvRows.push(["Loss Carried Forward", formatCurrency(formData.lossCarriedForward)]);
     csvRows.push(["Business Levy Paid (for offset)", formatCurrency(formData.businessLevyPaid)]);
     csvRows.push(["Tax Credits Claimed", formatCurrency(formData.taxCreditsClaimed)]);
-    
+
     csvRows.push(["--- CALCULATION RESULTS ---", ""]);
     csvRows.push(["Chargeable Income (Gross - Deductions)", formatCurrency(results.chargeableIncomeBeforeAdjustments)]);
     csvRows.push(["Final Chargeable Income", formatCurrency(results.finalChargeableIncome)]);
@@ -490,7 +489,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
       trigger: "Penalties, Interest, and Offences",
       content: "Failure to comply with the Corporation Tax Act, including late filing of returns, late payment of taxes, or incorrect declarations, can lead to penalties and interest charges. Specific offences and their corresponding penalties are detailed in the Income Tax Act and Corporation Tax Act. It is crucial to adhere to all filing and payment obligations to avoid these. For detailed information, refer to the relevant sections of the Acts or consult with the IRD/a tax professional.",
     },
-     {
+    {
       value: "item-adjustments",
       trigger: "Adjustments to Net Income (Profit)",
       content: (<>
@@ -571,14 +570,14 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
       trigger: "Withholding Taxes (if applicable)",
       content: <p className="text-sm text-muted-foreground">Deduction or credit for withholding taxes already deducted on income received (e.g., royalties, dividends, management fees).</p>
     },
-     {
+    {
       value: "item-important-links",
       trigger: "Important Links & Disclaimer",
       content: (<>
         <ul className="list-disc list-inside space-y-1 mb-2">
           <li><a href="https://www.ird.gov.tt/corporations" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">IRD - Corporation Tax Information</a></li>
           <li><a href="https://www.finance.gov.tt/wp-content/uploads/2014/08/The-Corporation-Tax-Act.pdf" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">The Corporation Tax Act (finance.gov.tt)</a></li>
-           <li><a href="http://rgd.legalaffairs.gov.tt/Laws2/Alphabetical_List/lawspdfs/75.01.pdf" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Income Tax Act (Chap. 75:01) (legalaffairs.gov.tt)</a></li>
+          <li><a href="http://rgd.legalaffairs.gov.tt/Laws2/Alphabetical_List/lawspdfs/75.01.pdf" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Income Tax Act (Chap. 75:01) (legalaffairs.gov.tt)</a></li>
         </ul>
         This calculator provides an estimate and does not cover all scenarios (e.g., specific industry incentives, detailed capital allowance rules, group relief, exact tiered rate calculations for SMEs/Life Insurance).
       </>),
@@ -599,7 +598,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
         </CardHeader>
         <CardContent className="space-y-6">
           <Form {...form}>
-            <form className="space-y-6"> 
+            <form className="space-y-6">
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                   <CardTitle className="text-xl text-primary flex items-center">
@@ -767,7 +766,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
                                     {field.value
                                       ? expenseOptionsList.find(
                                           (option) => option.value === field.value
-                                        )?.label || field.value 
+                                        )?.label || field.value
                                       : "Select or type expense..."}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                   </Button>
@@ -775,8 +774,8 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
                               </PopoverTrigger>
                               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                                 <Command>
-                                  <CommandInput 
-                                    placeholder="Search or type custom..." 
+                                  <CommandInput
+                                    placeholder="Search or type custom..."
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     className="h-9 text-xs"
@@ -858,7 +857,7 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card className="shadow-md rounded-lg">
                 <CardHeader>
                     <CardTitle className="text-xl text-primary flex items-center">
@@ -866,7 +865,6 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  
                   <FormField
                       control={form.control}
                       name="allowableDeductions"
@@ -1030,4 +1028,3 @@ Disclaimer: This calculator provides estimates. Consult official guidelines.
     </div>
   );
 }
-

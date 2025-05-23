@@ -28,13 +28,15 @@ import {
   Calculator as CalculatorIcon,
   ArrowRight,
   CalendarDays,
-  FileText,
+  FileText as FileTextIconLucide,
   Bell,
   Linkedin,
   Facebook,
-  HelpCircle,
-  Settings,
-  ListChecks,
+  FileHeart,
+  Leaf,
+  Building,
+  House,
+  ReceiptText,
   Percent,
   Landmark,
   PiggyBank,
@@ -47,14 +49,13 @@ import {
   Ship,
   FileBox,
   Stamp,
-  Home,
+  Home as HomeIconLucide,
   ShieldAlert,
   Network,
   BookOpen,
   Search,
   Copy,
   Trash2,
-  FileHeart,
   Cigarette,
   Gift,
   Plane,
@@ -62,25 +63,22 @@ import {
   Building2,
   Download,
   Mail,
-  CalendarPlus,
-  BarChart3, // Added from previous context
-  CheckCircle2, // Added from previous context
-  ThumbsUp, // Added from previous context
-  Banknote, // Added from previous context
-  Scale, // Added from previous context
-  UserCheck, // Added from previous context
-  HandCoins // Added from previous context
+  Save,
+  ListChecks,
+  Eye,
+  Loader2,
+  HelpCircle,
+  Settings,
+  Calculator as CalculatorIconLucide,
 } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO, addDays } from 'date-fns';
 import CalculatorDialog from "@/components/ui/CalculatorDialog";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 
-import { useToast } from "@/hooks/use-toast";
-import { format, parseISO, addDays } from 'date-fns';
-
+// Dynamically import calculator components
 const LazyBasicTimeCalculator = React.lazy(() => import("@/components/calculators/BasicTimeCalculator"));
 const LazySimplifiedPayrollCalculator = React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator"));
 const LazySimplifiedLevyCalculator = React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator"));
@@ -108,7 +106,6 @@ const LazyPropertyTaxDialogCalculator = React.lazy(() => import("@/components/ca
 const LazyRentalYieldCalculator = React.lazy(() => import("@/components/calculators/RentalYieldCalculator"));
 const LazyAMLRiskCalculator = React.lazy(() => import("@/components/calculators/AMLRiskCalculator"));
 const LazyFATCACRSCalculator = React.lazy(() => import("@/components/calculators/FATCACRSCalculator"));
-
 
 const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = {
   BasicTimeCalculator: LazyBasicTimeCalculator,
@@ -140,18 +137,31 @@ const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = 
   FATCACRSCalculator: LazyFATCACRSCalculator,
 };
 
-// Constants directly in the file for now
-const heroContentData = {
+interface HeroContent {
+  icon: React.ElementType;
+  headline: string;
+  primarySubheadline: string;
+  secondarySubheadline: string;
+  primaryCtaText: string;
+  primaryCtaLink: string;
+}
+
+const heroContentData: HeroContent = {
   icon: Briefcase,
   headline: "Calculate. Track. Comply.",
   primarySubheadline: "Your Tools in One Place.",
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
-  backgroundImageUrl: "https://firebasestorage.googleapis.com/v0/b/wage-wiz.firebasestorage.app/o/hero-taxes.webp?alt=media&token=37c7b6ac-f45e-4c1c-b33f-7381fb55244d",
 };
 
-const benefitsData = [
+interface BenefitItem {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+}
+
+const benefitsData: BenefitItem[] = [
   {
     icon: ShieldCheck,
     title: "Stay Compliant with Confidence",
@@ -163,7 +173,7 @@ const benefitsData = [
     description: "Whether you are managing a growing team, running a side hustle, or consulting independently, Tax TT is built with your workflow in mind, with no unnecessary complexity, just what you need.",
   },
   {
-    icon: CalculatorIcon,
+    icon: CalculatorIconLucide,
     title: "Accurate, IRD-Aligned Calculations",
     description: "Our tools reflect real-world rates and thresholds for PAYE, NIS, Health Surcharge, VAT, Business Levy, and more, so your numbers always match local requirements.",
   },
@@ -177,7 +187,7 @@ const benefitsData = [
 interface DeadlineItem {
   id: string;
   title: string;
-  dueDate: string; // YYYY-MM-DD format
+  dueDate: string;
   description: string;
   periodicity: string;
   status: "Urgent" | "Upcoming" | "Completed" | "Overdue";
@@ -192,8 +202,14 @@ const deadlineItems: DeadlineItem[] = [
   { id: "income-tax-return", title: "Individual Income Tax Return", dueDate: "2025-04-30", description: "For income year 2024.", periodicity: "Annually", status: "Upcoming" },
 ];
 
+interface ResourceGuide {
+  title: string;
+  description: string;
+  link: string;
+  category: string;
+}
 
-const resourceGuides = [
+const resourceGuides: ResourceGuide[] = [
     {
       title: "Understanding VAT",
       description: "An in-depth guide to VAT registration, obligations, and filing.",
@@ -214,7 +230,19 @@ const resourceGuides = [
     },
 ];
 
-const detailedCalculatorList = [
+interface DetailedCalculatorListItem {
+  name: string;
+  description: string;
+  icon: React.ElementType;
+  category: string;
+  ctaText?: string;
+  href?: string;
+  onClick?: () => void; // For dialogs
+  componentName?: string; // For lazy loading dialogs
+  calculatorIdentifier: string; // For review modal and unique keys
+}
+
+const detailedCalculatorList: DetailedCalculatorListItem[] = [
     {
       name: "Time Calculator",
       description: "Calculates total work hours, distinguishes between regular and overtime, and estimates gross pay based on hourly rates and overtime multipliers.",
@@ -317,7 +345,7 @@ const detailedCalculatorList = [
     {
       name: "Mortgage Calculator",
       description: "Calculate mortgage repayments, including down payments and interest. View indicative bank rates.",
-      icon: Home,
+      icon: HomeIconLucide,
       category: "Financial Planning",
       ctaText: "Estimate Payments",
       componentName: "MortgageCalculator",
@@ -425,7 +453,7 @@ const detailedCalculatorList = [
     {
       name: "Property Tax Calculator (Dialog)",
       description: "Quickly estimate annual property tax obligations based on Annual Rental Value (ARV).",
-      icon: Home,
+      icon: HomeIconLucide,
       category: "Tax",
       ctaText: "Estimate Property Tax",
       componentName: "PropertyTaxDialogCalculator",
@@ -458,7 +486,6 @@ const detailedCalculatorList = [
       componentName: "FATCACRSCalculator",
       calculatorIdentifier: "FATCA & CRS Calculator",
     },
-     // --- Calculators that link to full pages ---
     {
       name: "Income Tax (Full Page)",
       description: "Comprehensive personal income tax calculation including PAYE, NIS, and Health Surcharge.",
@@ -476,7 +503,6 @@ const detailedCalculatorList = [
       href: "/calculators/corporation-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Corporation Tax (Full Page)",
-
     },
     {
       name: "VAT Calculator (Full Page)",
@@ -490,7 +516,7 @@ const detailedCalculatorList = [
     {
       name: "Property Tax Estimator (Full Page)",
       description: "Estimate property taxes based on Annual Rental Value (ARV) and property type.",
-      icon: Home,
+      icon: HomeIconLucide,
       category: "Tax",
       href: "/calculators/property-tax",
       ctaText: "View Page",
@@ -544,7 +570,7 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
     let effectiveStatus = item.status;
     const dueDate = parseISO(item.dueDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0); 
 
     if (item.status !== "Completed" && dueDate < today) {
       effectiveStatus = "Overdue";
@@ -572,7 +598,7 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
         <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
         <div className="flex items-center text-sm font-medium text-foreground">
             <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-            Due: {format(dueDate, "MMMM d, yyyy")}
+            Due: {format(parseISO(item.dueDate), "MMMM d, yyyy")}
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-start space-x-2 pt-3">
@@ -582,7 +608,7 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Outlook Calendar" title="Add to Outlook Calendar">
            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current"><title>Microsoft Outlook</title><path d="M15.831.83H7.58A2.753 2.753 0 004.83 3.582v16.836A2.753 2.753 0 007.58 23.17h8.25a2.753 2.753 0 002.752-2.752V3.582A2.753 2.753 0 0015.83.83zm1.376 8.25h-4.125v1.376H13.08V15.2S11.888 16.5 9.9 16.5c-1.376 0-3.027-1.1-3.027-3.44 0-2.615 1.79-3.577 3.028-3.577 1.816 0 2.904 1.24 2.904 1.24V9.08zM9.9 11.13c-.963 0-1.65.716-1.65 2.062 0 1.348.687 2.063 1.65 2.063.962 0 1.65-.715 1.65-2.063s-.688-2.062-1.65-2.062z"></path></svg>
         </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple/Other Calendars" title="Download ICS for Apple/Other">
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple Calendars" title="Download ICS for Apple Calendars">
           <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><title>Apple</title><path d="M17.87.11C16.32.04 14.18 0 12.03 0c-2.4 0-4.27.04-5.84.11-2.19.11-3.81 1.44-4.75 3.95C.29 6.99 0 10.04 0 12.2c0 2.12.29 4.89 1.35 7.64.98 2.65 2.49 3.81 4.67 3.91 1.64.07 3.64.11 5.99.11 2.08 0 4.08-.04 5.66-.11 2.27-.11 3.82-1.29 4.79-3.91 1.19-3.04 1.35-5.62 1.35-7.64 0-2.16-.29-5.21-1.45-7.92-.98-2.58-2.55-3.81-4.75-3.95zm-5.84 20.08c1.62 0 3.04-.95 4.17-2.02a.78.78 0 00.21-.56.77.77 0 00-.79-.75c-.49 0-1.15.42-1.92.42s-1.3-.42-2.15-.42c-2.14 0-3.62 1.19-4.4 2.65-.37.65-.81 1.66.19 1.66a.74.74 0 00.5-.16c.99-.78 1.89-1.22 2.99-1.22zm.56-15.76c1.35-.02 2.85-1.73 2.88-3.69a3.13 3.13 0 00-3.13-3.18c-1.46 0-2.99 1.7-3.02 3.66-.02 1.83 1.23 3.21 3.27 3.21z"></path></svg>
         </Button>
       </CardFooter>
@@ -590,6 +616,7 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
   );
 });
 DeadlineCard.displayName = 'DeadlineCard';
+
 
 export default function LandingPage() {
   const { toast } = useToast();
@@ -600,57 +627,82 @@ export default function LandingPage() {
 
   const [isBasicTimeCalcOpen, setIsBasicTimeCalcOpen] = React.useState(false);
   const [basicTimeCalcKey, setBasicTimeCalcKey] = React.useState(0);
+
   const [isPayrollCalcOpen, setIsPayrollCalcOpen] = React.useState(false);
   const [payrollCalcKey, setPayrollCalcKey] = React.useState(0);
+
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
+  
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
 
   const [isSimpleVatCalcOpen, setIsSimpleVatCalcOpen] = React.useState(false);
   const [simpleVatCalcKey, setSimpleVatCalcKey] = React.useState(0);
+
   const [isExciseDutyCalcOpen, setIsExciseDutyCalcOpen] = React.useState(false);
   const [exciseDutyCalcKey, setExciseDutyCalcKey] = React.useState(0);
+
   const [isGrossToNetCalcOpen, setIsGrossToNetCalcOpen] = React.useState(false);
   const [grossToNetCalcKey, setGrossToNetCalcKey] = React.useState(0);
+
   const [isOvertimeCalcOpen, setIsOvertimeCalcOpen] = React.useState(false);
   const [overtimeCalcKey, setOvertimeCalcKey] = React.useState(0);
+
   const [isBonusCommCalcOpen, setIsBonusCommCalcOpen] = React.useState(false);
   const [bonusCommCalcKey, setBonusCommCalcKey] = React.useState(0);
+
   const [isVacationCalcOpen, setIsVacationCalcOpen] = React.useState(false);
   const [vacationCalcKey, setVacationCalcKey] = React.useState(0);
+
   const [isLoanAmortisationCalcOpen, setIsLoanAmortisationCalcOpen] = React.useState(false);
   const [loanAmortisationCalcKey, setLoanAmortisationCalcKey] = React.useState(0);
+
   const [isMortgageCalcOpen, setIsMortgageCalcOpen] = React.useState(false);
   const [mortgageCalcKey, setMortgageCalcKey] = React.useState(0);
+
   const [isSavingsInvestmentCalcOpen, setIsSavingsInvestmentCalcOpen] = React.useState(false);
   const [savingsInvestmentCalcKey, setSavingsInvestmentCalcKey] = React.useState(0);
+
   const [isCurrencyExchangeCalcOpen, setIsCurrencyExchangeCalcOpen] = React.useState(false);
   const [currencyExchangeCalcKey, setCurrencyExchangeCalcKey] = React.useState(0);
+
   const [isSimpleInterestCalcOpen, setIsSimpleInterestCalcOpen] = React.useState(false);
   const [simpleInterestCalcKey, setSimpleInterestCalcKey] = React.useState(0);
+
   const [isMarkupMarginCalcOpen, setIsMarkupMarginCalcOpen] = React.useState(false);
   const [markupMarginCalcKey, setMarkupMarginCalcKey] = React.useState(0);
+
   const [isBreakEvenCalcOpen, setIsBreakEvenCalcOpen] = React.useState(false);
   const [breakEvenCalcKey, setBreakEvenCalcKey] = React.useState(0);
+
   const [isCashFlowProjectionCalcOpen, setIsCashFlowProjectionCalcOpen] = React.useState(false);
   const [cashFlowProjectionCalcKey, setCashFlowProjectionCalcKey] = React.useState(0);
+
   const [isDepreciationCalcOpen, setIsDepreciationCalcOpen] = React.useState(false);
   const [depreciationCalcKey, setDepreciationCalcKey] = React.useState(0);
+
   const [isTariffCustomsDutyCalcOpen, setIsTariffCustomsDutyCalcOpen] = React.useState(false);
   const [tariffCustomsDutyCalcKey, setTariffCustomsDutyCalcKey] = React.useState(0);
+
   const [isFreightShippingCalcOpen, setIsFreightShippingCalcOpen] = React.useState(false);
   const [freightShippingCalcKey, setFreightShippingCalcKey] = React.useState(0);
+
   const [isCIFCalcOpen, setIsCIFCalcOpen] = React.useState(false);
   const [cifCalcKey, setCIFCalcKey] = React.useState(0);
+
   const [isStampDutyCalcOpen, setIsStampDutyCalcOpen] = React.useState(false);
   const [stampDutyCalcKey, setStampDutyCalcKey] = React.useState(0);
+
   const [isPropertyTaxDialogCalcOpen, setIsPropertyTaxDialogCalcOpen] = React.useState(false);
   const [propertyTaxDialogCalcKey, setPropertyTaxDialogCalcKey] = React.useState(0);
+
   const [isRentalYieldCalcOpen, setIsRentalYieldCalcOpen] = React.useState(false);
   const [rentalYieldCalcKey, setRentalYieldCalcKey] = React.useState(0);
+
   const [isAmlRiskCalcOpen, setIsAmlRiskCalcOpen] = React.useState(false);
   const [amlRiskCalcKey, setAmlRiskCalcKey] = React.useState(0);
+
   const [isFatcaCrsCalcOpen, setIsFatcaCrsCalcOpen] = React.useState(false);
   const [fatcaCrsCalcKey, setFatcaCrsCalcKey] = React.useState(0);
 
@@ -661,14 +713,12 @@ export default function LandingPage() {
     setActiveCalculator({ name: calculatorIdentifier, key: Date.now(), title, icon, componentName });
   }, []);
 
-
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
       setCalculatorForReview(activeCalculator.name);
       setIsReviewDialogOpen(true);
-      setActiveCalculator(null); // Clear active calculator
+      setActiveCalculator(null);
     }
-    // Reset individual dialog states
     if (!isOpen) {
         setIsBasicTimeCalcOpen(false);
         setIsPayrollCalcOpen(false);
@@ -715,7 +765,7 @@ export default function LandingPage() {
 
   const getOpenHandler = (calcIdentifier: string) => {
     const calc = detailedCalculatorList.find(c => c.calculatorIdentifier === calcIdentifier);
-    if (!calc || !calc.componentName) return () => {}; // Should not happen if configured correctly
+    if (!calc || !calc.componentName) return () => {}; 
 
     const stateSetters: { [key: string]: [React.Dispatch<React.SetStateAction<boolean>>, React.Dispatch<React.SetStateAction<number>>] } = {
         "Time Calculator": [setIsBasicTimeCalcOpen, setBasicTimeCalcKey],
@@ -747,9 +797,9 @@ export default function LandingPage() {
         "FATCA & CRS Calculator": [setIsFatcaCrsCalcOpen, setFatcaCrsCalcKey],
     };
     const setters = stateSetters[calcIdentifier];
-    if (!setters) return () => {}; // Should not happen
+    if (!setters) return () => {}; 
 
-    return () => openCalculatorDialog(setters[0], setters[1], calc.calculatorIdentifier, calc.name, calc.icon, calc.componentName);
+    return () => openCalculatorDialog(setters[0], setters[1], calc.calculatorIdentifier, calc.name, calc.icon, calc.componentName as string);
   };
 
   const getIsOpenState = (calcIdentifier: string) => {
@@ -814,7 +864,7 @@ export default function LandingPage() {
         case "Rental Yield Calculator": return rentalYieldCalcKey;
         case "AML Risk Calculator": return amlRiskCalcKey;
         case "FATCA & CRS Calculator": return fatcaCrsCalcKey;
-        default: return Date.now(); // Should not happen if configured correctly
+        default: return Date.now();
     }
   };
 
@@ -837,17 +887,21 @@ export default function LandingPage() {
     }
 
     const startDate = format(eventDate, "yyyyMMdd");
-    const endDate = format(addDays(eventDate, 1), "yyyyMMdd");
+    const endDate = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day event
     const eventTitle = encodeURIComponent(`Tax TT Reminder: ${deadline.title}`);
     const details = encodeURIComponent(`Deadline for ${deadline.title} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`);
+    const location = encodeURIComponent("Trinidad & Tobago"); // General location
 
     let url = "";
 
     if (type === 'google') {
-      url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${details}`;
+      url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
       toast({ title: "Opening Google Calendar...", description: `Preparing reminder for ${deadline.title}.`});
     } else if (type === 'outlook') {
-      url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${eventTitle}&body=${details}&startdt=${format(eventDate, "yyyy-MM-dd")}T00:00:00&enddt=${format(addDays(eventDate,1), "yyyy-MM-dd")}T00:00:00&allday=true`;
+      // Outlook web deeplink for all-day event
+      const outlookStartDate = format(eventDate, "yyyy-MM-dd'T'00:00:00");
+      const outlookEndDate = format(addDays(eventDate,1), "yyyy-MM-dd'T'00:00:00");
+      url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${eventTitle}&body=${details}&startdt=${outlookStartDate}&enddt=${outlookEndDate}&allday=true&location=${location}`;
       toast({ title: "Opening Outlook Calendar...", description: `Preparing reminder for ${deadline.title}.`});
     } else if (type === 'ics') {
       const icsContent = [
@@ -861,6 +915,7 @@ export default function LandingPage() {
         `DTEND;VALUE=DATE:${endDate}`,
         `SUMMARY:Tax TT Reminder: ${deadline.title}`,
         `DESCRIPTION:Deadline for ${deadline.title} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
+        `LOCATION:${location}`,
         "END:VEVENT",
         "END:VCALENDAR",
       ].join("\r\n");
@@ -891,6 +946,12 @@ export default function LandingPage() {
     return <CalculatorComponent key={key} />;
   };
 
+  const halfIndex = Math.ceil(detailedCalculatorList.filter(calc => calc.href).length / 2);
+  const pageLinkCalculators = detailedCalculatorList.filter(calc => calc.href);
+  const firstHalfPageLinkCalculators = pageLinkCalculators.slice(0, halfIndex);
+  const secondHalfPageLinkCalculators = pageLinkCalculators.slice(halfIndex);
+
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -899,21 +960,20 @@ export default function LandingPage() {
         className="relative w-full py-24 md:py-32"
       >
         <div
-          className="absolute inset-0 grayscale opacity-20"
-          style={{ backgroundImage: `url('${heroContentData.backgroundImageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-          aria-label="Background image of tax preparation scene"
+          className="absolute inset-0"
+          aria-hidden="true"
         ></div>
-        <div className="absolute inset-0 bg-black/60"></div>
+         <div className="absolute inset-0 "></div> 
 
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary" />
-          <h1 className="text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl mb-4">
+          <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl mb-4">
             {heroContentData.headline}
           </h1>
-          <p className="mt-2 text-xl md:text-2xl font-semibold text-primary-foreground/90 mb-6">
+          <p className="mt-2 text-xl md:text-2xl font-semibold text-primary/90 mb-6">
             {heroContentData.primarySubheadline}
           </p>
-          <p className="max-w-xl text-base md:text-lg text-primary-foreground/80 mb-10">
+          <p className="max-w-xl text-base md:text-lg text-muted-foreground mb-10">
             {heroContentData.secondarySubheadline}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-xs sm:max-w-md lg:max-w-none lg:flex-row lg:space-x-4">
@@ -960,34 +1020,7 @@ export default function LandingPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {detailedCalculatorList
-              .filter(calc => [
-                "Time Calculator",
-                "Payroll Calculator",
-                "Voluntary NIS Calculator",
-                "Levy Calculator",
-                "Simple VAT Calculator",
-                "Gross to Net Salary Calculator",
-                "Overtime Pay Calculator",
-                "Bonus & Commission Calculator",
-                "Vacation Pay Calculator",
-                "Loan Amortisation Calculator",
-                "Mortgage Calculator",
-                "Savings & Investment Calculator",
-                "Currency Exchange Calculator",
-                "Simple Interest Calculator",
-                "Markup & Margin Calculator",
-                "Break-even Analysis Calculator",
-                "Cash Flow Projection Calculator",
-                "Depreciation Calculator",
-                "Tariff & Customs Duty Calculator",
-                "Freight & Shipping Cost Calculator",
-                "CIF Calculator",
-                "Stamp Duty Calculator",
-                "Property Tax Calculator (Dialog)",
-                "Rental Yield Calculator",
-                "AML Risk Calculator",
-                "FATCA & CRS Calculator"
-              ].includes(calc.calculatorIdentifier))
+              .filter(calc => calc.componentName) // Only show dialog-based calculators here
               .map((calc) => (
               <Card key={calc.calculatorIdentifier} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -1001,27 +1034,71 @@ export default function LandingPage() {
                    <p className="text-sm text-muted-foreground">{calc.description}</p>
                 </CardContent>
                 <CardFooter>
-                  {calc.href ? (
-                    <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
-                      <Link href={calc.href}>
-                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  ) : calc.componentName ? (
-                    <Button
-                      onClick={getOpenHandler(calc.calculatorIdentifier)}
-                      variant="outline"
-                      className="w-full text-primary border-primary hover:bg-primary/10"
-                    >
-                      {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  ) : null}
+                  <Button
+                    onClick={getOpenHandler(calc.calculatorIdentifier)}
+                    variant="outline"
+                    className="w-full text-primary border-primary hover:bg-primary/10"
+                  >
+                    {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
           </div>
         </div>
       </section>
+      
+       {/* Explore All Our Calculators (Pages) */}
+      <section id="explore-calculators-pages" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Explore More Calculators (Full Pages)
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Accordion type="single" collapsible className="w-full">
+              {firstHalfPageLinkCalculators.map((calc) => (
+                <AccordionItem value={calc.calculatorIdentifier} key={calc.calculatorIdentifier}>
+                  <AccordionTrigger className="text-lg hover:no-underline">
+                    <div className="flex items-center">
+                      <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
+                      {calc.name}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-muted-foreground mb-3">{calc.description}</p>
+                    <Button asChild variant="link" className="text-accent p-0">
+                      <Link href={calc.href!}>
+                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <Accordion type="single" collapsible className="w-full">
+              {secondHalfPageLinkCalculators.map((calc) => (
+                <AccordionItem value={calc.calculatorIdentifier} key={calc.calculatorIdentifier}>
+                  <AccordionTrigger className="text-lg hover:no-underline">
+                    <div className="flex items-center">
+                      <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
+                      {calc.name}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-muted-foreground mb-3">{calc.description}</p>
+                    <Button asChild variant="link" className="text-accent p-0">
+                      <Link href={calc.href!}>
+                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
 
       {/* Why Choose Tax TT */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -1069,7 +1146,7 @@ export default function LandingPage() {
             Resources & Guides
           </h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {resourceGuides.map((resource, index) => (
+            {resourceGuides.map((resource) => (
               <Card key={resource.title} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
                 <CardHeader>
                   <BookOpen className="h-8 w-8 text-accent mb-3" />
@@ -1135,7 +1212,7 @@ export default function LandingPage() {
         </section>
 
       {/* FAQ Section */}
-      <section className="w-full py-12 md:py-24 border-t">
+      <section className="w-full py-12 md:py-24">
         <div className="container px-4 md:px-6">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Frequently Asked Questions</h2>
@@ -1191,20 +1268,20 @@ export default function LandingPage() {
                 <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
             </div>
              <p className="text-xs text-primary-foreground/60 mt-4">
-                © {new Date().getFullYear()} TaxTT. All rights reserved.
+                © {new Date().getFullYear()} Tax TT. All rights reserved.
             </p>
         </div>
       </footer>
 
       {/* Dynamically render calculator dialogs */}
       {detailedCalculatorList.filter(calc => calc.componentName).map(calc => (
-        <React.Suspense key={`dialog-suspense-${calc.calculatorIdentifier}`} fallback={<div>Loading Calculator...</div>}>
+        <React.Suspense key={`dialog-suspense-${calc.calculatorIdentifier}`} fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>}>
           <CalculatorDialog
             isOpen={getIsOpenState(calc.calculatorIdentifier)}
             onOpenChange={(isOpen) => handleCalculatorDialogClose(isOpen)}
             icon={calc.icon}
             title={calc.name}
-            CalculatorComponent={renderCalculatorComponent(calc.componentName, getDialogKey(calc.calculatorIdentifier))}
+            CalculatorComponent={renderCalculatorComponent(calc.componentName!, getDialogKey(calc.calculatorIdentifier))}
           />
         </React.Suspense>
       ))}
@@ -1223,5 +1300,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-```

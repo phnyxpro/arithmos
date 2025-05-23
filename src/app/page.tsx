@@ -3,22 +3,13 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  AlertCircle,
-  ArrowRight,
-  CalendarDays,
-  HelpCircle,
-  Search,
-  Settings,
-  Info,
-  ListChecks,
-  BarChart3,
-  CheckCircle2,
-  ThumbsUp,
-  Clock // Retained as it's used for the generic Time Calculator icon
-} from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Card,
   CardContent,
@@ -28,50 +19,103 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  Briefcase,
+  DollarSign,
+  Users as UsersIcon,
+  Clock,
+  ShieldCheck,
+  Smartphone,
+  Calculator as CalculatorIcon,
+  ArrowRight,
+  CalendarDays,
+  FileText,
+  Bell,
+  Linkedin,
+  Facebook,
+  Info,
+  HelpCircle,
+  Settings,
+  ListChecks,
+  Percent,
+  Landmark,
+  PiggyBank,
+  ArrowRightLeft,
+  Target,
+  LineChart,
+  AreaChart,
+  Building as BuildingIconLucide, // Renamed to avoid conflict
+  Truck,
+  Ship,
+  FileBox,
+  Stamp,
+  Home,
+  ShieldAlert,
+  Network,
+  BookOpen,
+  User, // Added User icon
+  Users as UsersLucide, // Added UsersIconLucide alias
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  ThumbsUp,
+  Banknote,
+  Scale,
+  CalculatorIcon as CalculatorIconLucide, // Renamed
+  UserCheck,
+  HandCoins,
+  FileHeart,
+  Cigarette,
+  Gift,
+  Plane,
+  PercentCircle,
+  Building2, // For Rental Yield
+  Download,
+  Mail,
+  CalendarPlus,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import CalculatorDialog from "@/components/ui/CalculatorDialog";
+import CalculatorDialog from "@/components/ui/CalculatorDialog"; // Assuming this path is correct
 import { heroContentData, benefitsData, resourceGuides } from "@/constants/ui";
 import { deadlineItems } from "@/constants/deadlines";
 import { detailedCalculatorList } from "@/constants/calculators";
+import { useToast } from "@/hooks/use-toast";
+import { format, parseISO, addDays } from 'date-fns';
 
 // Lazy loaded calculator components
-const LazyAMLRiskCalculator = React.lazy(() => import("@/components/calculators/AMLRiskCalculator"));
 const LazyBasicTimeCalculator = React.lazy(() => import("@/components/calculators/BasicTimeCalculator"));
-const LazyBonusCommissionCalculator = React.lazy(() => import("@/components/calculators/BonusCommissionCalculator"));
-const LazyBreakEvenCalculator = React.lazy(() => import("@/components/calculators/BreakEvenCalculator"));
-const LazyCIFCalculator = React.lazy(() => import("@/components/calculators/CIFCalculator"));
-const LazyCashFlowProjectionCalculator = React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator"));
-const LazyCurrencyExchangeCalculator = React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator"));
-const LazyDepreciationCalculator = React.lazy(() => import("@/components/calculators/DepreciationCalculator"));
+const LazySimplifiedPayrollCalculator = React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator"));
+const LazySimplifiedLevyCalculator = React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator"));
+const LazyVoluntaryNisCalculator = React.lazy(() => import("@/components/calculators/VoluntaryNisCalculator"));
+const LazySimpleVatCalculator = React.lazy(() => import("@/components/calculators/SimpleVatCalculator"));
 const LazyExciseDutyCalculator = React.lazy(() => import("@/components/calculators/ExciseDutyCalculator"));
-const LazyFATCACRSCalculator = React.lazy(() => import("@/components/calculators/FATCACRSCalculator"));
-const LazyFreightShippingCalculator = React.lazy(() => import("@/components/calculators/FreightShippingCalculator"));
 const LazyGrossToNetSalaryCalculator = React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator"));
-const LazyLoanAmortisationCalculator = React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator"));
-const LazyMarkupMarginCalculator = React.lazy(() => import("@/components/calculators/MarkupMarginCalculator"));
-const LazyMortgageCalculator = React.lazy(() => import("@/components/calculators/MortgageCalculator"));
 const LazyOvertimePayCalculator = React.lazy(() => import("@/components/calculators/OvertimePayCalculator"));
+const LazyBonusCommissionCalculator = React.lazy(() => import("@/components/calculators/BonusCommissionCalculator"));
+const LazyVacationPayCalculator = React.lazy(() => import("@/components/calculators/VacationPayCalculator"));
+const LazyLoanAmortisationCalculator = React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator"));
+const LazyMortgageCalculator = React.lazy(() => import("@/components/calculators/MortgageCalculator"));
+const LazySavingsInvestmentCalculator = React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator"));
+const LazyCurrencyExchangeCalculator = React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator"));
+const LazySimpleInterestCalculator = React.lazy(() => import("@/components/calculators/SimpleInterestCalculator"));
+const LazyMarkupMarginCalculator = React.lazy(() => import("@/components/calculators/MarkupMarginCalculator"));
+const LazyBreakEvenCalculator = React.lazy(() => import("@/components/calculators/BreakEvenCalculator"));
+const LazyCashFlowProjectionCalculator = React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator"));
+const LazyDepreciationCalculator = React.lazy(() => import("@/components/calculators/DepreciationCalculator"));
+const LazyTariffCustomsDutyCalculator = React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator"));
+const LazyFreightShippingCalculator = React.lazy(() => import("@/components/calculators/FreightShippingCalculator"));
+const LazyCIFCalculator = React.lazy(() => import("@/components/calculators/CIFCalculator"));
+const LazyStampDutyCalculator = React.lazy(() => import("@/components/calculators/StampDutyCalculator"));
 const LazyPropertyTaxDialogCalculator = React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator"));
 const LazyRentalYieldCalculator = React.lazy(() => import("@/components/calculators/RentalYieldCalculator"));
-const LazySavingsInvestmentCalculator = React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator"));
-const LazySimpleInterestCalculator = React.lazy(() => import("@/components/calculators/SimpleInterestCalculator"));
-const LazySimpleVatCalculator = React.lazy(() => import("@/components/calculators/SimpleVatCalculator"));
-const LazySimplifiedLevyCalculator = React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator"));
-const LazySimplifiedPayrollCalculator = React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator"));
-const LazyStampDutyCalculator = React.lazy(() => import("@/components/calculators/StampDutyCalculator"));
-const LazyTariffCustomsDutyCalculator = React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator"));
-const LazyVacationPayCalculator = React.lazy(() => import("@/components/calculators/VacationPayCalculator"));
-const LazyVoluntaryNisCalculator = React.lazy(() => import("@/components/calculators/VoluntaryNisCalculator"));
+const LazyAMLRiskCalculator = React.lazy(() => import("@/components/calculators/AMLRiskCalculator"));
+const LazyFATCACRSCalculator = React.lazy(() => import("@/components/calculators/FATCACRSCalculator"));
 
 const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = {
-  IncomeTaxCalculator: LazyGrossToNetSalaryCalculator, // Assuming GrossToNet can be used or a specific one exists
-  CorporationTaxCalculator: LazySimplifiedLevyCalculator, // Placeholder, replace with actual if exists
+  IncomeTaxCalculator: LazyGrossToNetSalaryCalculator,
+  CorporationTaxCalculator: LazySimplifiedLevyCalculator, // Placeholder
   SimpleVatCalculator: LazySimpleVatCalculator,
   PropertyTaxCalculator: LazyPropertyTaxDialogCalculator,
   SimplifiedLevyCalculator: LazySimplifiedLevyCalculator,
@@ -101,79 +145,183 @@ const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = 
   FATCACRSCalculator: LazyFATCACRSCalculator,
 };
 
+
 interface DeadlineItem {
   id: string;
   title: string;
   dueDate: string;
   details: string;
+  status: "Urgent" | "Upcoming" | "Completed" | "Overdue";
 }
 
-const DeadlineCard = React.memo(({ item }: { item: DeadlineItem }) => (
-  <Card className="w-full shadow-lg hover:shadow-xl transition-shadow duration-300">
-    <CardHeader>
-      <CardTitle className="text-xl text-primary flex items-center">
-        <CalendarDays className="mr-2 h-5 w-5" />
-        {item.title}
-      </CardTitle>
-      <CardDescription>Due: {item.dueDate}</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <p className="text-sm text-gray-700">{item.details}</p>
-    </CardContent>
-    <CardFooter>
-      <Button variant="outline" size="sm" className="w-full">
-        <AlertCircle className="mr-2 h-4 w-4" />
-        Set Reminder
-      </Button>
-    </CardFooter>
-  </Card>
-));
+const DeadlineCard = React.memo(({ item, onAddToCalendar }: { item: DeadlineItem; onAddToCalendar: (item: DeadlineItem, type: 'google' | 'outlook' | 'ics') => void; }) => {
+    let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+    let effectiveStatus = item.status;
+    const dueDate = parseISO(item.dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today to the start of the day
+
+    if (item.status !== "Completed" && dueDate < today) {
+      effectiveStatus = "Overdue";
+      badgeVariant = "destructive";
+    } else if (item.status === "Urgent") {
+      badgeVariant = "destructive";
+    } else if (item.status === "Upcoming") {
+      badgeVariant = "default";
+    } else if (item.status === "Completed") {
+      badgeVariant = "outline";
+    }
+  
+  return (
+    <Card className={`flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl ${effectiveStatus === "Overdue" || item.status === "Completed" ? 'opacity-70' : ''}`}>
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <CardTitle className="text-lg text-primary">{item.title}</CardTitle>
+          <Badge variant={badgeVariant} className={badgeVariant === "default" ? "bg-primary text-primary-foreground" : ""}>
+            {effectiveStatus}
+          </Badge>
+        </div>
+        <CardDescription className="text-xs pt-1">
+            Due: {format(dueDate, "MMMM d, yyyy")}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        <p className="text-sm text-muted-foreground">{item.details}</p>
+      </CardContent>
+      <CardFooter className="flex items-center justify-start space-x-2 pt-3">
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
+          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><title>Google Calendar</title><path d="M12 2.75A9.25 9.25 0 002.75 12 9.25 9.25 0 0012 21.25c2.13 0 4.09-.725 5.627-1.952V12h-5.627V8.58h5.627V5.364A9.213 9.213 0 0012 2.75zm0 1.41h3.514v2.83h-3.514V4.16zm5.627 5.83h-5.627v3.417h5.627V9.99zm0 4.834h-5.627v2.83h3.514A9.195 9.195 0 0017.627 14.824zM8.583 12v2.83H5.36A9.213 9.213 0 014.16 12h4.423zm0-1.417H4.16a9.213 9.213 0 011.2-2.83h3.223v2.83zM12 19.84a7.818 7.818 0 01-3.514-.838h3.514v-2.83H8.583v-1.417h3.417v2.83h3.514c.293.21.57.436.83.678A7.857 7.857 0 0112 19.84z" fill="currentColor"></path></svg>
+        </Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Outlook Calendar" title="Add to Outlook Calendar">
+           <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><title>Microsoft Outlook</title><path d="M15.831.83H7.58A2.753 2.753 0 004.83 3.582v16.836A2.753 2.753 0 007.58 23.17h8.25a2.753 2.753 0 002.752-2.752V3.582A2.753 2.753 0 0015.83.83zm1.376 8.25h-4.125v1.376H13.08V15.2S11.888 16.5 9.9 16.5c-1.376 0-3.027-1.1-3.027-3.44 0-2.615 1.79-3.577 3.028-3.577 1.816 0 2.904 1.24 2.904 1.24V9.08zM9.9 11.13c-.963 0-1.65.716-1.65 2.062 0 1.348.687 2.063 1.65 2.063.962 0 1.65-.715 1.65-2.063s-.688-2.062-1.65-2.062z" fill="currentColor"></path></svg>
+        </Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple/Other Calendars" title="Download ICS for Apple/Other">
+          <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="currentColor"><title>Apple</title><path d="M17.87.11C16.32.04 14.18 0 12.03 0c-2.4 0-4.27.04-5.84.11-2.19.11-3.81 1.44-4.75 3.95C.29 6.99 0 10.04 0 12.2c0 2.12.29 4.89 1.35 7.64.98 2.65 2.49 3.81 4.67 3.91 1.64.07 3.64.11 5.99.11 2.08 0 4.08-.04 5.66-.11 2.27-.11 3.82-1.29 4.79-3.91 1.19-3.04 1.35-5.62 1.35-7.64 0-2.16-.29-5.21-1.45-7.92-.98-2.58-2.55-3.81-4.75-3.95zm-5.84 20.08c1.62 0 3.04-.95 4.17-2.02a.78.78 0 00.21-.56.77.77 0 00-.79-.75c-.49 0-1.15.42-1.92.42s-1.3-.42-2.15-.42c-2.14 0-3.62 1.19-4.4 2.65-.37.65-.81 1.66.19 1.66a.74.74 0 00.5-.16c.99-.78 1.89-1.22 2.99-1.22zm.56-15.76c1.35-.02 2.85-1.73 2.88-3.69a3.13 3.13 0 00-3.13-3.18c-1.46 0-2.99 1.7-3.02 3.66-.02 1.83 1.23 3.21 3.27 3.21z"></path></svg>
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+});
 DeadlineCard.displayName = 'DeadlineCard';
 
 export default function LandingPage() {
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [activeCalculator, setActiveCalculator] = React.useState<{ name: string, key: number, title: string, icon: React.ElementType, componentName: string } | null>(null);
+  const { toast } = useToast();
+  
+  // Centralized dialog state management
+  const [activeCalculator, setActiveCalculator] = React.useState<{ name: string; key: number; title: string; icon: React.ElementType; componentName: string } | null>(null);
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
+  const [calculatorForReview, setCalculatorForReview] = React.useState<string | null>(null);
 
-  const handleCalculatorDialogOpen = (name: string, title: string, icon: React.ElementType, componentName: string) => {
+  const openCalculatorDialog = React.useCallback((name: string, title: string, icon: React.ElementType, componentName: string) => {
     setActiveCalculator({ name, key: Date.now(), title, icon, componentName });
-  };
+  }, []);
 
-  const handleCalculatorDialogClose = () => {
-    setActiveCalculator(null);
-  };
+  const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
+    if (!isOpen && activeCalculator) {
+      // Trigger review dialog only if a calculator was active and is now closing
+      setCalculatorForReview(activeCalculator.name);
+      setIsReviewDialogOpen(true);
+    }
+    setActiveCalculator(null); // Always clear active calculator
+  }, [activeCalculator]);
 
-  const filteredCalculators = React.useMemo(() =>
+
+  const handleSubmitReview = React.useCallback((calculatorName: string, rating: number) => {
+    console.log(`Review for ${calculatorName}: ${rating} stars`);
+    toast({
+      title: "Review Submitted!",
+      description: `Thanks for rating the ${calculatorName} ${rating} stars.`,
+    });
+    setCalculatorForReview(null); // Reset after review
+  }, [toast]);
+
+  const HeroIcon = heroContentData.icon;
+
+  const filteredPopularCalculators = React.useMemo(() =>
+    detailedCalculatorList.slice(0, 4), // Take the first 4 as "most popular"
+    []
+  );
+
+  const filteredDetailedCalculators = React.useMemo(() =>
     detailedCalculatorList.filter((calc) =>
       calc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      calc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      calc.category.toLowerCase().includes(searchTerm.toLowerCase())
+      (calc.description && calc.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (calc.category && calc.category.toLowerCase().includes(searchTerm.toLowerCase()))
     ),
     [searchTerm]
   );
+  
+  const halfLength = Math.ceil(filteredDetailedCalculators.length / 2);
+  const firstHalfCalculators = filteredDetailedCalculators.slice(0, halfLength);
+  const secondHalfCalculators = filteredDetailedCalculators.slice(halfLength);
 
-  const CalculatorCard = React.memo(({ calc }: { calc: typeof detailedCalculatorList[0] }) => (
-    <Card className="flex flex-col h-full shadow-md hover:shadow-lg transition-shadow duration-200">
-      <CardHeader>
-        <CardTitle className="text-xl text-primary flex items-center">
-          <calc.icon className="mr-2 h-6 w-6" />
-          {calc.name}
-        </CardTitle>
-        <Badge variant="secondary" className="w-fit">{calc.category}</Badge>
-      </CardHeader>
-      <CardContent className="flex-grow">
-        <p className="text-sm text-gray-600 dark:text-gray-400">{calc.description}</p>
-      </CardContent>
-      <CardFooter>
-        <Button
-          onClick={() => handleCalculatorDialogOpen(calc.name, calc.name, calc.icon, calc.componentName)}
-          className="w-full"
-        >
-          Open Calculator
-        </Button>
-      </CardFooter>
-    </Card>
-  ));
-  CalculatorCard.displayName = 'CalculatorCard';
+  const handleAddToCalendar = React.useCallback((deadline: DeadlineItem, type: 'google' | 'outlook' | 'ics') => {
+    const eventDate = parseISO(deadline.dueDate);
+    if (isNaN(eventDate.getTime())) {
+      toast({ title: "Invalid Date", description: `Cannot set reminder for "${deadline.name}" due to invalid date.`, variant: "destructive" });
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if (eventDate < today && deadline.status !== "Completed") {
+        toast({ title: "Past Due Date", description: `Cannot set a reminder for "${deadline.name}" as the date is in the past.`, variant: "default" });
+        return;
+    }
+    if (deadline.status === "Completed") {
+         toast({ title: "Already Completed", description: `"${deadline.name}" is marked as completed. No reminder set.`, variant: "default" });
+        return;
+    }
+
+    const startDate = format(eventDate, "yyyyMMdd");
+    const endDate = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day events, end date is typically the next day
+    const title = encodeURIComponent(`Tax TT Reminder: ${deadline.name}`);
+    const details = encodeURIComponent(`Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`);
+
+    let url = "";
+
+    if (type === 'google') {
+      url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startDate}/${endDate}&details=${details}`;
+      toast({ title: "Opening Google Calendar...", description: `Preparing reminder for ${deadline.name}.`});
+    } else if (type === 'outlook') {
+      // Outlook web URL is more complex and often less reliable for pre-filling all fields.
+      // A simplified version:
+      url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${title}&body=${details}&startdt=${format(eventDate, "yyyy-MM-dd")}T00:00:00&enddt=${format(addDays(eventDate,1), "yyyy-MM-dd")}T00:00:00&allday=true`;
+      toast({ title: "Opening Outlook Calendar...", description: `Preparing reminder for ${deadline.name}.`});
+    } else if (type === 'ics') {
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        `PRODID:-//TaxTT//TaxTT Reminder//EN`,
+        "BEGIN:VEVENT",
+        `UID:${crypto.randomUUID()}@taxtt.com`,
+        `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
+        `DTSTART;VALUE=DATE:${startDate}`,
+        `DTEND;VALUE=DATE:${endDate}`,
+        `SUMMARY:Tax TT Reminder: ${deadline.name}`,
+        `DESCRIPTION:Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`,
+        "END:VEVENT",
+        "END:VCALENDAR",
+      ].join("\r\n");
+
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_').replace(/[^\w\s]/gi, '')}.ics`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      toast({ title: "ICS File Downloading...", description: `Calendar event for "${deadline.name}" is being downloaded.` });
+      return; // No window.open for ICS
+    }
+
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }, [toast]);
+  
 
   const renderCalculator = () => {
     if (!activeCalculator) return null;
@@ -186,177 +334,264 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-40 bg-cover bg-center" style={{ backgroundImage: "url('/placeholder.svg?height=1080&width=1920')" }}>
-          <div className="container px-4 md:px-6 text-center text-white">
-            <div className="space-y-6 max-w-3xl mx-auto backdrop-blur-sm bg-black/30 p-8 rounded-xl">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none">
-                {heroContentData.title}
-              </h1>
-              <p className="text-lg md:text-xl text-slate-200">
-                {heroContentData.subtitle}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="#calculator-showcase">
-                  <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-                    {heroContentData.ctaButton}
-                  </Button>
-                </Link>
-                <Link href="#features">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto text-white border-white hover:bg-white/10">
-                    {heroContentData.secondaryButton}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section 
+        id="hero" 
+        className="relative w-full bg-cover bg-center py-24 md:py-32"
+      >
+        <div 
+          className="absolute inset-0 grayscale opacity-20"
+          style={{ backgroundImage: `url('${heroContentData.backgroundImageUrl}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          aria-label="Background image of tax preparation scene"
+        ></div>
+        <div className="absolute inset-0 bg-black/60"></div> 
+        
+        <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
+          <HeroIcon className="mb-6 h-16 w-16 text-primary" />
+          <h1 className="text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl md:text-6xl mb-4">
+            {heroContentData.headline}
+          </h1>
+          <p className="mt-2 text-xl md:text-2xl font-semibold text-primary-foreground/90 mb-6">
+            {heroContentData.primarySubheadline}
+          </p>
+          <p className="max-w-xl text-base md:text-lg text-primary-foreground/80 mb-10">
+            {heroContentData.secondarySubheadline}
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-xs sm:max-w-md lg:flex-row lg:space-x-4">
+             <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto lg:mb-0 mb-2">
+              <Link href={heroContentData.primaryCtaLink}>
+                {heroContentData.primaryCtaText}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Benefits Section */}
-        <section id="features" className="w-full py-12 md:py-24 bg-white dark:bg-slate-900">
-          <div className="container px-4 md:px-6">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Why Choose Us?</h2>
-              <p className="max-w-2xl mx-auto text-gray-600 md:text-xl dark:text-gray-400">
-                Our platform offers a suite of tools and resources tailored for Barbados, making financial management simpler and more efficient.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {benefitsData.map((benefit, index) => (
-                <Card key={index} className="shadow-lg hover:shadow-xl transition-shadow duration-300 dark:bg-slate-800">
-                  <CardHeader className="flex flex-row items-center space-x-4 pb-4">
-                    <div className="bg-primary/10 p-3 rounded-full">
-                      <benefit.icon className="w-6 h-6 text-primary" />
+      {/* Compliance Ticker */}
+      <section id="compliance-ticker" className="py-4 bg-primary text-primary-foreground shadow-md">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-semibold">Upcoming Compliance Reminders</h3>
+          </div>
+          <div className="overflow-hidden relative h-16"> {/* Ticker viewport */}
+            <div className="flex absolute whitespace-nowrap animate-marquee-scroll group-hover:pause-animation">
+              {[...deadlineItems.filter(d => d.status !== "Completed").sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5), 
+               ...deadlineItems.filter(d => d.status !== "Completed").sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()).slice(0, 5)].map((item, index) => (
+                <div key={`${item.id}-${index}`} className="inline-block align-top mx-4 p-3 rounded-lg bg-card/80 text-card-foreground shadow-sm min-w-[280px] sm:min-w-[320px]">
+                  <div className="flex items-center">
+                    <Bell className="h-5 w-5 text-accent mr-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold truncate">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">Due: {format(parseISO(item.dueDate), "MMM d, yyyy")}</p>
                     </div>
-                    <CardTitle className="text-xl text-primary">{benefit.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{benefit.description}</p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Calculator Showcase Section */}
-        <section id="calculator-showcase" className="w-full py-12 md:py-24 bg-slate-50 dark:bg-slate-800/50">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Financial Calculators</h2>
-              <p className="max-w-3xl text-gray-600 md:text-xl dark:text-gray-400">
-                Access a wide range of calculators for tax, payroll, finance, and trade. Find the tool you need with our easy search.
-              </p>
-              <div className="w-full max-w-md">
-                <Input
-                  type="search"
-                  placeholder="Search calculators (e.g., Income Tax, VAT, Mortgage)..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full text-lg py-6 px-4 rounded-lg shadow-sm dark:bg-slate-700 dark:text-white"
-                  aria-label="Search calculators"
-                />
-              </div>
-            </div>
-            {filteredCalculators.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredCalculators.map((calc) => (
-                  <CalculatorCard key={calc.name} calc={calc} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <Search className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No Calculators Found</h3>
-                <p className="text-gray-500 dark:text-gray-400 mt-2">Your search for "{searchTerm}" did not match any calculators. Try a different keyword or explore all calculators.</p>
-                <Button variant="link" onClick={() => setSearchTerm("")} className="mt-4 text-primary">
-                  Clear Search & View All
-                </Button>
-              </div>
-            )}
+      {/* Quick Access Calculators */}
+      <section id="popular-calculators" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Start With Our Most Popular Calculators
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredPopularCalculators.map((calc) => (
+              <Card key={calc.name} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
+                <CardHeader>
+                  <div className="flex items-center mb-3">
+                    <calc.icon className="h-8 w-8 text-accent mr-3" />
+                    <CardTitle className="text-xl text-primary">{calc.name}</CardTitle>
+                  </div>
+                  <Badge variant="secondary" className="w-fit">{calc.category}</Badge>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                   <p className="text-sm text-muted-foreground">{calc.description}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    onClick={() => openCalculatorDialog(calc.name, calc.name, calc.icon, calc.componentName)}
+                    variant="outline"
+                    className="w-full text-primary border-primary hover:bg-primary/10"
+                  >
+                    {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Upcoming Deadlines Section */}
-        <section className="w-full py-12 md:py-24 bg-white dark:bg-slate-900">
-          <div className="container px-4 md:px-6">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Stay Ahead of Deadlines</h2>
-              <p className="max-w-2xl mx-auto text-gray-600 md:text-xl dark:text-gray-400">
-                Keep track of important tax and financial deadlines in Barbados.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {deadlineItems.map((item) => (
-                <DeadlineCard key={item.id} item={item} />
-              ))}
-            </div>
-            <div className="text-center mt-12">
-              <Link href="/profile#deadlines"> {/* Assuming a profile page section for all deadlines */}
-                <Button size="lg" variant="outline" className="text-primary border-primary hover:bg-primary/5">
-                  View All Deadlines <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+       {/* Explore All Calculators Section */}
+       <section id="explore-all-calculators" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Explore All Our Calculators</h2>
+            <p className="max-w-3xl text-muted-foreground md:text-xl">
+              Find the specific tool you need from our comprehensive list. Search or browse by category.
+            </p>
+            <div className="w-full max-w-md">
+              <Input
+                type="search"
+                placeholder="Search calculators (e.g., Income Tax, VAT, Mortgage)..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full text-lg py-6 px-4 rounded-lg shadow-sm dark:bg-slate-700 dark:text-white"
+                aria-label="Search calculators"
+              />
             </div>
           </div>
-        </section>
 
-        {/* Knowledge Base / Resource Hub Section */}
-        <section className="w-full py-12 md:py-24 bg-slate-50 dark:bg-slate-800/50">
-          <div className="container px-4 md:px-6">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Knowledge Hub</h2>
-              <p className="max-w-2xl mx-auto text-gray-600 md:text-xl dark:text-gray-400">
-                Explore our guides and articles on various financial and tax topics relevant to Barbados.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {resourceGuides.map((guide, index) => (
-                <Card key={index} className="shadow-md hover:shadow-lg transition-shadow duration-300 dark:bg-slate-800">
-                  <CardHeader>
-                    <CardTitle className="text-xl text-primary flex items-center">
-                      <Info className="mr-2 h-5 w-5" />
-                      {guide.title}
-                    </CardTitle>
-                    <Badge variant="outline" className="mt-2">{guide.category}</Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{guide.description}</p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link href={guide.link} className="w-full">
-                      <Button variant="default" className="w-full bg-primary hover:bg-primary/90">
-                        Read Guide <ArrowRight className="ml-2 h-4 w-4" />
+          {filteredDetailedCalculators.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
+              <Accordion type="single" collapsible className="w-full">
+                {firstHalfCalculators.map((calc) => (
+                  <AccordionItem value={calc.name} key={calc.name}>
+                    <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
+                      <div className="flex items-center">
+                        <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
+                        {calc.name}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground leading-relaxed">
+                      <p className="mb-3">{calc.description}</p>
+                       <Button
+                        onClick={() => openCalculatorDialog(calc.name, calc.name, calc.icon, calc.componentName)}
+                        variant="link"
+                        className="text-accent p-0 h-auto"
+                      >
+                        {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-1 h-4 w-4"/>
                       </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+              <Accordion type="single" collapsible className="w-full">
+                {secondHalfCalculators.map((calc) => (
+                  <AccordionItem value={calc.name} key={calc.name}>
+                    <AccordionTrigger className="text-lg text-primary/90 hover:text-primary hover:no-underline">
+                       <div className="flex items-center">
+                        <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
+                        {calc.name}
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground leading-relaxed">
+                      <p className="mb-3">{calc.description}</p>
+                       <Button
+                        onClick={() => openCalculatorDialog(calc.name, calc.name, calc.icon, calc.componentName)}
+                        variant="link"
+                        className="text-accent p-0 h-auto"
+                      >
+                        {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-1 h-4 w-4"/>
+                      </Button>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
-            <div className="text-center mt-12">
-              <Link href="/knowledge-base">
-                <Button size="lg" variant="outline" className="text-primary border-primary hover:bg-primary/5">
-                  Explore All Resources <HelpCircle className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
+          ) : (
+            <div className="text-center py-12">
+              <Search className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No Calculators Found</h3>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">Your search for "{searchTerm}" did not match any calculators. Try a different keyword.</p>
+              <Button variant="link" onClick={() => setSearchTerm("")} className="mt-4 text-primary">
+                Clear Search & View All
+              </Button>
             </div>
-          </div>
-        </section>
+          )}
+        </div>
+      </section>
 
-        {/* Tax Form / Filing Assistance Section */}
-        <section className="w-full py-12 md:py-24 bg-white dark:bg-slate-900">
+       {/* Why Choose Tax TT */}
+       <section id="why-tax-tt" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Why Choose Tax TT?
+          </h2>
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2">
+            {benefitsData.map((benefit) => (
+              <div key={benefit.title} className="flex flex-col items-center text-center md:flex-row md:items-start md:text-left p-6 rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                  <benefit.icon className="h-12 w-12 text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-primary mb-2">{benefit.title}</h3>
+                  <p className="text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Upcoming Deadlines */}
+      <section id="deadlines-compliance" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-primary mb-3">Stay Ahead with Compliance</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Keep track of important IRD deadlines. Tax TT aims to provide timely reminders and tools to help you plan and file on time. Always verify dates with official IRD publications.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {deadlineItems.map((item) => (
+                <DeadlineCard key={item.id} item={item} onAddToCalendar={handleAddToCalendar} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Resources & Guides */}
+      <section id="resources-guides" className="py-16 lg:py-24">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Resources & Guides
+          </h2>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {resourceGuides.map((resource, index) => (
+              <Card key={index} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
+                <CardHeader>
+                  <BookOpen className="h-8 w-8 text-accent mb-3" />
+                  <CardTitle className="text-lg text-primary">{resource.title}</CardTitle>
+                   <Badge variant="outline" className="mt-2 w-fit">{resource.category}</Badge>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <p className="text-sm text-muted-foreground">{resource.description}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild variant="link" className="text-accent p-0">
+                    <Link href={resource.link}>Read Guide <ArrowRight className="ml-1 h-4 w-4"/></Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Button asChild size="lg" variant="outline" className="text-primary border-primary hover:bg-primary/10">
+                <Link href="/knowledge-base">Explore All Resources <HelpCircle className="ml-2 h-5 w-5"/></Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Tax Form / Filing Assistance Section */}
+      <section className="w-full py-12 md:py-24">
           <div className="container grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-12">
             <div className="space-y-4">
               <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm font-medium text-primary dark:bg-primary/20">
                 Tax Season Ready
               </div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Simplify Your Tax Filing</h2>
-              <p className="max-w-[600px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+              <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 Our platform provides tools and guidance to help you prepare for tax season. While we don't file for you, we empower you to gather information and understand your obligations.
               </p>
-              <ul className="grid gap-2 py-4">
+              <ul className="grid gap-2 py-4 text-muted-foreground">
                 <li className="flex items-center">
                   <ListChecks className="mr-2 h-5 w-5 text-primary" />
                   Organize income and expenses for easy reporting.
@@ -378,64 +613,80 @@ export default function LandingPage() {
             </div>
             <div className="flex justify-center">
               {/* Placeholder for an image or illustration related to tax filing */}
-              <img
+              <Image
                 alt="Tax Filing Assistance Illustration"
                 className="overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
                 height="400"
-                src="/placeholder.svg?height=400&width=600&text=Tax+Prep+Visual"
+                src="https://placehold.co/600x400.png"
                 width="600"
+                data-ai-hint="tax preparation"
               />
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section className="w-full py-12 md:py-24 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-          <div className="container px-4 md:px-6">
-            <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Frequently Asked Questions</h2>
-              <p className="max-w-2xl mx-auto text-gray-600 md:text-xl dark:text-gray-400">
-                Find answers to common questions about our platform and Barbadian tax & finance.
-              </p>
-            </div>
-            <div className="max-w-3xl mx-auto">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger className="text-lg font-semibold hover:text-primary dark:hover:text-primary-foreground">Is this platform officially endorsed by the Barbados Revenue Authority (BRA)?</AccordionTrigger>
-                  <AccordionContent className="text-base text-gray-600 dark:text-gray-400 pt-2">
-                    No, this platform is an independent initiative designed to assist users with understanding and managing their financial obligations in Barbados. It is not officially endorsed by the BRA. For official information, please refer to the BRA website.
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger className="text-lg font-semibold hover:text-primary dark:hover:text-primary-foreground">Are the calculators always up-to-date with the latest tax laws?</AccordionTrigger>
-                  <AccordionContent className="text-base text-gray-600 dark:text-gray-400 pt-2">
-                    We strive to keep our calculators and information as current as possible. However, tax laws can change. We recommend cross-referencing with official sources or consulting a financial advisor for critical decisions.
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3">
-                  <AccordionTrigger className="text-lg font-semibold hover:text-primary dark:hover:text-primary-foreground">Can I file my taxes directly through this platform?</AccordionTrigger>
-                  <AccordionContent className="text-base text-gray-600 dark:text-gray-400 pt-2">
-                    Currently, our platform does not support direct tax filing. We provide tools for calculation, estimation, and information gathering to help you prepare for filing with the relevant authorities.
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-4">
-                  <AccordionTrigger className="text-lg font-semibold hover:text-primary dark:hover:text-primary-foreground">Is my data secure on this platform?</AccordionTrigger>
-                  <AccordionContent className="text-base text-gray-600 dark:text-gray-400 pt-2">
-                    We take data privacy seriously. While most calculators can be used anonymously, if you choose to create an account, we employ security measures to protect your information. Please review our Privacy Policy for details.
-                  </AccordionContent>
-                </AccordionItem>
-                 <AccordionItem value="item-5">
-                  <AccordionTrigger className="text-lg font-semibold hover:text-primary dark:hover:text-primary-foreground">Who is this platform for?</AccordionTrigger>
-                  <AccordionContent className="text-base text-gray-600 dark:text-gray-400 pt-2">
-                    This platform is designed for individuals, small to medium-sized businesses, accountants, and financial advisors in Barbados or those dealing with Barbadian financial matters. Our goal is to provide accessible tools for a wide range of users.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
+      {/* FAQ Section */}
+      <section className="w-full py-12 md:py-24 border-t">
+        <div className="container px-4 md:px-6">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-primary">Frequently Asked Questions</h2>
+            <p className="max-w-2xl mx-auto text-muted-foreground md:text-xl">
+              Find answers to common questions about our platform and Trinidad & Tobago tax & finance.
+            </p>
           </div>
-        </section>
-      </main>
+          <div className="max-w-3xl mx-auto">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary">Is this platform officially endorsed by the IRD?</AccordionTrigger>
+                <AccordionContent className="text-base text-muted-foreground pt-2">
+                  No, this platform is an independent initiative designed to assist users with understanding and managing their financial obligations in Trinidad & Tobago. It is not officially endorsed by the IRD. For official information, please refer to the IRD website.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary">Are the calculators always up-to-date with the latest tax laws?</AccordionTrigger>
+                <AccordionContent className="text-base text-muted-foreground pt-2">
+                  We strive to keep our calculators and information as current as possible. However, tax laws can change. We recommend cross-referencing with official sources or consulting a financial advisor for critical decisions.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary">Can I file my taxes directly through this platform?</AccordionTrigger>
+                <AccordionContent className="text-base text-muted-foreground pt-2">
+                  Currently, our platform does not support direct tax filing. We provide tools for calculation, estimation, and information gathering to help you prepare for filing with the relevant authorities.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-4">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary">Is my data secure on this platform?</AccordionTrigger>
+                <AccordionContent className="text-base text-muted-foreground pt-2">
+                  We take data privacy seriously. While most calculators can be used anonymously, if you choose to create an account, we employ security measures to protect your information. Please review our Privacy Policy for details.
+                </AccordionContent>
+              </AccordionItem>
+               <AccordionItem value="item-5">
+                <AccordionTrigger className="text-lg font-semibold hover:text-primary">Who is this platform for?</AccordionTrigger>
+                <AccordionContent className="text-base text-muted-foreground pt-2">
+                  This platform is designed for individuals, small to medium-sized businesses, accountants, and financial advisors in Trinidad & Tobago or those dealing with T&T financial matters. Our goal is to provide accessible tools for a wide range of users.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </section>
 
+      <footer id="footer" className="py-12 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+            <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold mb-2">{heroContentData.headline}</h3>
+            <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
+                Your trusted partner for Trinidad & Tobago tax solutions.
+            </p>
+            <div className="text-xs text-primary-foreground/70">
+                <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
+            </div>
+             <p className="text-xs text-primary-foreground/60 mt-4">
+                © {new Date().getFullYear()} TaxTT. All rights reserved.
+            </p>
+        </div>
+      </footer>
+      
       {activeCalculator && (
          <React.Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center"><p className="text-white">Loading Calculator...</p></div>}>
             <CalculatorDialog
@@ -446,6 +697,15 @@ export default function LandingPage() {
                 CalculatorComponent={renderCalculator()}
             />
         </React.Suspense>
+      )}
+
+      {calculatorForReview && (
+        <StarReviewDialog
+          isOpen={isReviewDialogOpen}
+          onOpenChange={setIsReviewDialogOpen}
+          calculatorName={calculatorForReview}
+          onSubmitReview={handleSubmitReview}
+        />
       )}
     </div>
   );

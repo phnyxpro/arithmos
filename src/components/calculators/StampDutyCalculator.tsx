@@ -18,16 +18,21 @@ import { Separator } from '@/components/ui/separator';
 import { Stamp, DollarSign, Copy, Trash2, CircleCheckBig, AlertCircle } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-const initialCalculationResults = {
+interface CalculationResult {
+  calculatedStampDutyDisplay: string;
+  breakdown: string[];
+}
+
+const initialCalculationResults: CalculationResult = {
   calculatedStampDutyDisplay: "0.00",
-  breakdown: [] as string[],
+  breakdown: [],
 };
 
 export function StampDutyCalculator() {
   const { toast } = useToast();
 
   const [propertyValue, setPropertyValue] = useState<string>("");
-  const [calculationResults, setCalculationResults] = useState(initialCalculationResults);
+  const [calculationResults, setCalculationResults] = useState<CalculationResult>(initialCalculationResults);
 
   const formatCurrency = (num: number) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const parseNum = (val: string) => parseFloat(val) || 0;
@@ -42,61 +47,51 @@ export function StampDutyCalculator() {
     let duty = 0;
     const breakdownSteps: string[] = [];
 
-    // Tiered rates for general conveyances (residential property, non-first-time buyer simplified)
-    // These tiers and rates are illustrative examples for Trinidad & Tobago and should be verified.
-    // Actual laws are more complex.
-    const tier1Limit = 450000;
-    const tier2Limit = 850000;
-    const tier3Limit = 1250000;
+    const tier1Limit = 850000;
+    const tier2Limit = 1250000;
+    const tier3Limit = 1750000;
 
-    const tier1Rate = 0.00; // 0%
-    const tier2Rate = 0.02; // 2%
-    const tier3Rate = 0.05; // 5%
-    const tier4Rate = 0.075; // 7.5%
-    
-    let remainingValue = value;
+    const rate1 = 0.00; // 0%
+    const rate2 = 0.03; // 3%
+    const rate3 = 0.05; // 5%
+    const rate4 = 0.075; // 7.5%
 
     if (value <= tier1Limit) {
-      // No duty
       duty = 0;
       breakdownSteps.push(`Value up to $${formatCurrency(tier1Limit)}: $0.00 (0%)`);
     } else {
-      // Value exceeds tier 1 limit
-      breakdownSteps.push(`Value up to $${formatCurrency(tier1Limit)}: $0.00 (0%)`);
+      // Duty for the first tier (which is $0)
+      breakdownSteps.push(`On first $${formatCurrency(tier1Limit)}: $0.00 (0%)`);
       
       if (value <= tier2Limit) {
         const taxableInTier2 = value - tier1Limit;
-        const dutyInTier2 = taxableInTier2 * tier2Rate;
+        const dutyInTier2 = taxableInTier2 * rate2;
         duty += dutyInTier2;
-        breakdownSteps.push(`On next $${formatCurrency(taxableInTier2)} (up to $${formatCurrency(tier2Limit)}): $${formatCurrency(dutyInTier2)} (${tier2Rate*100}%)`);
+        breakdownSteps.push(`On next $${formatCurrency(taxableInTier2)} (up to $${formatCurrency(tier2Limit)}): $${formatCurrency(dutyInTier2)} @ ${rate2 * 100}%`);
       } else {
-        // Max duty from tier 2
         const tier2TaxableAmount = tier2Limit - tier1Limit;
-        const dutyFromTier2 = tier2TaxableAmount * tier2Rate;
+        const dutyFromTier2 = tier2TaxableAmount * rate2;
         duty += dutyFromTier2;
-        breakdownSteps.push(`On next $${formatCurrency(tier2TaxableAmount)} (up to $${formatCurrency(tier2Limit)}): $${formatCurrency(dutyFromTier2)} (${tier2Rate*100}%)`);
+        breakdownSteps.push(`On next $${formatCurrency(tier2TaxableAmount)} (from $${formatCurrency(tier1Limit + 0.01)} to $${formatCurrency(tier2Limit)}): $${formatCurrency(dutyFromTier2)} @ ${rate2 * 100}%`);
 
         if (value <= tier3Limit) {
           const taxableInTier3 = value - tier2Limit;
-          const dutyInTier3 = taxableInTier3 * tier3Rate;
+          const dutyInTier3 = taxableInTier3 * rate3;
           duty += dutyInTier3;
-          breakdownSteps.push(`On next $${formatCurrency(taxableInTier3)} (up to $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyInTier3)} (${tier3Rate*100}%)`);
+          breakdownSteps.push(`On next $${formatCurrency(taxableInTier3)} (from $${formatCurrency(tier2Limit + 0.01)} to $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyInTier3)} @ ${rate3 * 100}%`);
         } else {
-          // Max duty from tier 3
           const tier3TaxableAmount = tier3Limit - tier2Limit;
-          const dutyFromTier3 = tier3TaxableAmount * tier3Rate;
+          const dutyFromTier3 = tier3TaxableAmount * rate3;
           duty += dutyFromTier3;
-          breakdownSteps.push(`On next $${formatCurrency(tier3TaxableAmount)} (up to $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyFromTier3)} (${tier3Rate*100}%)`);
+          breakdownSteps.push(`On next $${formatCurrency(tier3TaxableAmount)} (from $${formatCurrency(tier2Limit + 0.01)} to $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyFromTier3)} @ ${rate3 * 100}%`);
           
-          // Remaining value for tier 4
           const taxableInTier4 = value - tier3Limit;
-          const dutyInTier4 = taxableInTier4 * tier4Rate;
+          const dutyInTier4 = taxableInTier4 * rate4;
           duty += dutyInTier4;
-          breakdownSteps.push(`On remaining $${formatCurrency(taxableInTier4)} (above $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyInTier4)} (${tier4Rate*100}%)`);
+          breakdownSteps.push(`On remaining $${formatCurrency(taxableInTier4)} (above $${formatCurrency(tier3Limit)}): $${formatCurrency(dutyInTier4)} @ ${rate4 * 100}%`);
         }
       }
     }
-
 
     setCalculationResults({
       calculatedStampDutyDisplay: formatCurrency(duty),
@@ -124,7 +119,7 @@ export function StampDutyCalculator() {
       return;
     }
     let textToCopy = `
-Stamp Duty Calculation Summary
+Stamp Duty Calculation Summary (Residential Property)
 ---------------------------------
 Input:
 Property Value / Consideration: TT$ ${formatCurrency(parseNum(propertyValue))}
@@ -133,13 +128,13 @@ Results:
 Estimated Stamp Duty Payable: TT$ ${calculationResults.calculatedStampDutyDisplay}
 `;
     if (calculationResults.breakdown.length > 0) {
-        textToCopy += "\nBreakdown:\n";
+        textToCopy += "\nDuty Calculation Breakdown:\n";
         calculationResults.breakdown.forEach(step => {
             textToCopy += `- ${step}\n`;
         });
     }
     textToCopy += `---------------------------------
-Disclaimer: This is an estimate based on general tiered rates for conveyances. Actual stamp duty can vary based on the specific nature of the instrument, parties involved, and exemptions (e.g., first-time homeowners). Consult the Stamp Duty Act and official IRD guidelines.
+Disclaimer: This is an estimate based on general tiered rates for residential property conveyances in Trinidad & Tobago. Actual stamp duty can vary based on the specific nature of the instrument, parties involved, and exemptions (e.g., first-time homeowners, gifts). Consult the Stamp Duty Act and official IRD guidelines or seek professional legal advice for accurate determination.
     `;
     navigator.clipboard.writeText(textToCopy.trim());
     toast({ title: "Results Copied!", description: "Stamp duty calculation details copied." });
@@ -149,10 +144,8 @@ Disclaimer: This is an estimate based on general tiered rates for conveyances. A
     <div className="py-4">
       <Card className="border-none shadow-none">
         <CardHeader className="p-0 pb-4">
-          {/* DialogTitle and DialogDescription are typically part of the parent Dialog component */}
-          {/* <CardTitle className="text-xl text-primary">Stamp Duty Calculator</CardTitle> */}
           <CardDescription>
-            Estimate stamp duty payable on property transfers based on the value of the property or consideration.
+            Estimate stamp duty payable on residential property transfers based on the value of the property or consideration using common T&T rates.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-0">
@@ -161,7 +154,7 @@ Disclaimer: This is an estimate based on general tiered rates for conveyances. A
               <DollarSign className="mr-2 h-4 w-4 text-muted-foreground" /> Property Value / Consideration (TTD)
             </Label>
             <Input
-              id="propertyValueStampDuty" type="number" step="0.01" placeholder="e.g., 750000"
+              id="propertyValueStampDuty" type="number" step="0.01" placeholder="e.g., 950000"
               value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)}
               className="h-9 text-sm"
             />
@@ -171,13 +164,18 @@ Disclaimer: This is an estimate based on general tiered rates for conveyances. A
             <Card className="mt-4 bg-muted/30">
               <CardHeader className="p-3">
                 <CardTitle className="text-md text-primary flex items-center">
-                   <CircleCheckBig className="mr-2 h-4 w-4" /> Estimated Stamp Duty
+                   <CircleCheckBig className="mr-2 h-4 w-4" /> Estimated Stamp Duty (Residential Property)
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-3 text-xs space-y-1">
-                {calculationResults.breakdown.map((step, index) => (
-                  <p key={index} className="text-muted-foreground">{step}</p>
-                ))}
+                <div className="font-medium mb-1">Duty Calculation Breakdown:</div>
+                {calculationResults.breakdown.length > 0 ? (
+                  calculationResults.breakdown.map((step, index) => (
+                    <p key={index} className="text-muted-foreground ml-2">{`- ${step}`}</p>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground ml-2">- Calculation pending or value below first tier.</p>
+                )}
                 <Separator className="my-1.5" />
                 <div className="flex justify-between font-semibold text-sm">
                   <span>Total Estimated Stamp Duty Payable:</span> <strong className="text-primary">TT$ {calculationResults.calculatedStampDutyDisplay}</strong>
@@ -196,10 +194,11 @@ Disclaimer: This is an estimate based on general tiered rates for conveyances. A
         </CardFooter>
         <p className="text-xs text-muted-foreground text-center mt-4 flex items-start">
           <AlertCircle size={20} className="mr-1.5 flex-shrink-0" />
-          <span>Disclaimer: This calculator provides an estimate based on a general tiered structure for stamp duty on conveyances or transfers of residential property in Trinidad & Tobago. Actual stamp duty payable can vary significantly based on the specific type of instrument (e.g., mortgage, lease, gift), the parties involved, applicable exemptions (like for first-time homeowners up to certain values), and any amendments to the Stamp Duty Act. Always consult the official Stamp Duty Act, IRD guidelines, or seek professional legal advice for accurate determination.</span>
+          <span>
+            Disclaimer: This calculator provides an estimate based on general tiered rates for stamp duty on conveyances or transfers of residential property in Trinidad & Tobago. It does NOT account for specific exemptions (e.g., first-time homeowner relief which has different thresholds and conditions), different rates for non-residential property, mortgages, leases, gifts, or other types of instruments. Actual stamp duty payable can vary significantly. Always consult the official Stamp Duty Act, IRD guidelines, or seek professional legal advice for accurate determination.
+          </span>
         </p>
       </Card>
     </div>
   );
 }
-

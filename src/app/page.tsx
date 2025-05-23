@@ -28,9 +28,6 @@ import {
   Clock,
   ArrowRight,
   CalendarDays,
-  Bell,
-  Linkedin,
-  Facebook,
   FileHeart,
   Banknote,
   Leaf,
@@ -67,6 +64,9 @@ import {
   Calculator as CalculatorIcon,
   FileText as FileTextIcon,
   ListChecks,
+  BarChart3, // Added from a previous request, ensure it's used or remove if not
+  CheckCircle2, // Added from a previous request, ensure it's used or remove if not
+  ThumbsUp, // Added from a previous request, ensure it's used or remove if not
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { BasicTimeCalculator } from '@/components/calculators/BasicTimeCalculator';
@@ -276,6 +276,7 @@ export default function LandingPage() {
     setOpenState: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     let wasOpen = false;
+    // This switch needs to be exhaustive for all dialogs you want to trigger reviews for.
     switch (calculatorName) {
       case "Basic Time Calculator": wasOpen = isBasicTimeCalcOpen; break;
       case "PAYE, NIS & HS Calculator": wasOpen = isPayrollCalcOpen; break;
@@ -353,7 +354,13 @@ export default function LandingPage() {
 
 
   const coreCalculators = detailedCalculatorList.filter(calc =>
-    ["time", "paye", "voluntary-nis", "levy-dialog", "simple-vat"]
+    ["time", "paye", "voluntary-nis", "levy-dialog", "simple-vat",
+     "excise-duty", "gross-to-net", "overtime-pay", "bonus-commission", "vacation-pay",
+     "loan-amort", "mortgage", "savings-invest", "currency-ex", "simple-interest",
+     "markup-margin", "break-even", "cash-flow-proj", "depreciation", "tariff-duty",
+     "freight-ship", "cif-calc", "stamp-duty", "prop-tax-dialog", "rental-yield",
+     "aml-risk", "fatca-crs"
+    ]
     .includes(calc.id)
   );
 
@@ -397,10 +404,9 @@ export default function LandingPage() {
     const eventTitle = `Tax TT Reminder: ${deadline.name}`;
     const eventDescription = `Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}. Remember to verify with official IRD sources.`;
 
-    const googleStartDate = format(eventDate, "yyyyMMdd");
-    const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd");
-
     if (type === 'google') {
+      const googleStartDate = format(eventDate, "yyyyMMdd");
+      const googleEndDate = format(addDays(eventDate, 1), "yyyyMMdd");
       const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${googleStartDate}/${googleEndDate}&details=${encodeURIComponent(eventDescription)}`;
       window.open(googleUrl, '_blank');
       toast({ title: "Opening Google Calendar", description: `Adding reminder for "${deadline.name}".` });
@@ -506,16 +512,19 @@ export default function LandingPage() {
             Start With Our Most Popular Calculators
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {detailedCalculatorList.map((calc) => (
+            {coreCalculators.map((calc) => (
               <Card key={calc.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
                   <div className="flex items-center mb-3">
                     <calc.icon className="h-8 w-8 text-accent mr-3" />
                     <CardTitle className="text-xl text-primary">{calc.title}</CardTitle>
                   </div>
-                  <CardDescription className="text-sm">{calc.description}</CardDescription>
+                  <CardDescription className="text-sm h-12 overflow-hidden text-ellipsis"> {/* Added height and overflow control */}
+                    {calc.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
+                  {/* Content can be added here if needed in the future */}
                 </CardContent>
                 <CardFooter>
                   {calc.onClick ? (
@@ -594,7 +603,7 @@ export default function LandingPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="pt-4 flex items-center justify-start space-x-1 sm:space-x-2">
-                    <Button
+                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-7 w-7 text-primary hover:bg-primary/10"
@@ -603,7 +612,7 @@ export default function LandingPage() {
                       aria-label="Add to Google Calendar"
                       title="Add to Google Calendar"
                     >
-                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20.46 14.354V10.822H21.75V4.763C21.75 4.03 21.17 3.45 20.438 3.45H3.563C2.83 3.45 2.25 4.03 2.25 4.763V20.145C2.25 20.878 2.83 21.457 3.563 21.457H12.69V20.181H3.563C3.546 20.181 3.53 20.175 3.518 20.162C3.506 20.149 3.5 20.132 3.5 20.115V8.52H20.5V10.822H19.219V14.354H20.46Z" fill="#34A853"/>
                         <path d="M19.219 14.354V10.822H10.888V8.52H3.5V4.793C3.5 4.776 3.506 4.759 3.518 4.746C3.53 4.733 3.546 4.728 3.563 4.728H20.438C20.454 4.728 20.47 4.733 20.482 4.746C20.494 4.759 20.5 4.776 20.5 4.793V8.52H13.15V10.822H20.5V14.354H19.219Z" fill="#4285F4"/>
                         <path d="M12.69 20.181H3.563C3.546 20.181 3.53 20.175 3.518 20.162C3.506 20.149 3.5 20.132 3.5 20.115V8.52H10.888V14.354H13.15V20.181H12.69Z" fill="#FBBC04"/>
@@ -611,7 +620,7 @@ export default function LandingPage() {
                         <path d="M16.8563 21.75C18.7368 21.75 20.25 20.2368 20.25 18.3562C20.25 16.4757 18.7368 14.9625 16.8563 14.9625C14.9757 14.9625 13.4625 16.4757 13.4625 18.3562C13.4625 20.2368 14.9757 21.75 16.8563 21.75Z" fill="#FFFFFF"/>
                         <path d="M16.8563 20.8125C18.2105 20.8125 19.3125 19.7105 19.3125 18.3562C19.3125 17.0019 18.2105 15.9 16.8563 15.9C15.502 15.9 14.4 17.0019 14.4 18.3562C14.4 19.7105 15.502 20.8125 16.8563 20.8125Z" fill="#4285F4"/>
                         <path d="M18.5625 16.65H17.775V15.8625H15.9V16.65H15.1125V17.5125H15.9V18.3H17.775V17.5125H18.5625V16.65Z" fill="#FFFFFF"/>
-                      </svg>
+                       </svg>
                     </Button>
                     <Button
                       variant="ghost"
@@ -622,7 +631,7 @@ export default function LandingPage() {
                       aria-label="Add to Outlook Calendar"
                       title="Add to Outlook Calendar"
                     >
-                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                       <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20.4 3.6H3.6C3.26863 3.6 3 3.86863 3 4.2V19.8C3 20.1314 3.26863 20.4 3.6 20.4H20.4C20.7314 20.4 21 20.1314 21 19.8V4.2C21 3.86863 20.7314 3.6 20.4 3.6Z" fill="#0078D4"/>
                         <path d="M9.86252 12.4603L5.01002 16.2178V7.06785L9.86252 12.4603Z" fill="white"/>
                         <path d="M10.6711 13.1009L12.0001 14.1396L13.3291 13.1009L18.0616 7.50146H5.93857L10.6711 13.1009Z" fill="white"/>
@@ -636,13 +645,12 @@ export default function LandingPage() {
                       className="h-7 w-7 text-primary hover:bg-primary/10"
                       onClick={() => handleAddToCalendar(item, 'ics')}
                       disabled={item.status === "Completed"}
-                      aria-label="Download ICS File for Apple Calendar"
-                      title="Download ICS for Apple Calendar"
+                      aria-label="Download ICS File for Apple/Other Calendars"
+                      title="Download ICS for Apple/Other"
                     >
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8.354 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L7.293 10.5 4.646 7.854a.5.5 0 1 1 .708-.708l3 3z"/>
-                        <path d="M12.146 7.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L14.707 10.5l-2.561-2.561a.5.5 0 0 1 0-.708zM8 1c2.296 0 4.377.584 5.995 1.517a.498.498 0 0 1 .005.865L12.005 5.11a.5.5 0 0 1-.67.015L8.188 3.087a.5.5 0 0 0-.376 0l-3.147 2.038a.5.5 0 0 1-.67-.015L1.995 3.382a.5.5 0 0 1 .005-.865C3.623 1.584 5.704 1 8 1zM15 6.588a.5.5 0 0 1 .854.353V14a1.5 1.5 0 0 1-1.5 1.5H1.646A1.5 1.5 0 0 1 .146 14V6.94a.5.5 0 0 1 .854-.353L4.37 8.467l.252.167a.5.5 0 0 0 .756 0l2.773-1.803L11.63 8.467l.252.167a.5.5 0 0 0 .756 0l3.369-2.046z"/>
-                      </svg>
+                        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8.35355 3.14645C8.15829 2.95118 7.84171 2.95118 7.64645 3.14645L4.14645 6.64645C3.95118 6.84171 3.95118 7.15829 4.14645 7.35355C4.34171 7.54882 4.65829 7.54882 4.85355 7.35355L7.5 4.70711V12.5C7.5 12.7761 7.72386 13 8 13C8.27614 13 8.5 12.7761 8.5 12.5V4.70711L11.1464 7.35355C11.3417 7.54882 11.6583 7.54882 11.8536 7.35355C12.0488 7.15829 12.0488 6.84171 11.8536 6.64645L8.35355 3.14645ZM2.5 10.5C2.22386 10.5 2 10.7239 2 11V12C2 13.1046 2.89543 14 4 14H12C13.1046 14 14 13.1046 14 12V11C14 10.7239 13.7761 10.5 13.5 10.5C13.2239 10.5 13 10.7239 13 11V12C13 12.5523 12.5523 13 12 13H4C3.44772 13 3 12.5523 3 12V11C3 10.7239 2.77614 10.5 2.5 10.5Z" />
+                        </svg>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -936,4 +944,3 @@ export default function LandingPage() {
     </div>
   );
 }
-```

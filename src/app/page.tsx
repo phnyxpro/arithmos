@@ -65,9 +65,6 @@ import {
   ShieldCheck,
   Smartphone,
   Calculator as CalculatorIcon,
-  BarChart3,
-  CheckCircle2,
-  ThumbsUp,
   FileText as FileTextIcon,
   ListChecks,
 } from "lucide-react";
@@ -345,6 +342,7 @@ export default function LandingPage() {
     { id: "rental-yield", name: "Rental Yield Calculator", title: "Rental Yield Calculator", description: "Calculate returns on rental property investments.", icon: Building2, onClick: () => openCalculatorDialog(setIsRentalYieldCalcOpen, setRentalYieldCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "Rental Yield Calculator" },
     { id: "aml-risk", name: "AML Compliance Risk Assessment Calculator", title: "AML Compliance Risk Assessment Calculator", description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions.", icon: ShieldAlert, onClick: () => openCalculatorDialog(setIsAMLRiskCalcOpen, setAMLRiskCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "AML Compliance Risk Assessment Calculator" },
     { id: "fatca-crs", name: "FATCA & CRS Compliance Calculator", title: "FATCA & CRS Compliance Calculator", description: "Assess and report obligations under FATCA & CRS regulations.", icon: Network, onClick: () => openCalculatorDialog(setIsFATCACRSCalcOpen, setFATCACRSCalcKey), ctaText: "Open Calculator", calculatorIdentifier: "FATCA & CRS Compliance Calculator" },
+    // Full page calculators (no onClick, uses href)
     { id: "business-levy-page", name: "Business Levy (Full Page)", title: "Business Levy (Full Page)", description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).", icon: Banknote, href: "/calculators/business-levy", ctaText: "View Page", calculatorIdentifier: "Business Levy (Full Page)" },
     { id: "green-fund", name: "Green Fund Levy (Full Page)", title: "Green Fund Levy (Full Page)", description: "Detailed Green Fund Levy calculation with quarterly tracking. Applies at 0.3% of total annualized gross sales.", icon: Leaf, href: "/calculators/green-fund-levy", ctaText: "View Page", calculatorIdentifier: "Green Fund Levy (Full Page)" },
     { id: "corp-tax", name: "Corporation Tax Calculator", title: "Corporation Tax Calculator", description: "Estimates Corporation Tax liability based on chargeable profits, considering allowable deductions, other income, loss carried forward, and tax credits.", icon: Building, href: "/calculators/corporation-tax", ctaText: "View Page", calculatorIdentifier: "Corporation Tax Calculator" },
@@ -353,8 +351,9 @@ export default function LandingPage() {
     { id: "vat-calc-page", name: "VAT Calculator (Full Page)", title: "VAT Calculator (Full Page)", description: "Calculates Value Added Tax (12.5%) on prices, allowing for input of price excluding or including VAT. Also includes a VAT registration eligibility checker.", icon: ReceiptText, href: "/calculators/vat", ctaText: "View Page", calculatorIdentifier: "VAT Calculator (Full Page)" },
   ];
 
+
   const coreCalculators = detailedCalculatorList.filter(calc =>
-    ["time", "paye", "voluntary-nis", "levy-dialog", "simple-vat", "excise-duty", "gross-to-net", "overtime-pay", "bonus-commission", "vacation-pay", "loan-amort", "mortgage", "savings-invest", "currency-ex", "simple-interest", "markup-margin", "break-even", "cash-flow-proj", "depreciation", "tariff-duty", "freight-ship", "cif-calc", "stamp-duty", "prop-tax-dialog", "rental-yield", "aml-risk", "fatca-crs"]
+    ["time", "paye", "voluntary-nis", "levy-dialog", "simple-vat"]
     .includes(calc.id)
   );
 
@@ -507,7 +506,7 @@ export default function LandingPage() {
             Start With Our Most Popular Calculators
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coreCalculators.map((calc) => (
+            {detailedCalculatorList.map((calc) => (
               <Card key={calc.id} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
                   <div className="flex items-center mb-3">
@@ -534,7 +533,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
 
       {/* Why Choose Tax TT */}
       <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -638,11 +636,12 @@ export default function LandingPage() {
                       className="h-7 w-7 text-primary hover:bg-primary/10"
                       onClick={() => handleAddToCalendar(item, 'ics')}
                       disabled={item.status === "Completed"}
-                      aria-label="Download ICS File for Apple/Other Calendars"
-                      title="Download ICS for Apple/Other"
+                      aria-label="Download ICS File for Apple Calendar"
+                      title="Download ICS for Apple Calendar"
                     >
-                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.3055 10.1139C17.8919 7.04895 15.2311 4.65002 12.0005 4.65002C10.0991 4.65002 8.40054 5.5908 7.31079 7.05378C7.26054 7.01928 7.20724 6.98765 7.15169 6.95858C6.62301 6.67998 6.00054 6.90263 5.72194 7.43131C5.44226 7.95999 5.66491 8.58255 6.19359 8.86123C6.25266 8.89245 6.31387 8.91992 6.37675 8.94324C5.31985 10.0977 5.2145 11.779 6.11515 13.0526C6.13475 13.0794 6.15525 13.1057 6.17659 13.1314C6.52258 13.5422 6.96372 13.8761 7.46817 14.1165C7.08673 14.7656 6.93878 15.5373 7.06217 16.2985C7.07054 16.3457 7.07954 16.3926 7.08917 16.439C7.40475 17.9048 8.68016 19.0017 10.2246 19.0948C10.2753 19.0979 10.3261 19.1006 10.377 19.1027C10.435 19.1051 10.4932 19.1063 10.5516 19.1063C11.9064 19.1063 13.1088 18.3272 13.6598 17.1119C13.9355 17.0211 14.2003 16.9058 14.4519 16.7687C15.2161 17.4126 16.2258 17.7582 17.2741 17.7265C18.9907 17.674 20.4114 16.3616 20.6692 14.6643C20.7153 14.3428 20.7283 14.017 20.7075 13.693C21.2484 13.3535 21.6296 12.7926 21.7581 12.1418C21.9032 11.3976 21.5403 10.6659 20.8453 10.2902C20.8277 10.2797 20.8097 10.2699 20.7913 10.2608C20.7659 10.2484 20.7403 10.2368 20.7145 10.2261C19.7311 9.84768 18.8421 10.2673 18.4108 11.1739C18.3584 11.2854 18.3231 11.4012 18.3055 11.5199V10.1139Z" />
+                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.354 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L7.293 10.5 4.646 7.854a.5.5 0 1 1 .708-.708l3 3z"/>
+                        <path d="M12.146 7.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L14.707 10.5l-2.561-2.561a.5.5 0 0 1 0-.708zM8 1c2.296 0 4.377.584 5.995 1.517a.498.498 0 0 1 .005.865L12.005 5.11a.5.5 0 0 1-.67.015L8.188 3.087a.5.5 0 0 0-.376 0l-3.147 2.038a.5.5 0 0 1-.67-.015L1.995 3.382a.5.5 0 0 1 .005-.865C3.623 1.584 5.704 1 8 1zM15 6.588a.5.5 0 0 1 .854.353V14a1.5 1.5 0 0 1-1.5 1.5H1.646A1.5 1.5 0 0 1 .146 14V6.94a.5.5 0 0 1 .854-.353L4.37 8.467l.252.167a.5.5 0 0 0 .756 0l2.773-1.803L11.63 8.467l.252.167a.5.5 0 0 0 .756 0l3.369-2.046z"/>
                       </svg>
                     </Button>
                   </CardFooter>
@@ -937,4 +936,4 @@ export default function LandingPage() {
     </div>
   );
 }
-
+```

@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"; // Added this import
 import {
   Briefcase,
   DollarSign,
@@ -270,16 +271,7 @@ const detailedCalculatorList: DetailedCalculatorListItem[] = [
       componentName: "VoluntaryNisCalculator",
       calculatorIdentifier: "Voluntary NIS Calculator",
     },
-    {
-      name: "Levy Calculator (Business & Green Fund)",
-      description: "Estimate Business Levy and Green Fund Levy from gross income. Considers exemptions for new companies.",
-      icon: Landmark,
-      category: "Business Tax",
-      ctaText: "Estimate Levies",
-      componentName: "SimplifiedLevyCalculator",
-      calculatorIdentifier: "Levy Calculator",
-    },
-    {
+     {
       name: "Simple VAT Calculator",
       description: "Quickly add or remove 12.5% VAT from a price. Includes VAT registration eligibility checker.",
       icon: Percent,
@@ -486,78 +478,6 @@ const detailedCalculatorList: DetailedCalculatorListItem[] = [
       componentName: "FATCACRSCalculator",
       calculatorIdentifier: "FATCA & CRS Calculator",
     },
-    {
-      name: "Income Tax (Full Page)",
-      description: "Comprehensive personal income tax calculation including PAYE, NIS, and Health Surcharge.",
-      icon: DollarSign,
-      category: "Tax",
-      href: "/calculators/income-tax",
-      ctaText: "View Page",
-      calculatorIdentifier: "Income Tax (Full Page)",
-    },
-    {
-      name: "Corporation Tax (Full Page)",
-      description: "Detailed corporation tax calculation with various income types, deductions, and offsets.",
-      icon: Landmark,
-      category: "Tax",
-      href: "/calculators/corporation-tax",
-      ctaText: "View Page",
-      calculatorIdentifier: "Corporation Tax (Full Page)",
-    },
-    {
-      name: "VAT Calculator (Full Page)",
-      description: "Calculate VAT, check registration eligibility, and explore VAT guides.",
-      icon: ReceiptText,
-      category: "Tax",
-      href: "/calculators/vat",
-      ctaText: "View Page",
-      calculatorIdentifier: "VAT Calculator (Full Page)",
-    },
-    {
-      name: "Property Tax Estimator (Full Page)",
-      description: "Estimate property taxes based on Annual Rental Value (ARV) and property type.",
-      icon: HomeIconLucide,
-      category: "Tax",
-      href: "/calculators/property-tax",
-      ctaText: "View Page",
-      calculatorIdentifier: "Property Tax Estimator (Full Page)",
-    },
-    {
-      name: "Business Levy (Full Page)",
-      description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).",
-      icon: Briefcase,
-      category: "Tax",
-      href: "/calculators/business-levy",
-      ctaText: "View Page",
-      calculatorIdentifier: "Business Levy (Full Page)",
-    },
-    {
-      name: "Green Fund Levy (Full Page)",
-      description: "Calculate Green Fund Levy with options for annual, quarterly, or monthly income input and quarterly tracking.",
-      icon: Leaf,
-      category: "Tax",
-      href: "/calculators/green-fund-levy",
-      ctaText: "View Page",
-      calculatorIdentifier: "Green Fund Levy (Full Page)",
-    },
-    {
-      name: "Payroll Calculator (Full Page)",
-      description: "Full payroll processing including PAYE, NIS, Health Surcharge, overtime, and other earnings/deductions.",
-      icon: UsersIcon,
-      category: "Payroll & HR",
-      href: "/calculators/payroll",
-      ctaText: "View Page",
-      calculatorIdentifier: "Payroll Calculator (Full Page)",
-    },
-    {
-      name: "Time Calculator (Full Page)",
-      description: "Includes basic time duration/pay and advanced daily pay calculations with breaks and overtime.",
-      icon: Clock,
-      category: "Payroll & HR",
-      href: "/calculators/time-calculator",
-      ctaText: "View Page",
-      calculatorIdentifier: "Time Calculator (Full Page)",
-    }
 ];
 
 interface DeadlineCardProps {
@@ -570,7 +490,7 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
     let effectiveStatus = item.status;
     const dueDate = parseISO(item.dueDate);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); 
+    today.setHours(0, 0, 0, 0);
 
     if (item.status !== "Completed" && dueDate < today) {
       effectiveStatus = "Overdue";
@@ -602,14 +522,14 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-start space-x-2 pt-3">
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
+         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
           <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current"><title>Google Calendar</title><path d="M12 2.75A9.25 9.25 0 002.75 12 9.25 9.25 0 0012 21.25c2.13 0 4.09-.725 5.627-1.952V12h-5.627V8.58h5.627V5.364A9.213 9.213 0 0012 2.75zm0 1.41h3.514v2.83h-3.514V4.16zm5.627 5.83h-5.627v3.417h5.627V9.99zm0 4.834h-5.627v2.83h3.514A9.195 9.195 0 0017.627 14.824zM8.583 12v2.83H5.36A9.213 9.213 0 014.16 12h4.423zm0-1.417H4.16a9.213 9.213 0 011.2-2.83h3.223v2.83zM12 19.84a7.818 7.818 0 01-3.514-.838h3.514v-2.83H8.583v-1.417h3.417v2.83h3.514c.293.21.57.436.83.678A7.857 7.857 0 0112 19.84z"></path></svg>
         </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Outlook Calendar" title="Add to Outlook Calendar">
            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current"><title>Microsoft Outlook</title><path d="M15.831.83H7.58A2.753 2.753 0 004.83 3.582v16.836A2.753 2.753 0 007.58 23.17h8.25a2.753 2.753 0 002.752-2.752V3.582A2.753 2.753 0 0015.83.83zm1.376 8.25h-4.125v1.376H13.08V15.2S11.888 16.5 9.9 16.5c-1.376 0-3.027-1.1-3.027-3.44 0-2.615 1.79-3.577 3.028-3.577 1.816 0 2.904 1.24 2.904 1.24V9.08zM9.9 11.13c-.963 0-1.65.716-1.65 2.062 0 1.348.687 2.063 1.65 2.063.962 0 1.65-.715 1.65-2.063s-.688-2.062-1.65-2.062z"></path></svg>
         </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple Calendars" title="Download ICS for Apple Calendars">
-          <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><title>Apple</title><path d="M17.87.11C16.32.04 14.18 0 12.03 0c-2.4 0-4.27.04-5.84.11-2.19.11-3.81 1.44-4.75 3.95C.29 6.99 0 10.04 0 12.2c0 2.12.29 4.89 1.35 7.64.98 2.65 2.49 3.81 4.67 3.91 1.64.07 3.64.11 5.99.11 2.08 0 4.08-.04 5.66-.11 2.27-.11 3.82-1.29 4.79-3.91 1.19-3.04 1.35-5.62 1.35-7.64 0-2.16-.29-5.21-1.45-7.92-.98-2.58-2.55-3.81-4.75-3.95zm-5.84 20.08c1.62 0 3.04-.95 4.17-2.02a.78.78 0 00.21-.56.77.77 0 00-.79-.75c-.49 0-1.15.42-1.92.42s-1.3-.42-2.15-.42c-2.14 0-3.62 1.19-4.4 2.65-.37.65-.81 1.66.19 1.66a.74.74 0 00.5-.16c.99-.78 1.89-1.22 2.99-1.22zm.56-15.76c1.35-.02 2.85-1.73 2.88-3.69a3.13 3.13 0 00-3.13-3.18c-1.46 0-2.99 1.7-3.02 3.66-.02 1.83 1.23 3.21 3.27 3.21z"></path></svg>
+           <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><title>Apple</title><path d="M17.87.11C16.32.04 14.18 0 12.03 0c-2.4 0-4.27.04-5.84.11-2.19.11-3.81 1.44-4.75 3.95C.29 6.99 0 10.04 0 12.2c0 2.12.29 4.89 1.35 7.64.98 2.65 2.49 3.81 4.67 3.91 1.64.07 3.64.11 5.99.11 2.08 0 4.08-.04 5.66-.11 2.27-.11 3.82-1.29 4.79-3.91 1.19-3.04 1.35-5.62 1.35-7.64 0-2.16-.29-5.21-1.45-7.92-.98-2.58-2.55-3.81-4.75-3.95zm-5.84 20.08c1.62 0 3.04-.95 4.17-2.02a.78.78 0 00.21-.56.77.77 0 00-.79-.75c-.49 0-1.15.42-1.92.42s-1.3-.42-2.15-.42c-2.14 0-3.62 1.19-4.4 2.65-.37.65-.81 1.66.19 1.66a.74.74 0 00.5-.16c.99-.78 1.89-1.22 2.99-1.22zm.56-15.76c1.35-.02 2.85-1.73 2.88-3.69a3.13 3.13 0 00-3.13-3.18c-1.46 0-2.99 1.7-3.02 3.66-.02 1.83 1.23 3.21 3.27 3.21z"></path></svg>
         </Button>
       </CardFooter>
     </Card>
@@ -633,7 +553,7 @@ export default function LandingPage() {
 
   const [isLevyCalcOpen, setIsLevyCalcOpen] = React.useState(false);
   const [levyCalcKey, setLevyCalcKey] = React.useState(0);
-  
+
   const [isVoluntaryNisCalcOpen, setIsVoluntaryNisCalcOpen] = React.useState(false);
   const [voluntaryNisCalcKey, setVoluntaryNisCalcKey] = React.useState(0);
 
@@ -706,7 +626,6 @@ export default function LandingPage() {
   const [isFatcaCrsCalcOpen, setIsFatcaCrsCalcOpen] = React.useState(false);
   const [fatcaCrsCalcKey, setFatcaCrsCalcKey] = React.useState(0);
 
-
   const openCalculatorDialog = React.useCallback((setter: React.Dispatch<React.SetStateAction<boolean>>, keySetter: React.Dispatch<React.SetStateAction<number>>, calculatorIdentifier: string, title: string, icon: React.ElementType, componentName: string) => {
     setter(true);
     keySetter(prev => prev + 1);
@@ -717,8 +636,9 @@ export default function LandingPage() {
     if (!isOpen && activeCalculator) {
       setCalculatorForReview(activeCalculator.name);
       setIsReviewDialogOpen(true);
-      setActiveCalculator(null);
+      setActiveCalculator(null); // Clear active calculator after initiating review
     }
+    // Always ensure all dialogs are marked as closed if the generic close is triggered
     if (!isOpen) {
         setIsBasicTimeCalcOpen(false);
         setIsPayrollCalcOpen(false);
@@ -748,7 +668,7 @@ export default function LandingPage() {
         setIsAmlRiskCalcOpen(false);
         setIsFatcaCrsCalcOpen(false);
     }
-  }, [activeCalculator]);
+  }, [activeCalculator]); // Added activeCalculator to dependencies
 
 
   const handleSubmitReview = React.useCallback((calculatorName: string, rating: number) => {
@@ -757,21 +677,23 @@ export default function LandingPage() {
       title: "Review Submitted!",
       description: `Thanks for rating the ${calculatorName} ${rating} stars.`,
     });
-    setCalculatorForReview(null);
-    setIsReviewDialogOpen(false);
+    setCalculatorForReview(null); // Clear calculator for review
+    setIsReviewDialogOpen(false); // Close review dialog
   }, [toast]);
+
 
   const HeroIcon = heroContentData.icon;
 
   const getOpenHandler = (calcIdentifier: string) => {
     const calc = detailedCalculatorList.find(c => c.calculatorIdentifier === calcIdentifier);
-    if (!calc || !calc.componentName) return () => {}; 
+    if (!calc || !calc.componentName) return () => {}; // Should not happen if list is correct
 
+    // A mapping from calculatorIdentifier to its state setters
     const stateSetters: { [key: string]: [React.Dispatch<React.SetStateAction<boolean>>, React.Dispatch<React.SetStateAction<number>>] } = {
         "Time Calculator": [setIsBasicTimeCalcOpen, setBasicTimeCalcKey],
         "Payroll Calculator": [setIsPayrollCalcOpen, setPayrollCalcKey],
         "Voluntary NIS Calculator": [setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey],
-        "Levy Calculator": [setIsLevyCalcOpen, setLevyCalcKey],
+        "Levy Calculator": [setIsLevyCalcOpen, setLevyCalcKey], // This was SimplifiedLevyCalculator
         "Simple VAT Calculator": [setIsSimpleVatCalcOpen, setSimpleVatCalcKey],
         "Excise Duty Calculator": [setIsExciseDutyCalcOpen, setExciseDutyCalcKey],
         "Gross to Net Salary Calculator": [setIsGrossToNetCalcOpen, setGrossToNetCalcKey],
@@ -796,9 +718,12 @@ export default function LandingPage() {
         "AML Risk Calculator": [setIsAmlRiskCalcOpen, setAmlRiskCalcKey],
         "FATCA & CRS Calculator": [setIsFatcaCrsCalcOpen, setFatcaCrsCalcKey],
     };
-    const setters = stateSetters[calcIdentifier];
-    if (!setters) return () => {}; 
 
+    const setters = stateSetters[calcIdentifier];
+    if (!setters) {
+        console.warn(`No state setters found for calculator: ${calcIdentifier}`);
+        return () => {}; // Return a no-op function if setters are not found
+    }
     return () => openCalculatorDialog(setters[0], setters[1], calc.calculatorIdentifier, calc.name, calc.icon, calc.componentName as string);
   };
 
@@ -807,7 +732,7 @@ export default function LandingPage() {
         case "Time Calculator": return isBasicTimeCalcOpen;
         case "Payroll Calculator": return isPayrollCalcOpen;
         case "Voluntary NIS Calculator": return isVoluntaryNisCalcOpen;
-        case "Levy Calculator": return isLevyCalcOpen;
+        case "Levy Calculator": return isLevyCalcOpen; // Corresponds to SimplifiedLevyCalculator
         case "Simple VAT Calculator": return isSimpleVatCalcOpen;
         case "Excise Duty Calculator": return isExciseDutyCalcOpen;
         case "Gross to Net Salary Calculator": return isGrossToNetCalcOpen;
@@ -840,7 +765,7 @@ export default function LandingPage() {
         case "Time Calculator": return basicTimeCalcKey;
         case "Payroll Calculator": return payrollCalcKey;
         case "Voluntary NIS Calculator": return voluntaryNisCalcKey;
-        case "Levy Calculator": return levyCalcKey;
+        case "Levy Calculator": return levyCalcKey; // Corresponds to SimplifiedLevyCalculator
         case "Simple VAT Calculator": return simpleVatCalcKey;
         case "Excise Duty Calculator": return exciseDutyCalcKey;
         case "Gross to Net Salary Calculator": return grossToNetCalcKey;
@@ -864,9 +789,10 @@ export default function LandingPage() {
         case "Rental Yield Calculator": return rentalYieldCalcKey;
         case "AML Risk Calculator": return amlRiskCalcKey;
         case "FATCA & CRS Calculator": return fatcaCrsCalcKey;
-        default: return Date.now();
+        default: return Date.now(); // Fallback, should not be reached if list is correct
     }
   };
+
 
   const handleAddToCalendar = React.useCallback((deadline: DeadlineItem, type: 'google' | 'outlook' | 'ics') => {
     const eventDate = parseISO(deadline.dueDate);
@@ -937,20 +863,6 @@ export default function LandingPage() {
     }
   }, [toast]);
 
-  const renderCalculatorComponent = (componentName: string, key: number) => {
-    const CalculatorComponent = calculatorComponents[componentName];
-    if (!CalculatorComponent) {
-      console.error(`Calculator component ${componentName} not found.`);
-      return <p>Calculator component not available.</p>;
-    }
-    return <CalculatorComponent key={key} />;
-  };
-
-  const halfIndex = Math.ceil(detailedCalculatorList.filter(calc => calc.href).length / 2);
-  const pageLinkCalculators = detailedCalculatorList.filter(calc => calc.href);
-  const firstHalfPageLinkCalculators = pageLinkCalculators.slice(0, halfIndex);
-  const secondHalfPageLinkCalculators = pageLinkCalculators.slice(halfIndex);
-
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -963,7 +875,6 @@ export default function LandingPage() {
           className="absolute inset-0"
           aria-hidden="true"
         ></div>
-         <div className="absolute inset-0 "></div> 
 
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary" />
@@ -1001,8 +912,8 @@ export default function LandingPage() {
                   <div className="flex items-center">
                     <Bell className="h-5 w-5 text-accent mr-2 flex-shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold truncate text-card-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">Due: {format(parseISO(item.dueDate), "MMM d, yyyy")}</p>
+                      <p className="text-sm font-semibold truncate text-primary-foreground">{item.title}</p>
+                      <p className="text-xs text-primary-foreground/70">Due: {format(parseISO(item.dueDate), "MMM d, yyyy")}</p>
                     </div>
                   </div>
                 </div>
@@ -1034,71 +945,27 @@ export default function LandingPage() {
                    <p className="text-sm text-muted-foreground">{calc.description}</p>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    onClick={getOpenHandler(calc.calculatorIdentifier)}
-                    variant="outline"
-                    className="w-full text-primary border-primary hover:bg-primary/10"
-                  >
-                    {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                   {calc.href ? (
+                    <Button asChild variant="outline" className="w-full text-primary border-primary hover:bg-primary/10">
+                      <Link href={calc.href}>
+                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={getOpenHandler(calc.calculatorIdentifier)}
+                      variant="outline"
+                      className="w-full text-primary border-primary hover:bg-primary/10"
+                    >
+                      {calc.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             ))}
           </div>
         </div>
       </section>
-      
-       {/* Explore All Our Calculators (Pages) */}
-      <section id="explore-calculators-pages" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Explore More Calculators (Full Pages)
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <Accordion type="single" collapsible className="w-full">
-              {firstHalfPageLinkCalculators.map((calc) => (
-                <AccordionItem value={calc.calculatorIdentifier} key={calc.calculatorIdentifier}>
-                  <AccordionTrigger className="text-lg hover:no-underline">
-                    <div className="flex items-center">
-                      <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
-                      {calc.name}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-muted-foreground mb-3">{calc.description}</p>
-                    <Button asChild variant="link" className="text-accent p-0">
-                      <Link href={calc.href!}>
-                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-            <Accordion type="single" collapsible className="w-full">
-              {secondHalfPageLinkCalculators.map((calc) => (
-                <AccordionItem value={calc.calculatorIdentifier} key={calc.calculatorIdentifier}>
-                  <AccordionTrigger className="text-lg hover:no-underline">
-                    <div className="flex items-center">
-                      <calc.icon className="mr-3 h-5 w-5 text-primary/80" />
-                      {calc.name}
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-muted-foreground mb-3">{calc.description}</p>
-                    <Button asChild variant="link" className="text-accent p-0">
-                      <Link href={calc.href!}>
-                        {calc.ctaText || "View Page"} <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
 
       {/* Why Choose Tax TT */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -1300,3 +1167,4 @@ export default function LandingPage() {
     </div>
   );
 }
+```

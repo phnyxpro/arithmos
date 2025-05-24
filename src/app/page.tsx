@@ -740,7 +740,6 @@ export default function LandingPage() {
         setIsSimpleInterestCalcOpen(false);
         setIsMarkupMarginCalcOpen(false);
         setIsBreakEvenCalcOpen(false);
-        setIsCashFlowProjectionCalcOpen(false);
         setIsDepreciationCalcOpen(false);
         setIsTariffCustomsDutyCalcOpen(false);
         setIsFreightShippingCalcOpen(false);

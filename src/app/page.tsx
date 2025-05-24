@@ -93,6 +93,8 @@ import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
 import CalculatorDialog from "@/components/ui/CalculatorDialog";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
+import { cn } from "@/lib/utils"; // Or your actual path to the cn utility
+
 
 // Dynamically import calculator components
 const LazyBasicTimeCalculator = React.lazy(() => import("@/components/calculators/BasicTimeCalculator"));

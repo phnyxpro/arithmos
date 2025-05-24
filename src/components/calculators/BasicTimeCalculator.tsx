@@ -211,4 +211,4 @@ export function BasicTimeCalculator() {
   );
 }
 
-    
+export default BasicTimeCalculator;

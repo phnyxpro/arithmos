@@ -18,7 +18,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"; // Added this import
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Briefcase,
   DollarSign,
@@ -71,9 +86,9 @@ import {
   HelpCircle,
   Settings,
   Calculator as CalculatorIconLucide,
+  CalendarPlus,
+  ChevronDown,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
 import CalculatorDialog from "@/components/ui/CalculatorDialog";
@@ -478,7 +493,80 @@ const detailedCalculatorList: DetailedCalculatorListItem[] = [
       componentName: "FATCACRSCalculator",
       calculatorIdentifier: "FATCA & CRS Calculator",
     },
+    {
+      name: "Income Tax (Full Page)",
+      description: "Comprehensive personal income tax calculation including PAYE, NIS, and Health Surcharge.",
+      icon: DollarSign,
+      category: "Tax",
+      href: "/calculators/income-tax",
+      ctaText: "View Page",
+      calculatorIdentifier: "Income Tax (Full Page)",
+    },
+    {
+      name: "Corporation Tax (Full Page)",
+      description: "Detailed corporation tax calculation with various income types, deductions, and offsets.",
+      icon: Landmark,
+      category: "Tax",
+      href: "/calculators/corporation-tax",
+      ctaText: "View Page",
+      calculatorIdentifier: "Corporation Tax (Full Page)",
+    },
+    {
+      name: "VAT Calculator (Full Page)",
+      description: "Calculate VAT, check registration eligibility, and explore VAT guides.",
+      icon: ReceiptText,
+      category: "Tax",
+      href: "/calculators/vat",
+      ctaText: "View Page",
+      calculatorIdentifier: "VAT Calculator (Full Page)",
+    },
+    {
+      name: "Property Tax Estimator (Full Page)",
+      description: "Estimate property taxes based on Annual Rental Value (ARV) and property type.",
+      icon: HomeIconLucide,
+      category: "Tax",
+      href: "/calculators/property-tax",
+      ctaText: "View Page",
+      calculatorIdentifier: "Property Tax Estimator (Full Page)",
+    },
+    {
+      name: "Business Levy (Full Page)",
+      description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).",
+      icon: Briefcase,
+      category: "Tax",
+      href: "/calculators/business-levy",
+      ctaText: "View Page",
+      calculatorIdentifier: "Business Levy (Full Page)",
+    },
+    {
+      name: "Green Fund Levy (Full Page)",
+      description: "Calculate Green Fund Levy with options for annual, quarterly, or monthly income input and quarterly tracking.",
+      icon: Leaf,
+      category: "Tax",
+      href: "/calculators/green-fund-levy",
+      ctaText: "View Page",
+      calculatorIdentifier: "Green Fund Levy (Full Page)",
+    },
+    {
+      name: "Payroll Calculator (Full Page)",
+      description: "Full payroll processing including PAYE, NIS, Health Surcharge, overtime, and other earnings/deductions.",
+      icon: UsersIcon,
+      category: "Payroll & HR",
+      href: "/calculators/payroll",
+      ctaText: "View Page",
+      calculatorIdentifier: "Payroll Calculator (Full Page)",
+    },
+    {
+      name: "Time Calculator (Full Page)",
+      description: "Includes basic time duration/pay and advanced daily pay calculations with breaks and overtime.",
+      icon: Clock,
+      category: "Payroll & HR",
+      href: "/calculators/time-calculator",
+      ctaText: "View Page",
+      calculatorIdentifier: "Time Calculator (Full Page)",
+    }
 ];
+
 
 interface DeadlineCardProps {
   item: DeadlineItem;
@@ -504,7 +592,10 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
     }
 
   return (
-    <Card className={`flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl ${effectiveStatus === "Overdue" || item.status === "Completed" ? 'opacity-70' : ''}`}>
+    <Card className={cn(
+        "flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl",
+        (effectiveStatus === "Overdue" || item.status === "Completed") ? 'opacity-70' : ''
+      )}>
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg text-primary">{item.title}</CardTitle>
@@ -522,13 +613,13 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-start space-x-2 pt-3">
-         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
           <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current"><title>Google Calendar</title><path d="M12 2.75A9.25 9.25 0 002.75 12 9.25 9.25 0 0012 21.25c2.13 0 4.09-.725 5.627-1.952V12h-5.627V8.58h5.627V5.364A9.213 9.213 0 0012 2.75zm0 1.41h3.514v2.83h-3.514V4.16zm5.627 5.83h-5.627v3.417h5.627V9.99zm0 4.834h-5.627v2.83h3.514A9.195 9.195 0 0017.627 14.824zM8.583 12v2.83H5.36A9.213 9.213 0 014.16 12h4.423zm0-1.417H4.16a9.213 9.213 0 011.2-2.83h3.223v2.83zM12 19.84a7.818 7.818 0 01-3.514-.838h3.514v-2.83H8.583v-1.417h3.417v2.83h3.514c.293.21.57.436.83.678A7.857 7.857 0 0112 19.84z"></path></svg>
         </Button>
         <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Outlook Calendar" title="Add to Outlook Calendar">
            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 fill-current"><title>Microsoft Outlook</title><path d="M15.831.83H7.58A2.753 2.753 0 004.83 3.582v16.836A2.753 2.753 0 007.58 23.17h8.25a2.753 2.753 0 002.752-2.752V3.582A2.753 2.753 0 0015.83.83zm1.376 8.25h-4.125v1.376H13.08V15.2S11.888 16.5 9.9 16.5c-1.376 0-3.027-1.1-3.027-3.44 0-2.615 1.79-3.577 3.028-3.577 1.816 0 2.904 1.24 2.904 1.24V9.08zM9.9 11.13c-.963 0-1.65.716-1.65 2.062 0 1.348.687 2.063 1.65 2.063.962 0 1.65-.715 1.65-2.063s-.688-2.062-1.65-2.062z"></path></svg>
         </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple Calendars" title="Download ICS for Apple Calendars">
+        <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => onAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple/Other Calendars" title="Download ICS for Apple/Other Calendars">
            <svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 24 24" className="h-4 w-4 fill-current"><title>Apple</title><path d="M17.87.11C16.32.04 14.18 0 12.03 0c-2.4 0-4.27.04-5.84.11-2.19.11-3.81 1.44-4.75 3.95C.29 6.99 0 10.04 0 12.2c0 2.12.29 4.89 1.35 7.64.98 2.65 2.49 3.81 4.67 3.91 1.64.07 3.64.11 5.99.11 2.08 0 4.08-.04 5.66-.11 2.27-.11 3.82-1.29 4.79-3.91 1.19-3.04 1.35-5.62 1.35-7.64 0-2.16-.29-5.21-1.45-7.92-.98-2.58-2.55-3.81-4.75-3.95zm-5.84 20.08c1.62 0 3.04-.95 4.17-2.02a.78.78 0 00.21-.56.77.77 0 00-.79-.75c-.49 0-1.15.42-1.92.42s-1.3-.42-2.15-.42c-2.14 0-3.62 1.19-4.4 2.65-.37.65-.81 1.66.19 1.66a.74.74 0 00.5-.16c.99-.78 1.89-1.22 2.99-1.22zm.56-15.76c1.35-.02 2.85-1.73 2.88-3.69a3.13 3.13 0 00-3.13-3.18c-1.46 0-2.99 1.7-3.02 3.66-.02 1.83 1.23 3.21 3.27 3.21z"></path></svg>
         </Button>
       </CardFooter>
@@ -536,6 +627,12 @@ const DeadlineCard = React.memo(({ item, onAddToCalendar }: DeadlineCardProps) =
   );
 });
 DeadlineCard.displayName = 'DeadlineCard';
+
+const renderCalculatorComponent = (componentName: string, key: number) => {
+  const Component = calculatorComponents[componentName];
+  if (!Component) return <div>Calculator component not found.</div>;
+  return <Component key={key} />;
+};
 
 
 export default function LandingPage() {
@@ -668,7 +765,7 @@ export default function LandingPage() {
         setIsAmlRiskCalcOpen(false);
         setIsFatcaCrsCalcOpen(false);
     }
-  }, [activeCalculator]); // Added activeCalculator to dependencies
+  }, [activeCalculator]);
 
 
   const handleSubmitReview = React.useCallback((calculatorName: string, rating: number) => {
@@ -677,8 +774,8 @@ export default function LandingPage() {
       title: "Review Submitted!",
       description: `Thanks for rating the ${calculatorName} ${rating} stars.`,
     });
-    setCalculatorForReview(null); // Clear calculator for review
-    setIsReviewDialogOpen(false); // Close review dialog
+    setCalculatorForReview(null);
+    setIsReviewDialogOpen(false);
   }, [toast]);
 
 
@@ -686,14 +783,13 @@ export default function LandingPage() {
 
   const getOpenHandler = (calcIdentifier: string) => {
     const calc = detailedCalculatorList.find(c => c.calculatorIdentifier === calcIdentifier);
-    if (!calc || !calc.componentName) return () => {}; // Should not happen if list is correct
+    if (!calc || !calc.componentName) return () => {};
 
-    // A mapping from calculatorIdentifier to its state setters
     const stateSetters: { [key: string]: [React.Dispatch<React.SetStateAction<boolean>>, React.Dispatch<React.SetStateAction<number>>] } = {
         "Time Calculator": [setIsBasicTimeCalcOpen, setBasicTimeCalcKey],
         "Payroll Calculator": [setIsPayrollCalcOpen, setPayrollCalcKey],
         "Voluntary NIS Calculator": [setIsVoluntaryNisCalcOpen, setVoluntaryNisCalcKey],
-        "Levy Calculator": [setIsLevyCalcOpen, setLevyCalcKey], // This was SimplifiedLevyCalculator
+        "Levy Calculator": [setIsLevyCalcOpen, setLevyCalcKey],
         "Simple VAT Calculator": [setIsSimpleVatCalcOpen, setSimpleVatCalcKey],
         "Excise Duty Calculator": [setIsExciseDutyCalcOpen, setExciseDutyCalcKey],
         "Gross to Net Salary Calculator": [setIsGrossToNetCalcOpen, setGrossToNetCalcKey],
@@ -722,7 +818,7 @@ export default function LandingPage() {
     const setters = stateSetters[calcIdentifier];
     if (!setters) {
         console.warn(`No state setters found for calculator: ${calcIdentifier}`);
-        return () => {}; // Return a no-op function if setters are not found
+        return () => {};
     }
     return () => openCalculatorDialog(setters[0], setters[1], calc.calculatorIdentifier, calc.name, calc.icon, calc.componentName as string);
   };
@@ -732,7 +828,7 @@ export default function LandingPage() {
         case "Time Calculator": return isBasicTimeCalcOpen;
         case "Payroll Calculator": return isPayrollCalcOpen;
         case "Voluntary NIS Calculator": return isVoluntaryNisCalcOpen;
-        case "Levy Calculator": return isLevyCalcOpen; // Corresponds to SimplifiedLevyCalculator
+        case "Levy Calculator": return isLevyCalcOpen;
         case "Simple VAT Calculator": return isSimpleVatCalcOpen;
         case "Excise Duty Calculator": return isExciseDutyCalcOpen;
         case "Gross to Net Salary Calculator": return isGrossToNetCalcOpen;
@@ -765,7 +861,7 @@ export default function LandingPage() {
         case "Time Calculator": return basicTimeCalcKey;
         case "Payroll Calculator": return payrollCalcKey;
         case "Voluntary NIS Calculator": return voluntaryNisCalcKey;
-        case "Levy Calculator": return levyCalcKey; // Corresponds to SimplifiedLevyCalculator
+        case "Levy Calculator": return levyCalcKey;
         case "Simple VAT Calculator": return simpleVatCalcKey;
         case "Excise Duty Calculator": return exciseDutyCalcKey;
         case "Gross to Net Salary Calculator": return grossToNetCalcKey;
@@ -789,10 +885,9 @@ export default function LandingPage() {
         case "Rental Yield Calculator": return rentalYieldCalcKey;
         case "AML Risk Calculator": return amlRiskCalcKey;
         case "FATCA & CRS Calculator": return fatcaCrsCalcKey;
-        default: return Date.now(); // Fallback, should not be reached if list is correct
+        default: return Date.now();
     }
   };
-
 
   const handleAddToCalendar = React.useCallback((deadline: DeadlineItem, type: 'google' | 'outlook' | 'ics') => {
     const eventDate = parseISO(deadline.dueDate);
@@ -813,10 +908,10 @@ export default function LandingPage() {
     }
 
     const startDate = format(eventDate, "yyyyMMdd");
-    const endDate = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day event
+    const endDate = format(addDays(eventDate, 1), "yyyyMMdd");
     const eventTitle = encodeURIComponent(`Tax TT Reminder: ${deadline.title}`);
     const details = encodeURIComponent(`Deadline for ${deadline.title} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`);
-    const location = encodeURIComponent("Trinidad & Tobago"); // General location
+    const location = encodeURIComponent("Trinidad & Tobago");
 
     let url = "";
 
@@ -824,7 +919,6 @@ export default function LandingPage() {
       url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventTitle}&dates=${startDate}/${endDate}&details=${details}&location=${location}`;
       toast({ title: "Opening Google Calendar...", description: `Preparing reminder for ${deadline.title}.`});
     } else if (type === 'outlook') {
-      // Outlook web deeplink for all-day event
       const outlookStartDate = format(eventDate, "yyyy-MM-dd'T'00:00:00");
       const outlookEndDate = format(addDays(eventDate,1), "yyyy-MM-dd'T'00:00:00");
       url = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${eventTitle}&body=${details}&startdt=${outlookStartDate}&enddt=${outlookEndDate}&allday=true&location=${location}`;
@@ -863,6 +957,8 @@ export default function LandingPage() {
     }
   }, [toast]);
 
+  const { title: heroTitle, icon: HeroIconComponent, primarySubheadline, secondarySubheadline, primaryCtaText, primaryCtaLink } = heroContentData;
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -877,20 +973,20 @@ export default function LandingPage() {
         ></div>
 
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
-          <HeroIcon className="mb-6 h-16 w-16 text-primary" />
+          <HeroIconComponent className="mb-6 h-16 w-16 text-primary" />
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl mb-4">
-            {heroContentData.headline}
+            {heroTitle}
           </h1>
           <p className="mt-2 text-xl md:text-2xl font-semibold text-primary/90 mb-6">
-            {heroContentData.primarySubheadline}
+            {primarySubheadline}
           </p>
           <p className="max-w-xl text-base md:text-lg text-muted-foreground mb-10">
-            {heroContentData.secondarySubheadline}
+            {secondarySubheadline}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-xs sm:max-w-md lg:max-w-none lg:flex-row lg:space-x-4">
              <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto lg:mb-0 mb-2">
-              <Link href={heroContentData.primaryCtaLink}>
-                {heroContentData.primaryCtaText}
+              <Link href={primaryCtaLink}>
+                {primaryCtaText}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -931,7 +1027,35 @@ export default function LandingPage() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {detailedCalculatorList
-              .filter(calc => calc.componentName) // Only show dialog-based calculators here
+              .filter(calc =>
+                ["Time Calculator",
+                 "Payroll Calculator",
+                 "Voluntary NIS Calculator",
+                 "Simple VAT Calculator",
+                 "Excise Duty Calculator",
+                 "Gross to Net Salary Calculator",
+                 "Overtime Pay Calculator",
+                 "Bonus & Commission Calculator",
+                 "Vacation Pay Calculator",
+                 "Loan Amortisation Calculator",
+                 "Mortgage Calculator",
+                 "Savings & Investment Calculator",
+                 "Currency Exchange Calculator",
+                 "Simple Interest Calculator",
+                 "Markup & Margin Calculator",
+                 "Break-even Analysis Calculator",
+                 "Cash Flow Projection Calculator",
+                 "Depreciation Calculator",
+                 "Tariff & Customs Duty Calculator",
+                 "Freight & Shipping Cost Calculator",
+                 "CIF Calculator",
+                 "Stamp Duty Calculator",
+                 "Property Tax Calculator (Dialog)",
+                 "Rental Yield Calculator",
+                 "AML Risk Calculator",
+                 "FATCA & CRS Calculator",
+                 ].includes(calc.calculatorIdentifier) && calc.componentName
+              )
               .map((calc) => (
               <Card key={calc.calculatorIdentifier} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl">
                 <CardHeader>
@@ -1126,7 +1250,7 @@ export default function LandingPage() {
 
       <footer id="footer" className="py-12 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-            <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
+            <HeroIconComponent className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">{heroContentData.headline}</h3>
             <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
                 Your trusted partner for Trinidad & Tobago tax solutions.
@@ -1167,4 +1291,3 @@ export default function LandingPage() {
     </div>
   );
 }
-```

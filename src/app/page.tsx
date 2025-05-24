@@ -112,7 +112,6 @@ const LazyCurrencyExchangeCalculator = React.lazy(() => import("@/components/cal
 const LazySimpleInterestCalculator = React.lazy(() => import("@/components/calculators/SimpleInterestCalculator"));
 const LazyMarkupMarginCalculator = React.lazy(() => import("@/components/calculators/MarkupMarginCalculator"));
 const LazyBreakEvenCalculator = React.lazy(() => import("@/components/calculators/BreakEvenCalculator"));
-const LazyCashFlowProjectionCalculator = React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator"));
 const LazyDepreciationCalculator = React.lazy(() => import("@/components/calculators/DepreciationCalculator"));
 const LazyTariffCustomsDutyCalculator = React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator"));
 const LazyFreightShippingCalculator = React.lazy(() => import("@/components/calculators/FreightShippingCalculator"));
@@ -141,7 +140,6 @@ const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = 
   SimpleInterestCalculator: LazySimpleInterestCalculator,
   MarkupMarginCalculator: LazyMarkupMarginCalculator,
   BreakEvenCalculator: LazyBreakEvenCalculator,
-  CashFlowProjectionCalculator: LazyCashFlowProjectionCalculator,
   DepreciationCalculator: LazyDepreciationCalculator,
   TariffCustomsDutyCalculator: LazyTariffCustomsDutyCalculator,
   FreightShippingCalculator: LazyFreightShippingCalculator,
@@ -402,15 +400,6 @@ const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Find Break-even Point",
       componentName: "BreakEvenCalculator",
       calculatorIdentifier: "Break-even Analysis Calculator",
-    },
-    {
-      name: "Cash Flow Projection Calculator",
-      description: "Forecast monthly or quarterly cash flows easily based on opening balance and average inflows/outflows.",
-      icon: AreaChart,
-      category: "Financial Planning",
-      ctaText: "Project Cash Flow",
-      componentName: "CashFlowProjectionCalculator",
-      calculatorIdentifier: "Cash Flow Projection Calculator",
     },
     {
       name: "Depreciation Calculator",
@@ -693,9 +682,6 @@ export default function LandingPage() {
   const [isBreakEvenCalcOpen, setIsBreakEvenCalcOpen] = React.useState(false);
   const [breakEvenCalcKey, setBreakEvenCalcKey] = React.useState(0);
 
-  const [isCashFlowProjectionCalcOpen, setIsCashFlowProjectionCalcOpen] = React.useState(false);
-  const [cashFlowProjectionCalcKey, setCashFlowProjectionCalcKey] = React.useState(0);
-
   const [isDepreciationCalcOpen, setIsDepreciationCalcOpen] = React.useState(false);
   const [depreciationCalcKey, setDepreciationCalcKey] = React.useState(0);
 
@@ -803,7 +789,6 @@ export default function LandingPage() {
         "Simple Interest Calculator": [setIsSimpleInterestCalcOpen, setSimpleInterestCalcKey],
         "Markup & Margin Calculator": [setIsMarkupMarginCalcOpen, setMarkupMarginCalcKey],
         "Break-even Analysis Calculator": [setIsBreakEvenCalcOpen, setBreakEvenCalcKey],
-        "Cash Flow Projection Calculator": [setIsCashFlowProjectionCalcOpen, setCashFlowProjectionCalcKey],
         "Depreciation Calculator": [setIsDepreciationCalcOpen, setDepreciationCalcKey],
         "Tariff & Customs Duty Calculator": [setIsTariffCustomsDutyCalcOpen, setTariffCustomsDutyCalcKey],
         "Freight & Shipping Cost Calculator": [setIsFreightShippingCalcOpen, setFreightShippingCalcKey],
@@ -842,7 +827,6 @@ export default function LandingPage() {
         case "Simple Interest Calculator": return isSimpleInterestCalcOpen;
         case "Markup & Margin Calculator": return isMarkupMarginCalcOpen;
         case "Break-even Analysis Calculator": return isBreakEvenCalcOpen;
-        case "Cash Flow Projection Calculator": return isCashFlowProjectionCalcOpen;
         case "Depreciation Calculator": return isDepreciationCalcOpen;
         case "Tariff & Customs Duty Calculator": return isTariffCustomsDutyCalcOpen;
         case "Freight & Shipping Cost Calculator": return isFreightShippingCalcOpen;
@@ -875,7 +859,6 @@ export default function LandingPage() {
         case "Simple Interest Calculator": return simpleInterestCalcKey;
         case "Markup & Margin Calculator": return markupMarginCalcKey;
         case "Break-even Analysis Calculator": return breakEvenCalcKey;
-        case "Cash Flow Projection Calculator": return cashFlowProjectionCalcKey;
         case "Depreciation Calculator": return depreciationCalcKey;
         case "Tariff & Customs Duty Calculator": return tariffCustomsDutyCalcKey;
         case "Freight & Shipping Cost Calculator": return freightShippingCalcKey;
@@ -1044,7 +1027,6 @@ export default function LandingPage() {
                  "Simple Interest Calculator",
                  "Markup & Margin Calculator",
                  "Break-even Analysis Calculator",
-                 "Cash Flow Projection Calculator",
                  "Depreciation Calculator",
                  "Tariff & Customs Duty Calculator",
                  "Freight & Shipping Cost Calculator",

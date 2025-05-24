@@ -56,7 +56,7 @@ import {
 
 export interface HeroContent {
   icon: React.ElementType;
-  headline: string;
+  headline: string; // Changed from title to headline
   primarySubheadline: string;
   secondarySubheadline: string;
   primaryCtaText: string;
@@ -65,7 +65,7 @@ export interface HeroContent {
 
 export const heroContentData: HeroContent = {
   icon: Briefcase,
-  headline: "Calculate. Track. Comply.",
+  headline: "Calculate. Track. Comply.", // Changed from title to headline
   primarySubheadline: "Your Tools in One Place.",
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",
   primaryCtaText: "Try Our Calculators",

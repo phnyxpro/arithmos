@@ -1,16 +1,10 @@
-\
 import * as React from "react";
+import { ActiveCalculatorInfo } from "../types"; // Adjusted path
 
 export function useCalculatorDialogManager() {
   const [openState, setOpenState] = React.useState<Record<string, boolean>>({});
   const [dialogKeys, setDialogKeys] = React.useState<Record<string, number>>({});
-  const [activeCalculator, setActiveCalculator] = React.useState<null | {
-    name: string;
-    key: number;
-    title: string;
-    icon: React.ElementType;
-    componentName: string;
-  }>(null);
+  const [activeCalculator, setActiveCalculator] = React.useState<ActiveCalculatorInfo | null>(null); // Used the new type
 
   const openDialog = React.useCallback(
     (
@@ -20,9 +14,6 @@ export function useCalculatorDialogManager() {
       componentName: string
     ) => {
       setOpenState((prev) => ({ ...prev, [identifier]: true }));
-      // Use Date.now() for key to ensure it's unique for re-renders,
-      // rather than incrementing, as the old keySetter did.
-      // The original suggestion used Date.now() for activeCalculator.key, so this aligns.
       const newKey = Date.now();
       setDialogKeys((prev) => ({ ...prev, [identifier]: newKey }));
       setActiveCalculator({
@@ -44,7 +35,6 @@ export function useCalculatorDialogManager() {
   }, [activeCalculator]);
 
   const closeAllDialogs = React.useCallback(() => {
-    // Create an object with all known identifiers set to false
     const allClosed = Object.keys(openState).reduce((acc, key) => {
         acc[key] = false;
         return acc;
@@ -58,8 +48,8 @@ export function useCalculatorDialogManager() {
     dialogKeys,
     activeCalculator,
     openDialog,
-    closeDialog, // Added for individual dialog closing
+    closeDialog,
     closeAllDialogs,
-    setActiveCalculator // Expose to allow modification, e.g., clearing after review
+    setActiveCalculator
   };
 }

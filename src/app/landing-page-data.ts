@@ -1,4 +1,4 @@
-\
+
 import * as React from "react";
 
 import {
@@ -312,15 +312,6 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Find Break-even Point",
       componentName: "BreakEvenCalculator",
       calculatorIdentifier: "Break-even Analysis Calculator",
-    },
-    {
-      name: "Cash Flow Projection Calculator",
-      description: "Forecast monthly or quarterly cash flows easily based on opening balance and average inflows/outflows.",
-      icon: AreaChart,
-      category: "Financial Planning",
-      ctaText: "Project Cash Flow",
-      componentName: "CashFlowProjectionCalculator",
-      calculatorIdentifier: "Cash Flow Projection Calculator",
     },
     {
       name: "Depreciation Calculator",

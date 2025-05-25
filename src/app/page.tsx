@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -32,9 +31,34 @@ import {
   Linkedin,
   Facebook,
   UsersIcon, // Added UsersIcon
+  DollarSign,
+  Clock,
+  FileHeart,
+  Landmark,
+  Percent,
+  Cigarette,
+  Gift,
+  Plane,
+  ArrowRightLeft,
+  PercentCircle,
+  LineChart,
+  AreaChart,
+  Building as BuildingIconLucide,
+  Truck,
+  Ship,
+  FileBox,
+  Stamp,
+  Home as HomeIconLucide,
+  ShieldAlert,
+  Network,
+  Building2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
+import { detailedCalculatorList } from '@/app/landing-page-data';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import useCalculatorDialogManager from "@/hooks/useCalculatorDialogManager";
 
 interface HeroSectionProps {
   title: string;
@@ -153,6 +177,12 @@ export default function LandingPage() {
   const { toast } = useToast();
   const HeroIcon = heroData.Icon;
 
+  const dialogCalculators = detailedCalculatorList.filter(calc => calc.componentName);
+  const uniqueCategories = Array.from(new Set(dialogCalculators.map(calc => calc.category)));
+
+  const { openCalculatorDialog } = useCalculatorDialogManager();
+
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -201,6 +231,54 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+       {/* Popular Financial Tools & Calculators Section */}
+       <section id="popular-calculators" className="py-16 lg:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-primary mb-12">
+            Popular Financial Tools &amp; Calculators
+          </h2>
+          <Tabs defaultValue={uniqueCategories[0]} className="w-full">
+            <ScrollArea className="max-w-full pb-4">
+              <TabsList className="grid w-max grid-flow-col auto-cols-max items-center justify-center gap-2 rounded-md p-1 text-muted-foreground">
+                {uniqueCategories.map(category => (
+                  <TabsTrigger key={category} value={category} className="data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground">
+                    {category}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+
+            {uniqueCategories.map(category => (
+              <TabsContent key={category} value={category} className="mt-8">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {dialogCalculators.filter(calc => calc.category === category).map(calculator => (
+                    <Card key={calculator.calculatorIdentifier} className="flex flex-col shadow-md hover:shadow-lg transition-shadow rounded-xl">
+                      <CardHeader className="flex flex-row items-start space-x-4">
+                        <calculator.icon className="h-8 w-8 text-accent mt-1 flex-shrink-0" />
+                        <CardTitle className="text-lg text-primary">{calculator.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="flex-grow">
+                        <CardDescription className="text-sm text-muted-foreground">{calculator.description}</CardDescription>
+                      </CardContent>
+                      <CardFooter>
+                        <Button
+                          onClick={() => openCalculatorDialog(calculator.calculatorIdentifier)}
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        >
+                          {calculator.ctaText || "Open Calculator"}
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </section>
+
 
       {/* Deadlines Section */}
       <section id="deadlines" className="py-16 lg:py-24">

@@ -25,7 +25,6 @@ import {
   BarChart3, // Using BarChart3 for Financial Insights
   FileText,
   CalendarDays,
-  Bell,
   ArrowRight,
   Target,     // For "Tailored Solutions"
   Zap,        // For "Efficiency"
@@ -154,75 +153,6 @@ export default function LandingPage() {
   const { toast } = useToast();
   const HeroIcon = heroData.Icon;
 
-  const handleAddToCalendar = React.useCallback((deadline: Deadline) => {
-    const eventDate = parseISO(deadline.dueDate);
-    if (isNaN(eventDate.getTime()) || eventDate < new Date(new Date().setHours(0,0,0,0))) {
-      toast({
-        title: "Invalid or Past Date",
-        description: `Cannot set a reminder for "${deadline.name}" as the date is invalid or in the past.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const startDateStr = format(eventDate, "yyyyMMdd");
-    const endDateStr = format(addDays(eventDate, 1), "yyyyMMdd");
-
-    const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-      `TaxTT Reminder: ${deadline.name}`
-    )}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(
-      `${deadline.details}
-
-View more at TaxTT.`
-    )}&location=Trinidad%20and%20Tobago`;
-
-    const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&subject=${encodeURIComponent(
-        `TaxTT Reminder: ${deadline.name}`
-      )}&startdt=${format(eventDate, "yyyy-MM-dd")}T00:00:00&enddt=${format(addDays(eventDate,1), "yyyy-MM-dd")}T00:00:00&body=${encodeURIComponent(
-        `${deadline.details}
-
-View more at TaxTT.`
-      )}&location=Trinidad%20and%20Tobago`;
-
-    const icsContent = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      `PRODID:-//TaxTT//TaxTT Reminder//EN`,
-      "BEGIN:VEVENT",
-      `UID:${crypto.randomUUID()}@taxtt.com`,
-      `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
-      `DTSTART;VALUE=DATE:${startDateStr}`,
-      `DTEND;VALUE=DATE:${endDateStr}`,
-      `SUMMARY:TaxTT Reminder: ${deadline.name}`,
-      `DESCRIPTION:${deadline.details}
-
-View more at TaxTT.`,
-      "LOCATION:Trinidad and Tobago",
-      "END:VEVENT",
-      "END:VCALENDAR",
-    ].join(\`
-\`);
-
-    // For this example, we'll just use the ICS download for all,
-    // as direct links to Google/Outlook can be complex to get right universally.
-    // You can extend this to offer choices or use platform-specific libraries.
-
-    const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `TaxTT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-
-    toast({
-      title: "Calendar File Downloading",
-      description: `An .ics file for "${deadline.name}" is being downloaded. You can import this into your calendar.`,
-    });
-  }, [toast]);
-
-
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -295,16 +225,7 @@ View more at TaxTT.`,
                 <CardContent className="flex-grow">
                   <p className="text-sm text-muted-foreground mb-2">{deadline.details}</p>
                 </CardContent>
-                <CardFooter>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-sm text-primary border-primary hover:bg-primary/10"
-                    onClick={() => handleAddToCalendar(deadline)}
-                  >
-                    <Bell className="mr-2 h-4 w-4" /> Add to Calendar
-                  </Button>
-                </CardFooter>
+                {/* CardFooter has been removed as the button is no longer needed */}
               </Card>
             ))}
           </div>

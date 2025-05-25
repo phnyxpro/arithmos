@@ -95,35 +95,6 @@ import CalculatorDialog from "@/components/ui/CalculatorDialog";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 import { cn } from "@/lib/utils"; // Or your actual path to the cn utility
 
-
-// Dynamically import calculator components
-const LazyBasicTimeCalculator = React.lazy(() => import("@/components/calculators/BasicTimeCalculator"));
-const LazySimplifiedPayrollCalculator = React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator"));
-const LazySimplifiedLevyCalculator = React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator"));
-const LazyVoluntaryNisCalculator = React.lazy(() => import("@/components/calculators/VoluntaryNisCalculator"));
-const LazySimpleVatCalculator = React.lazy(() => import("@/components/calculators/SimpleVatCalculator"));
-const LazyExciseDutyCalculator = React.lazy(() => import("@/components/calculators/ExciseDutyCalculator"));
-const LazyGrossToNetSalaryCalculator = React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator"));
-const LazyOvertimePayCalculator = React.lazy(() => import("@/components/calculators/OvertimePayCalculator"));
-const LazyBonusCommissionCalculator = React.lazy(() => import("@/components/calculators/BonusCommissionCalculator"));
-const LazyVacationPayCalculator = React.lazy(() => import("@/components/calculators/VacationPayCalculator"));
-const LazyLoanAmortisationCalculator = React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator"));
-const LazyMortgageCalculator = React.lazy(() => import("@/components/calculators/MortgageCalculator"));
-const LazySavingsInvestmentCalculator = React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator"));
-const LazyCurrencyExchangeCalculator = React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator"));
-const LazySimpleInterestCalculator = React.lazy(() => import("@/components/calculators/SimpleInterestCalculator"));
-const LazyMarkupMarginCalculator = React.lazy(() => import("@/components/calculators/MarkupMarginCalculator"));
-const LazyBreakEvenCalculator = React.lazy(() => import("@/components/calculators/BreakEvenCalculator"));
-const LazyDepreciationCalculator = React.lazy(() => import("@/components/calculators/DepreciationCalculator"));
-const LazyTariffCustomsDutyCalculator = React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator"));
-const LazyFreightShippingCalculator = React.lazy(() => import("@/components/calculators/FreightShippingCalculator"));
-const LazyCIFCalculator = React.lazy(() => import("@/components/calculators/CIFCalculator"));
-const LazyStampDutyCalculator = React.lazy(() => import("@/components/calculators/StampDutyCalculator"));
-const LazyPropertyTaxDialogCalculator = React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator"));
-const LazyRentalYieldCalculator = React.lazy(() => import("@/components/calculators/RentalYieldCalculator"));
-const LazyAMLRiskCalculator = React.lazy(() => import("@/components/calculators/AMLRiskCalculator"));
-const LazyFATCACRSCalculator = React.lazy(() => import("@/components/calculators/FATCACRSCalculator"));
-
 const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = {
   BasicTimeCalculator: LazyBasicTimeCalculator,
   SimplifiedPayrollCalculator: LazySimplifiedPayrollCalculator,

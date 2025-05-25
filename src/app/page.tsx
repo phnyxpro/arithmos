@@ -95,35 +95,6 @@ import CalculatorDialog from "@/components/ui/CalculatorDialog";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 import { cn } from "@/lib/utils"; // Or your actual path to the cn utility
 
-const calculatorComponents: { [key: string]: React.LazyExoticComponent<any> } = {
-  BasicTimeCalculator: LazyBasicTimeCalculator,
-  SimplifiedPayrollCalculator: LazySimplifiedPayrollCalculator,
-  SimplifiedLevyCalculator: LazySimplifiedLevyCalculator,
-  VoluntaryNisCalculator: LazyVoluntaryNisCalculator,
-  SimpleVatCalculator: LazySimpleVatCalculator,
-  ExciseDutyCalculator: LazyExciseDutyCalculator,
-  GrossToNetSalaryCalculator: LazyGrossToNetSalaryCalculator,
-  OvertimePayCalculator: LazyOvertimePayCalculator,
-  BonusCommissionCalculator: LazyBonusCommissionCalculator,
-  VacationPayCalculator: LazyVacationPayCalculator,
-  LoanAmortisationCalculator: LazyLoanAmortisationCalculator,
-  MortgageCalculator: LazyMortgageCalculator,
-  SavingsInvestmentCalculator: LazySavingsInvestmentCalculator,
-  CurrencyExchangeCalculator: LazyCurrencyExchangeCalculator,
-  SimpleInterestCalculator: LazySimpleInterestCalculator,
-  MarkupMarginCalculator: LazyMarkupMarginCalculator,
-  BreakEvenCalculator: LazyBreakEvenCalculator,
-  DepreciationCalculator: LazyDepreciationCalculator,
-  TariffCustomsDutyCalculator: LazyTariffCustomsDutyCalculator,
-  FreightShippingCalculator: LazyFreightShippingCalculator,
-  CIFCalculator: LazyCIFCalculator,
-  StampDutyCalculator: LazyStampDutyCalculator,
-  PropertyTaxDialogCalculator: LazyPropertyTaxDialogCalculator,
-  RentalYieldCalculator: LazyRentalYieldCalculator,
-  AMLRiskCalculator: LazyAMLRiskCalculator,
-  FATCACRSCalculator: LazyFATCACRSCalculator,
-};
-
 interface HeroContent {
   icon: React.ElementType;
   headline: string;

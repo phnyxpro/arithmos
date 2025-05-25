@@ -62,6 +62,8 @@ import {
   Building2,
   Calculator as CalculatorIcon,
   Download,
+  Linkedin,
+  Facebook,
   Mail,
   CalendarPlus,
 } from "lucide-react";
@@ -285,7 +287,7 @@ export default function LandingPage() {
                   <Bell className="h-5 w-5 mr-2.5 text-accent" />
                   <div className="text-xs">
                     <span className="font-semibold text-card-foreground block truncate">{item.name}</span>
-                    <span className="text-muted-foreground">Due: {format(parseISO(item.nextDueDate), "MMM d, yyyy")}</span>
+                    <span className="text-muted-foreground">Due: {item.nextDueDate && !isNaN(parseISO(item.nextDueDate).getTime()) ? format(parseISO(item.nextDueDate), "MMM d, yyyy") : "Invalid Date"}</span>
                   </div>
                 </div>
               ))}

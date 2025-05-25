@@ -32,6 +32,7 @@ import {
   BookOpen,   // For "Knowledge"
   Linkedin,
   Facebook,
+  UsersIcon, // Added UsersIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format, parseISO, addDays } from 'date-fns';
@@ -170,13 +171,17 @@ export default function LandingPage() {
     const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
       `TaxTT Reminder: ${deadline.name}`
     )}&dates=${startDateStr}/${endDateStr}&details=${encodeURIComponent(
-      `${deadline.details}\n\nView more at TaxTT.`
+      `${deadline.details}
+
+View more at TaxTT.`
     )}&location=Trinidad%20and%20Tobago`;
 
     const outlookCalendarUrl = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&subject=${encodeURIComponent(
         `TaxTT Reminder: ${deadline.name}`
       )}&startdt=${format(eventDate, "yyyy-MM-dd")}T00:00:00&enddt=${format(addDays(eventDate,1), "yyyy-MM-dd")}T00:00:00&body=${encodeURIComponent(
-        `${deadline.details}\n\nView more at TaxTT.`
+        `${deadline.details}
+
+View more at TaxTT.`
       )}&location=Trinidad%20and%20Tobago`;
 
     const icsContent = [
@@ -189,11 +194,14 @@ export default function LandingPage() {
       `DTSTART;VALUE=DATE:${startDateStr}`,
       `DTEND;VALUE=DATE:${endDateStr}`,
       `SUMMARY:TaxTT Reminder: ${deadline.name}`,
-      `DESCRIPTION:${deadline.details}\\n\\nView more at TaxTT.`,
+      `DESCRIPTION:${deadline.details}
+
+View more at TaxTT.`,
       "LOCATION:Trinidad and Tobago",
       "END:VEVENT",
       "END:VCALENDAR",
-    ].join("\r\n");
+    ].join("
+");
 
     // For this example, we'll just use the ICS download for all,
     // as direct links to Google/Outlook can be complex to get right universally.

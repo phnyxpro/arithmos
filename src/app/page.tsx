@@ -66,6 +66,7 @@ import {
   Facebook,
   Mail,
   CalendarPlus,
+  ListChecks, 
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";

@@ -200,8 +200,8 @@ View more at TaxTT.`,
       "LOCATION:Trinidad and Tobago",
       "END:VEVENT",
       "END:VCALENDAR",
-    ].join("
-");
+    ].join(\`
+\`);
 
     // For this example, we'll just use the ICS download for all,
     // as direct links to Google/Outlook can be complex to get right universally.

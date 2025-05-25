@@ -1,55 +1,41 @@
 import * as React from "react";
-import { ActiveCalculatorInfo } from "../types"; // Adjusted path
+import { ActiveCalculatorInfo } from "../types";
 
 export function useCalculatorDialogManager() {
-  const [openState, setOpenState] = React.useState<Record<string, boolean>>({});
-  const [dialogKeys, setDialogKeys] = React.useState<Record<string, number>>({});
-  const [activeCalculator, setActiveCalculator] = React.useState<ActiveCalculatorInfo | null>(null); // Used the new type
+  const [activeCalculator, setActiveCalculator] = React.useState<ActiveCalculatorInfo | null>(null);
 
   const openDialog = React.useCallback(
     (
       identifier: string,
       title: string,
       icon: React.ElementType,
-      componentName: string
+      component: React.ElementType // Changed from componentName to component
     ) => {
-      setOpenState((prev) => ({ ...prev, [identifier]: true }));
       const newKey = Date.now();
-      setDialogKeys((prev) => ({ ...prev, [identifier]: newKey }));
       setActiveCalculator({
         name: identifier,
         key: newKey,
         title,
         icon,
-        componentName,
+        component, // Use component here
       });
     },
     []
   );
 
-  const closeDialog = React.useCallback((identifier: string) => {
-    setOpenState((prev) => ({ ...prev, [identifier]: false }));
-    if (activeCalculator && activeCalculator.name === identifier) {
-      setActiveCalculator(null);
-    }
-  }, [activeCalculator]);
-
-  const closeAllDialogs = React.useCallback(() => {
-    const allClosed = Object.keys(openState).reduce((acc, key) => {
-        acc[key] = false;
-        return acc;
-    }, {} as Record<string, boolean>);
-    setOpenState(allClosed);
+  const closeDialog = React.useCallback(() => {
+    // No identifier needed as we only manage one active dialog
     setActiveCalculator(null);
-  }, [openState]);
+  }, []);
+
+  // activeCalculator already holds the open state (if null, it's closed)
+  // and the key is part of activeCalculator, so separate openState and dialogKeys are not strictly needed
+  // if we only ever show one dialog at a time, which seems to be the new goal.
 
   return {
-    openState,
-    dialogKeys,
     activeCalculator,
     openDialog,
     closeDialog,
-    closeAllDialogs,
-    setActiveCalculator
+    setActiveCalculator, // Exposing this if direct manipulation is needed (e.g., by parent for review dialog logic)
   };
 }

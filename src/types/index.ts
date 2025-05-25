@@ -5,7 +5,7 @@ export interface ActiveCalculatorInfo {
   key: number;
   title: string;
   icon: React.ElementType;
-  componentName: string;
+  component: React.ElementType; // Changed from componentName to component
 }
 
 // If there was existing content in this file, it should be preserved.

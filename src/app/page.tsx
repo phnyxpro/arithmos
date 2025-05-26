@@ -77,64 +77,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 
-// Lazy load calculator components
-import { BasicTimeCalculator } from "@/components/calculators/BasicTimeCalculator";
-import { SimplifiedPayrollCalculator } from "@/components/calculators/SimplifiedPayrollCalculator";
-import { SimplifiedLevyCalculator } from "@/components/calculators/SimplifiedLevyCalculator";
-import { SimpleVatCalculator } from "@/components/calculators/SimpleVatCalculator";
-import { ExciseDutyCalculator } from "@/components/calculators/ExciseDutyCalculator";
-import { GrossToNetSalaryCalculator } from "@/components/calculators/GrossToNetSalaryCalculator";
-import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
-import { BonusCommissionCalculator } from "@/components/calculators/BonusCommissionCalculator";
-import { VacationPayCalculator } from "@/components/calculators/VacationPayCalculator";
-import { LoanAmortisationCalculator } from "@/components/calculators/LoanAmortisationCalculator";
-import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
-import { SavingsInvestmentCalculator } from "@/components/calculators/SavingsInvestmentCalculator";
-import { CurrencyExchangeCalculator } from "@/components/calculators/CurrencyExchangeCalculator";
-import { SimpleInterestCalculator } from "@/components/calculators/SimpleInterestCalculator";
-import { MarkupMarginCalculator } from "@/components/calculators/MarkupMarginCalculator";
-import { BreakEvenCalculator } from "@/components/calculators/BreakEvenCalculator";
-import { CashFlowProjectionCalculator } from "@/components/calculators/CashFlowProjectionCalculator";
-import { DepreciationCalculator } from "@/components/calculators/DepreciationCalculator";
-import { TariffCustomsDutyCalculator } from "@/components/calculators/TariffCustomsDutyCalculator";
-import { FreightShippingCalculator } from "@/components/calculators/FreightShippingCalculator";
-import { CIFCalculator } from "@/components/calculators/CIFCalculator";
-import { StampDutyCalculator } from "@/components/calculators/StampDutyCalculator";
-import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
-import { RentalYieldCalculator } from "@/components/calculators/RentalYieldCalculator";
-import { AMLRiskCalculator } from "@/components/calculators/AMLRiskCalculator";
-import { FATCACRSCalculator } from "@/components/calculators/FATCACRSCalculator";
-
-
-const calculatorComponents: Record<string, React.ComponentType<any>> = {
-  BasicTimeCalculator: BasicTimeCalculator,
-  SimplifiedPayrollCalculator: LazySimplifiedPayrollCalculator,
-  SimplifiedLevyCalculator: LazySimplifiedLevyCalculator,
-  SimpleVatCalculator: LazySimpleVatCalculator,
-  ExciseDutyCalculator: LazyExciseDutyCalculator,
-  GrossToNetSalaryCalculator: LazyGrossToNetSalaryCalculator,
-  OvertimePayCalculator: LazyOvertimePayCalculator,
-  BonusCommissionCalculator: LazyBonusCommissionCalculator,
-  VacationPayCalculator: LazyVacationPayCalculator,
-  LoanAmortisationCalculator: LazyLoanAmortisationCalculator,
-  MortgageCalculator: LazyMortgageCalculator,
-  SavingsInvestmentCalculator: LazySavingsInvestmentCalculator,
-  CurrencyExchangeCalculator: LazyCurrencyExchangeCalculator,
-  SimpleInterestCalculator: LazySimpleInterestCalculator,
-  MarkupMarginCalculator: LazyMarkupMarginCalculator,
-  BreakEvenCalculator: LazyBreakEvenCalculator,
-  CashFlowProjectionCalculator: LazyCashFlowProjectionCalculator,
-  DepreciationCalculator: LazyDepreciationCalculator,
-  TariffCustomsDutyCalculator: LazyTariffCustomsDutyCalculator,
-  FreightShippingCalculator: LazyFreightShippingCalculator,
-  CIFCalculator: LazyCIFCalculator,
-  StampDutyCalculator: LazyStampDutyCalculator,
-  PropertyTaxDialogCalculator: LazyPropertyTaxDialogCalculator,
-  RentalYieldCalculator: LazyRentalYieldCalculator,
-  AMLRiskCalculator: LazyAMLRiskCalculator,
-  FATCACRSCalculator: LazyFATCACRSCalculator,
-};
-
 export default function LandingPage() {
   const { toast } = useToast();
   const {
@@ -143,6 +85,41 @@ export default function LandingPage() {
     closeDialog: closeCalculatorDialog,
     setActiveCalculator,
   } = useCalculatorDialogManager();
+
+  // Define LazyComponentMap using useMemo inside the component
+  const LazyComponentMap = React.useMemo(() => ({
+    BasicTimeCalculator: React.lazy(() => import("@/components/calculators/BasicTimeCalculator")),
+    SimplifiedPayrollCalculator: React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator")),
+    SimplifiedLevyCalculator: React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator")),
+    SimpleVatCalculator: React.lazy(() => import("@/components/calculators/SimpleVatCalculator")),
+    ExciseDutyCalculator: React.lazy(() => import("@/components/calculators/ExciseDutyCalculator")),
+    GrossToNetSalaryCalculator: React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator")),
+    OvertimePayCalculator: React.lazy(() => import("@/components/calculators/OvertimePayCalculator")),
+    BonusCommissionCalculator: React.lazy(() => import("@/components/calculators/BonusCommissionCalculator")),
+    VacationPayCalculator: React.lazy(() => import("@/components/calculators/VacationPayCalculator")),
+    LoanAmortisationCalculator: React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator")),
+    MortgageCalculator: React.lazy(() => import("@/components/calculators/MortgageCalculator")),
+    SavingsInvestmentCalculator: React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator")),
+    CurrencyExchangeCalculator: React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator")),
+    SimpleInterestCalculator: React.lazy(() => import("@/components/calculators/SimpleInterestCalculator")),
+    MarkupMarginCalculator: React.lazy(() => import("@/components/calculators/MarkupMarginCalculator")),
+    BreakEvenCalculator: React.lazy(() => import("@/components/calculators/BreakEvenCalculator")),
+    CashFlowProjectionCalculator: React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator")),
+    DepreciationCalculator: React.lazy(() => import("@/components/calculators/DepreciationCalculator")),
+    TariffCustomsDutyCalculator: React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator")),
+    FreightShippingCalculator: React.lazy(() => import("@/components/calculators/FreightShippingCalculator")),
+    CIFCalculator: React.lazy(() => import("@/components/calculators/CIFCalculator")),
+    StampDutyCalculator: React.lazy(() => import("@/components/calculators/StampDutyCalculator")),
+    PropertyTaxDialogCalculator: React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator")),
+    RentalYieldCalculator: React.lazy(() => import("@/components/calculators/RentalYieldCalculator")),
+    AMLRiskCalculator: React.lazy(() => import("@/components/calculators/AMLRiskCalculator")),
+    FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator")),
+  }), []);
+
+  // Define a type for the map keys
+  type CalculatorComponentName = keyof typeof LazyComponentMap;
+
+  const calculatorComponents: Record<CalculatorComponentName, React.ComponentType<any>> = LazyComponentMap;
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
@@ -308,7 +285,7 @@ export default function LandingPage() {
                                     calculator.calculatorIdentifier,
                                     calculator.name,
                                     CalculatorIconComponent,
-                                    LazyComponent
+                                    calculatorComponents[calculator.componentName as CalculatorComponentName]
                                   );
                                 } else {
                                   console.error(`Lazy component for ${calculator.componentName} not found.`);

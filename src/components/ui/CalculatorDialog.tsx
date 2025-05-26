@@ -35,11 +35,9 @@ const CalculatorDialog = ({
         </DialogTitle>
       </DialogHeader>
       {CalculatorComponent}
-      <DialogClose asChild>
-        <Button type="button" variant="outline" className="mt-4 w-full">
+      <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => onOpenChange(false)}>
           Close
         </Button>
-      </DialogClose>
     </DialogContent>
   </Dialog>
 );

@@ -78,36 +78,36 @@ import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 
 // Lazy load calculator components
-const LazyBasicTimeCalculator = React.lazy(() => import("@/components/calculators/BasicTimeCalculator").then(module => ({ default: module.BasicTimeCalculator })));
-const LazySimplifiedPayrollCalculator = React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator").then(module => ({ default: module.SimplifiedPayrollCalculator })));
-const LazySimplifiedLevyCalculator = React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator").then(module => ({ default: module.SimplifiedLevyCalculator })));
-const LazySimpleVatCalculator = React.lazy(() => import("@/components/calculators/SimpleVatCalculator").then(module => ({ default: module.SimpleVatCalculator })));
-const LazyExciseDutyCalculator = React.lazy(() => import("@/components/calculators/ExciseDutyCalculator").then(module => ({ default: module.ExciseDutyCalculator })));
-const LazyGrossToNetSalaryCalculator = React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator").then(module => ({ default: module.GrossToNetSalaryCalculator })));
-const LazyOvertimePayCalculator = React.lazy(() => import("@/components/calculators/OvertimePayCalculator").then(module => ({ default: module.OvertimePayCalculator })));
-const LazyBonusCommissionCalculator = React.lazy(() => import("@/components/calculators/BonusCommissionCalculator").then(module => ({ default: module.BonusCommissionCalculator })));
-const LazyVacationPayCalculator = React.lazy(() => import("@/components/calculators/VacationPayCalculator").then(module => ({ default: module.VacationPayCalculator })));
-const LazyLoanAmortisationCalculator = React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator").then(module => ({ default: module.LoanAmortisationCalculator })));
-const LazyMortgageCalculator = React.lazy(() => import("@/components/calculators/MortgageCalculator").then(module => ({ default: module.MortgageCalculator })));
-const LazySavingsInvestmentCalculator = React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator").then(module => ({ default: module.SavingsInvestmentCalculator })));
-const LazyCurrencyExchangeCalculator = React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator").then(module => ({ default: module.CurrencyExchangeCalculator })));
-const LazySimpleInterestCalculator = React.lazy(() => import("@/components/calculators/SimpleInterestCalculator").then(module => ({ default: module.SimpleInterestCalculator })));
-const LazyMarkupMarginCalculator = React.lazy(() => import("@/components/calculators/MarkupMarginCalculator").then(module => ({ default: module.MarkupMarginCalculator })));
-const LazyBreakEvenCalculator = React.lazy(() => import("@/components/calculators/BreakEvenCalculator").then(module => ({ default: module.BreakEvenCalculator })));
-const LazyCashFlowProjectionCalculator = React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator").then(module => ({ default: module.CashFlowProjectionCalculator })));
-const LazyDepreciationCalculator = React.lazy(() => import("@/components/calculators/DepreciationCalculator").then(module => ({ default: module.DepreciationCalculator })));
-const LazyTariffCustomsDutyCalculator = React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator").then(module => ({ default: module.TariffCustomsDutyCalculator })));
-const LazyFreightShippingCalculator = React.lazy(() => import("@/components/calculators/FreightShippingCalculator").then(module => ({ default: module.FreightShippingCalculator })));
-const LazyCIFCalculator = React.lazy(() => import("@/components/calculators/CIFCalculator").then(module => ({ default: module.CIFCalculator })));
-const LazyStampDutyCalculator = React.lazy(() => import("@/components/calculators/StampDutyCalculator").then(module => ({ default: module.StampDutyCalculator })));
-const LazyPropertyTaxDialogCalculator = React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator").then(module => ({ default: module.PropertyTaxDialogCalculator })));
-const LazyRentalYieldCalculator = React.lazy(() => import("@/components/calculators/RentalYieldCalculator").then(module => ({ default: module.RentalYieldCalculator })));
-const LazyAMLRiskCalculator = React.lazy(() => import("@/components/calculators/AMLRiskCalculator").then(module => ({ default: module.AMLRiskCalculator })));
-const LazyFATCACRSCalculator = React.lazy(() => import("@/components/calculators/FATCACRSCalculator").then(module => ({ default: module.FATCACRSCalculator })));
+import { BasicTimeCalculator } from "@/components/calculators/BasicTimeCalculator";
+import { SimplifiedPayrollCalculator } from "@/components/calculators/SimplifiedPayrollCalculator";
+import { SimplifiedLevyCalculator } from "@/components/calculators/SimplifiedLevyCalculator";
+import { SimpleVatCalculator } from "@/components/calculators/SimpleVatCalculator";
+import { ExciseDutyCalculator } from "@/components/calculators/ExciseDutyCalculator";
+import { GrossToNetSalaryCalculator } from "@/components/calculators/GrossToNetSalaryCalculator";
+import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
+import { BonusCommissionCalculator } from "@/components/calculators/BonusCommissionCalculator";
+import { VacationPayCalculator } from "@/components/calculators/VacationPayCalculator";
+import { LoanAmortisationCalculator } from "@/components/calculators/LoanAmortisationCalculator";
+import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
+import { SavingsInvestmentCalculator } from "@/components/calculators/SavingsInvestmentCalculator";
+import { CurrencyExchangeCalculator } from "@/components/calculators/CurrencyExchangeCalculator";
+import { SimpleInterestCalculator } from "@/components/calculators/SimpleInterestCalculator";
+import { MarkupMarginCalculator } from "@/components/calculators/MarkupMarginCalculator";
+import { BreakEvenCalculator } from "@/components/calculators/BreakEvenCalculator";
+import { CashFlowProjectionCalculator } from "@/components/calculators/CashFlowProjectionCalculator";
+import { DepreciationCalculator } from "@/components/calculators/DepreciationCalculator";
+import { TariffCustomsDutyCalculator } from "@/components/calculators/TariffCustomsDutyCalculator";
+import { FreightShippingCalculator } from "@/components/calculators/FreightShippingCalculator";
+import { CIFCalculator } from "@/components/calculators/CIFCalculator";
+import { StampDutyCalculator } from "@/components/calculators/StampDutyCalculator";
+import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
+import { RentalYieldCalculator } from "@/components/calculators/RentalYieldCalculator";
+import { AMLRiskCalculator } from "@/components/calculators/AMLRiskCalculator";
+import { FATCACRSCalculator } from "@/components/calculators/FATCACRSCalculator";
 
 
-const LazyComponentMap: Record<string, React.LazyExoticComponent<any>> = {
-  BasicTimeCalculator: LazyBasicTimeCalculator,
+const calculatorComponents: Record<string, React.ComponentType<any>> = {
+  BasicTimeCalculator: BasicTimeCalculator,
   SimplifiedPayrollCalculator: LazySimplifiedPayrollCalculator,
   SimplifiedLevyCalculator: LazySimplifiedLevyCalculator,
   SimpleVatCalculator: LazySimpleVatCalculator,
@@ -244,19 +244,8 @@ export default function LandingPage() {
       <section
         id="hero"
         className="relative w-full py-20 md:py-28 text-center"
+ data-ai-hint="financial planning"
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url('https://placehold.co/1920x1080.png')`, // Placeholder, replace with actual image if desired
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-          data-ai-hint="financial planning"
-          aria-hidden="true"
-        >
-           <div className="absolute inset-0 bg-black/60"></div>
-        </div>
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" />
           <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
@@ -274,26 +263,6 @@ export default function LandingPage() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
-        </div>
-      </section>
-
-      {/* Compliance Ticker Section */}
-      <section id="compliance-ticker" className="py-4 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4">
-          <h3 className="text-lg font-semibold mb-3 text-center">Upcoming Compliance Reminders</h3>
-          <div className="overflow-hidden relative h-12 group"> {/* Viewport for ticker */}
-            <div className="absolute top-0 left-0 flex animate-marquee-scroll group-hover:pause-animation">
-              {[...pageDeadlineItems.filter(d => d.status !== "Completed").sort((a,b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()).slice(0,5), ...pageDeadlineItems.filter(d => d.status !== "Completed").sort((a,b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime()).slice(0,5)].map((item, index) => (
-                <div key={`${item.id}-${index}`} className="mx-4 p-2.5 rounded-md bg-card/80 shadow flex items-center flex-shrink-0" style={{ minWidth: '280px' }}>
-                  <Bell className="h-5 w-5 mr-2.5 text-accent" />
-                  <div className="text-xs">
-                    <span className="font-semibold text-card-foreground block truncate">{item.name}</span>
-                    <span className="text-muted-foreground">Due: {item.nextDueDate && !isNaN(parseISO(item.nextDueDate).getTime()) ? format(parseISO(item.nextDueDate), "MMM d, yyyy") : "Invalid Date"}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
@@ -333,8 +302,8 @@ export default function LandingPage() {
                           <Button
                             onClick={() => {
                               if (calculator.componentName) {
-                                const LazyComponent = LazyComponentMap[calculator.componentName];
-                                if (LazyComponent) {
+                                const CalculatorComponent = calculatorComponents[calculator.componentName];
+                                if (CalculatorComponent) {
                                   openCalculatorDialog(
                                     calculator.calculatorIdentifier,
                                     calculator.name,

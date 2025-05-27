@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { AlarmClock, DollarSign, Hourglass, Percent as PercentIcon, Copy, Trash2, Calculator } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-export function OvertimePayCalculator() {
+export default function OvertimePayCalculator() {
   const { toast } = useToast();
   const [hourlyRate, setHourlyRate] = useState<string>("");
   const [regularHours, setRegularHours] = useState<string>("");

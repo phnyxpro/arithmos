@@ -56,7 +56,7 @@ const PAYE_RATE_2 = 0.30;
 
 const WEEKS_IN_MONTH_APPROX = 4.3333; // Approximation for Health Surcharge calculation
 
-export function GrossToNetSalaryCalculator() {
+export default function GrossToNetSalaryCalculator() {
   const { toast } = useToast();
   const [grossMonthlyIncome, setGrossMonthlyIncome] = useState<string>("");
   

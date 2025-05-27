@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const VAT_RATE = 0.125; // 12.5%
 
-export function SimpleVatCalculator() {
+export default function SimpleVatCalculator() {
   const { toast } = useToast();
 
   const [amount, setAmount] = useState<string>("");

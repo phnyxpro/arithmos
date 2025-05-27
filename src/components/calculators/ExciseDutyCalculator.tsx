@@ -49,7 +49,7 @@ const initialResults = {
   dutyFromAdValoremRate: "0.00",
 };
 
-export function ExciseDutyCalculator() {
+export default function ExciseDutyCalculator() {
   const { toast } = useToast();
 
   const [productType, setProductType] = useState<string>("");

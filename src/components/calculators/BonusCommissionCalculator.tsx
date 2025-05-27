@@ -93,7 +93,7 @@ const initialCalculationResults = {
   yearDisplay: "",
 };
 
-export function BonusCommissionCalculator() {
+export default function BonusCommissionCalculator() {
   const { toast } = useToast();
   const [regularMonthlySalary, setRegularMonthlySalary] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");

@@ -36,7 +36,7 @@ const GREEN_FUND_LEVY_RATE = 0.003; // 0.3%
 const BUSINESS_LEVY_EXEMPTION_YEARS = 3;
 const INTEREST_RATE_ON_SHORTFALL = 0.15; // 15%
 
-export function SimplifiedLevyCalculator() {
+export default function SimplifiedLevyCalculator() {
   const { toast } = useToast();
 
   const [incomePeriod, setIncomePeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");

@@ -225,6 +225,7 @@ export default function LandingPage() {
       component: calculator.componentName,
       title: calculator.name,
       icon: calculator.icon || CalculatorIcon,
+      description: calculator.description,
     });
   }}
 >
@@ -456,7 +457,8 @@ export default function LandingPage() {
                   {React.createElement(activeCalculator.icon, { className: "mr-2 h-6 w-6" })}
                   {activeCalculator.title}
                 </DialogTitle>
-                {activeCalculator.title && (
+                 {/* Add DialogDescription for accessibility */}
+ {activeCalculator.description && (
  <DialogDescription>Calculator for {activeCalculator.title}</DialogDescription>
                 )}
               </DialogHeader>

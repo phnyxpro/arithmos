@@ -150,7 +150,7 @@ export default function LandingPage() {
       <section
         id="hero"
         className="relative w-full py-20 md:py-28 text-center"
- data-ai-hint="financial planning"
+
       >
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" />

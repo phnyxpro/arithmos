@@ -73,7 +73,7 @@ const initialCalculationResults = {
     yearDisplay: "",
 };
 
-export function SimplifiedPayrollCalculator() {
+export default function SimplifiedPayrollCalculator() {
   const { toast } = useToast();
   const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString());
   const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());

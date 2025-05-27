@@ -226,13 +226,13 @@ export default function LandingPage() {
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" />
           <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4">
-            {pageHeroData.headline}
+            <span className="text-primary">{pageHeroData.headline}</span>
           </h1>
           <h2 className="text-xl md:text-2xl font-semibold text-primary-foreground/90 mb-6">
-            {pageHeroData.primarySubheadline}
+            <span className="text-primary">{pageHeroData.primarySubheadline}</span>
           </h2>
           <p className="max-w-2xl mx-auto text-base md:text-lg text-primary-foreground/80 mb-10">
-            {pageHeroData.secondarySubheadline}
+            <span className="text-primary">{pageHeroData.secondarySubheadline}</span>
           </p>
           <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Link href={pageHeroData.primaryCtaLink}>

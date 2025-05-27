@@ -252,7 +252,7 @@ export default function LandingPage() {
           <Tabs defaultValue={uniqueCategories[0]} className="w-full">
             <ScrollArea className="max-w-full pb-4">
               <TabsList className="grid w-full grid-flow-col auto-cols-max items-center justify-start gap-2 rounded-md p-1 text-muted-foreground">
-                {uniqueCategories.map(category => (
+                {uniqueCategories.slice(0, 5).map(category => (
                   <TabsTrigger key={category} value={category} className="data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground">
                     {category}
                   </TabsTrigger>

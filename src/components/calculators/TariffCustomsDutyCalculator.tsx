@@ -26,7 +26,7 @@ const initialCalculationResults = {
   estimatedLandedCostDisplay: "0.00",
 };
 
-export function TariffCustomsDutyCalculator() {
+export default function TariffCustomsDutyCalculator() {
   const { toast } = useToast();
 
   const [itemDescription, setItemDescription] = useState<string>("");

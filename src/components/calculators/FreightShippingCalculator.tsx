@@ -27,7 +27,7 @@ const initialCalculationResults = {
   estimatedLandedCostDisplay: "0.00",
 };
 
-export function FreightShippingCalculator() {
+export default function FreightShippingCalculator() {
   const { toast } = useToast();
 
   const [productValue, setProductValue] = useState<string>("");

@@ -511,14 +511,6 @@ export default function LandingPage() {
           <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
             Your trusted partner for Trinidad & Tobago SME financial solutions.
           </p>
-          <div className="flex justify-center space-x-6 mb-6">
-             <Link href="#" aria-label="LinkedIn" className="text-primary-foreground/70 hover:text-primary-foreground">
-                <Linkedin size={24} />
-             </Link>
-             <Link href="#" aria-label="Facebook" className="text-primary-foreground/70 hover:text-primary-foreground">
-                <Facebook size={24} />
-             </Link>
-          </div>
           <div className="text-xs text-primary-foreground/70">
             <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
           </div>

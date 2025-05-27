@@ -456,6 +456,9 @@ export default function LandingPage() {
                   {React.createElement(activeCalculator.icon, { className: "mr-2 h-6 w-6" })}
                   {activeCalculator.title}
                 </DialogTitle>
+                {activeCalculator.title && (
+ <DialogDescription>Calculator for {activeCalculator.title}</DialogDescription>
+                )}
               </DialogHeader>
               {React.createElement(LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap], { key: activeCalculator.key })}
                <DialogClose asChild>

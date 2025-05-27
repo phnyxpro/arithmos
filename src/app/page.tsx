@@ -226,7 +226,6 @@ export default function LandingPage() {
       title: calculator.name,
       icon: calculator.icon || CalculatorIcon,
     });
-    openCalculatorDialog();
   }}
 >
   {calculator.ctaText || "Open Calculator"}

@@ -44,7 +44,7 @@ const daysPerWeekOptions = [
 
 const AVG_WORKING_DAYS_PER_MONTH = 21.67; // Common approximation
 
-export function VacationPayCalculator() {
+export default function VacationPayCalculator() {
   const { toast } = useToast();
   const [payRateType, setPayRateType] = useState<string>("hourly");
   const [payRateAmount, setPayRateAmount] = useState<string>("");

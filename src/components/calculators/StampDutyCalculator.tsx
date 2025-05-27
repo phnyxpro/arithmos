@@ -28,7 +28,7 @@ const initialCalculationResults: CalculationResult = {
   breakdown: [],
 };
 
-export function StampDutyCalculator() {
+export default function StampDutyCalculator() {
   const { toast } = useToast();
 
   const [propertyValue, setPropertyValue] = useState<string>("");

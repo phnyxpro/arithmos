@@ -44,7 +44,7 @@ const voluntaryNisClassesData: VoluntaryNisClass[] = [
   { class: "XVI", monthlyEarnings: { min: 8300.00, max: null }, assumedAverageWeekly: 1915.00, voluntaryWeekly: 218.31, voluntaryMonthly: 946.01, voluntaryQuarterly: 2838.03 },
 ];
 
-export function VoluntaryNisCalculator() {
+export default function VoluntaryNisCalculator() {
   const { toast } = useToast();
   const [monthlyEarnings, setMonthlyEarnings] = useState<string>("");
   const [currentDateOnMount, setCurrentDateOnMount] = useState<string>("");

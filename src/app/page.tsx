@@ -66,7 +66,6 @@ import {
   Facebook,
   Mail,
   CalendarPlus,
-  ListChecks, 
 } from "lucide-react";
 
 import { useToast } from "@/hooks/use-toast";
@@ -141,74 +140,6 @@ export default function LandingPage() {
     setIsReviewDialogOpen(false);
     setCalculatorToReview(null);
   };
-
-  const handleAddToCalendar = React.useCallback((deadline: typeof pageDeadlineItems[0], type: 'google' | 'outlook' | 'ics') => {
-    const eventDate = parseISO(deadline.nextDueDate);
-    if (isNaN(eventDate.getTime())) {
-      toast({
-        title: "Invalid Date",
-        description: `Cannot set reminder for "${deadline.name}" due to an invalid date format.`,
-        variant: "destructive",
-      });
-      return;
-    }
-    if (eventDate < new Date(new Date().setHours(0,0,0,0)) && deadline.status !== "Completed") {
-      toast({
-        title: "Past Date",
-        description: `The due date for "${deadline.name}" is in the past.`,
-        variant: "default",
-      });
-      return;
-    }
-    if (deadline.status === "Completed") {
-      toast({
-        title: "Task Completed",
-        description: `"${deadline.name}" is already marked as completed. No reminder set.`,
-        variant: "default"
-      });
-      return;
-    }
-
-    const startDate = format(eventDate, "yyyyMMdd");
-    const endDate = format(addDays(eventDate, 1), "yyyyMMdd"); // For all-day event
-    const eventTitle = `TaxTT Reminder: ${deadline.name}`;
-    const eventDescription = `Deadline for ${deadline.name} - ${deadline.description}. Periodicity: ${deadline.periodicity}.`;
-
-    if (type === 'google') {
-      const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}`;
-      window.open(googleUrl, '_blank');
-      toast({ title: "Opening Google Calendar..."});
-    } else if (type === 'outlook') {
-      const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=${startDate}T000000&enddt=${endDate}T000000&subject=${encodeURIComponent(eventTitle)}&body=${encodeURIComponent(eventDescription)}`;
-      window.open(outlookUrl, '_blank');
-      toast({ title: "Opening Outlook Calendar..."});
-    } else { // ICS
-      const icsContent = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        `PRODID:-//TaxTT//TaxTT Reminder//EN`,
-        "BEGIN:VEVENT",
-        `UID:${crypto.randomUUID()}@taxtt.com`,
-        `DTSTAMP:${format(new Date(), "yyyyMMdd'T'HHmmss'Z'")}`,
-        `DTSTART;VALUE=DATE:${startDate}`,
-        `DTEND;VALUE=DATE:${endDate}`,
-        `SUMMARY:${eventTitle}`,
-        `DESCRIPTION:${eventDescription}`,
-        "END:VEVENT",
-        "END:VCALENDAR",
-      ].join("\r\n");
-
-      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `Tax_TT_Reminder_${deadline.name.replace(/\s+/g, '_')}.ics`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-      toast({ title: "ICS File Downloading...", description: `Add "${deadline.name}" to your calendar.`});
-    }
-  }, [toast]);
 
   const HeroIcon = pageHeroData.icon;
 
@@ -351,17 +282,9 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                      {format(parseISO(item.nextDueDate), 'MMMM dd, yyyy')}
                     </div>
                   </CardContent>
-                   <CardFooter className="flex items-center justify-start space-x-1 pt-2">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Microsoft Outlook Calendar" title="Add to Outlook Calendar">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.45 3.552H8.023L2 8.583V20.13c0 .98.796 1.775 1.776 1.775h15.898a1.776 1.776 0 001.776-1.776V5.327a1.776 1.776 0 00-1.776-1.775zM9.113 5.327h10.56v3.263l-5.28 3.21-5.28-3.21V5.327zm10.56 14.803H4.328V10.31l5.28 3.21 5.28-3.21v6.605z"/></svg>
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple/Other Calendars" title="Download ICS for Apple/Other Calendars">
-                    </Button>
-                  </CardFooter>
                 </Card>
               );
             })}
@@ -417,8 +340,8 @@ export default function LandingPage() {
                   While we don't file for you, we empower you to gather information and understand your obligations.
                 </p>
                 <ul className="space-y-2 text-left mb-8 opacity-90">
-                  <li className="flex items-center"><ListChecks className="h-5 w-5 mr-2 text-background/80" /> Organize income and expenses for easy reporting.</li>
-                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Access relevant tax information and guides.</li>
+                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Access relevant tax information and guides</li>
+                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Organize income and expenses for easy reporting</li>
                   <li className="flex items-center"><CalculatorIcon className="h-5 w-5 mr-2 text-background/80" /> Use our calculators to estimate liabilities.</li>
                 </ul>
               </div>

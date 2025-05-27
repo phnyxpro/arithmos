@@ -215,13 +215,22 @@ export default function LandingPage() {
                     </CardContent>
 
                     <CardFooter>
-                      <Button
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                        aria-label={`Open ${calculator.name} calculator`}
-                      >
-                        {calculator.ctaText || "Open Calculator"}
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                    <Button
+  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+  aria-label={`Open ${calculator.name} calculator`}
+  onClick={() => {
+    setActiveCalculator({
+      key: calculator.calculatorIdentifier,
+      component: calculator.componentName,
+      title: calculator.name,
+      icon: calculator.icon || CalculatorIcon,
+    });
+    openCalculatorDialog();
+  }}
+>
+  {calculator.ctaText || "Open Calculator"}
+  <ArrowRight className="ml-2 h-4 w-4" />
+</Button>
                     </CardFooter>
                   </Card>
                 );
@@ -233,6 +242,7 @@ export default function LandingPage() {
     </Tabs>
   </div>
 </section>
+
       {/* Why Choose Tax TT */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">

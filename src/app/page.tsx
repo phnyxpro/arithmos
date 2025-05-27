@@ -276,32 +276,7 @@ export default function LandingPage() {
                           <CardDescription className="text-sm text-muted-foreground">{calculator.description}</CardDescription>
                         </CardContent>
                         <CardFooter>
-                          <Button
-                            onClick={() => {
-                              if (calculator.componentName) {
-                                const CalculatorComponent = calculatorComponents[calculator.componentName];
-                                if (CalculatorComponent) {
-                                  openCalculatorDialog(
-                                    calculator.calculatorIdentifier,
-                                    calculator.name,
-                                    CalculatorIconComponent,
-                                    calculatorComponents[calculator.componentName as CalculatorComponentName]
-                                  );
-                                } else {
-                                  console.error(`Lazy component for ${calculator.componentName} not found.`);
-                                  toast({ title: "Error", description: `Calculator ${calculator.name} could not be loaded.`, variant: "destructive"});
-                                }
-                              } else if (calculator.href) {
-                                // This part is for navigating to a full page if href is defined
-                                // For dialog-only section, this might not be hit if filtered correctly
-                                window.location.href = calculator.href;
-                              } else {
-                                console.error(`No action defined for calculator: ${calculator.name}`);
-                                toast({ title: "Configuration Error", description: `No action available for ${calculator.name}.`, variant: "destructive"});
-                              }
-                            }}
-                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                          >
+                          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                             {calculator.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4"/>
                           </Button>
                         </CardFooter>
@@ -376,18 +351,15 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                      Due: {format(dueDate, "MMMM d, yyyy")}
                     </div>
                   </CardContent>
                    <CardFooter className="flex items-center justify-start space-x-1 pt-2">
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'google')} disabled={item.status === "Completed"} aria-label="Add to Google Calendar" title="Add to Google Calendar">
-                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.56 10.44V6.5H19V5H5v1.5H3.44v3.94H2v7.12h1.44v3.94H5V23h14v-1.5h1.56v-3.94H22v-7.12h-1.44zM5 7.61h1.5v1.07H5V7.61zm0 3.93h1.5v1.07H5v-1.07zm0 3.93h1.5v1.07H5v-1.07zm0 3.94h1.5v1.07H5v-1.07zm14 2.01H6.5V6.5h11v15.02h1.5v-1.07zm0-3.94h-1.5v-1.07h1.5v1.07zm0-3.93h-1.5v-1.07h1.5v1.07zm0-3.93h-1.5V7.61h1.5v1.07z"/><path d="M12 10.75c-1.38 0-2.5 1.12-2.5 2.5s1.12 2.5 2.5 2.5 2.5-1.12 2.5-2.5-1.12-2.5-2.5-2.5zm0 3.5c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/><path d="M12.5 8.25h-1V12h3.75v-1H12.5z" fillRule="evenodd"/></svg>
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'outlook')} disabled={item.status === "Completed"} aria-label="Add to Microsoft Outlook Calendar" title="Add to Outlook Calendar">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21.45 3.552H8.023L2 8.583V20.13c0 .98.796 1.775 1.776 1.775h15.898a1.776 1.776 0 001.776-1.776V5.327a1.776 1.776 0 00-1.776-1.775zM9.113 5.327h10.56v3.263l-5.28 3.21-5.28-3.21V5.327zm10.56 14.803H4.328V10.31l5.28 3.21 5.28-3.21v6.605z"/></svg>
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-primary hover:bg-primary/10" onClick={() => handleAddToCalendar(item, 'ics')} disabled={item.status === "Completed"} aria-label="Download ICS File for Apple/Other Calendars" title="Download ICS for Apple/Other Calendars">
-                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.1 17.2c-.4-.3-1.1-.4-1.7-.4-.9 0-1.6.3-2.2.9-.6.6-.9 1.4-.9 2.3 0 .8.2 1.5.5 2.1.4.6.9 1.1 1.5 1.4.6.3 1.3.5 2.1.5.6 0 1.2-.1 1.7-.3.6-.2 1-.5 1.4-.9.3-.3.6-.7.7-1.1.1-.4.2-.8.2-1.3 0-1.3-.5-2.4-1.4-3.2zm-2.4 5c-.3.2-.7.3-1.1.3-.5 0-.9-.1-1.3-.4-.3-.2-.6-.5-.8-.9-.2-.4-.3-.8-.3-1.2s.1-.8.4-1.1c.3-.3.6-.5.9-.7.4-.1.8-.2 1.2-.2.4 0 .8.1 1.1.2.2.1.4.3.6.5.4.5.6 1.1.6 1.8 0 .5-.1.9-.3 1.3-.2.4-.5.7-.8 1zM17.2 0h-1.6c-.5.1-1 .2-1.6.4-.5.2-1 .5-1.4.9-.4.4-.8.8-1.1 1.4-.3.6-.5 1.2-.6 1.9H9.1c-.4-.8-.9-1.5-1.5-2.1C7 2.1 6.2 1.8 5.3 1.8c-.9 0-1.7.3-2.3.8-.6.5-1 1.2-1.2 2C1.6 5.3 1.5 6 1.5 6.7c0 .9.2 1.7.7 2.4.5.7 1.2 1.3 2.1 1.7.7.3 1.4.5 2.2.5.8 0 1.5-.1 2.2-.4.7-.3 1.3-.7 1.8-1.3v6.6c-.7.8-1.2 1.5-1.6 2.1-.4.6-.6 1.2-.6 1.8 0 .9.2 1.6.6 2.3.4.7.9 1.2 1.5 1.7.6.4 1.3.6 2.1.6s1.5-.2 2.1-.6c.6-.4 1.1-.9 1.5-1.7.4-.7.6-1.4.6-2.3 0-.6-.1-1.1-.3-1.6-.2-.5-.5-1-.8-1.4V6.2C19.1 4.9 18.5 3 17.2 0zm-2.2 9.8c-.5.5-1 .9-1.6 1.1-.6.2-1.3.4-2.1.4-.7 0-1.3-.1-1.8-.4-.5-.2-1-.6-1.3-1-.3-.4-.5-.9-.5-1.4s.1-.9.4-1.3c.2-.4.5-.7.8-.9s.7-.3 1.1-.3c.8 0 1.5.2 2.1.5.6.3 1.1.7 1.5 1.2.3.4.4.8.4 1.3zm0-6.5c0 .4-.1.8-.2 1.1-.1.3-.3.6-.6.9-.6.5-1.3.7-2.1.7-.6 0-1.1-.1-1.5-.3-.4-.2-.7-.5-.9-.8-.2-.3-.3-.7-.3-1.1s.1-.7.3-1c.1-.3.3-.5.5-.7.4-.3.9-.5 1.4-.6.5-.1 1-.1 1.5-.1h.2v3.3z"/></svg>
                     </Button>
                   </CardFooter>
                 </Card>

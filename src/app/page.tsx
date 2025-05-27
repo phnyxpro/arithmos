@@ -282,7 +282,7 @@ export default function LandingPage() {
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-                      {format(parseISO(item.nextDueDate), 'MMMM dd, yyyy')}
+                      {item.nextDueDate && typeof item.nextDueDate === 'string' ? format(parseISO(item.nextDueDate), 'MMMM dd, yyyy') : 'Invalid Date'}
                     </div>
                   </CardContent>
                 </Card>

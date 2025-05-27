@@ -163,54 +163,76 @@ export default function LandingPage() {
   </div>
 </section>
 
-      {/* Popular Financial Tools & Calculators Section */}
-      <section id="popular-calculators" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Popular Financial Tools &amp; Calculators
-          </h2>
-          <Tabs defaultValue={uniqueCategories[0]} className="w-full">
-            <ScrollArea className="max-w-full pb-4">
-              <TabsList className="grid w-full grid-flow-col auto-cols-max items-center justify-start gap-2 rounded-md p-1 text-muted-foreground">
-                {uniqueCategories.slice(0, 5).map(category => (
-                  <TabsTrigger key={category} value={category} className="data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground">
-                    {category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+<section id="popular-calculators" className="py-16 lg:py-24">
+  <div className="container mx-auto px-4">
+    <h2 className="text-3xl font-bold text-center text-primary mb-12">
+      Popular Financial Tools &amp; Calculators
+    </h2>
 
-            {uniqueCategories.map(category => (
-              <TabsContent key={category} value={category} className="mt-8">
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {dialogCalculators.filter(calc => calc.category === category).map(calculator => {
-                    const CalculatorIconComponent = calculator.icon || CalculatorIcon; // Default icon
-                    return (
-                      <Card key={calculator.calculatorIdentifier} className="flex flex-col shadow-md hover:shadow-xl transition-shadow rounded-xl">
-                        <CardHeader className="flex flex-row items-start space-x-4">
-                          <CalculatorIconComponent className="h-8 w-8 text-accent mt-1 flex-shrink-0" />
-                          <CardTitle className="text-lg text-primary">{calculator.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                          <CardDescription className="text-sm text-muted-foreground">{calculator.description}</CardDescription>
-                        </CardContent>
-                        <CardFooter>
-                          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                            {calculator.ctaText || "Open Calculator"} <ArrowRight className="ml-2 h-4 w-4"/>
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      </section>
+    <Tabs defaultValue={uniqueCategories[0]} className="w-full">
+      <ScrollArea className="max-w-full pb-4">
+        <TabsList className="grid w-full grid-flow-col auto-cols-max items-center justify-start gap-2 rounded-md p-1 text-muted-foreground">
+          {uniqueCategories.slice(0, 5).map((category) => (
+            <TabsTrigger
+              key={category}
+              value={category}
+              className="data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
+            >
+              {category}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
 
+      {uniqueCategories.map((category) => {
+        const calculatorsInCategory = dialogCalculators.filter(
+          (calc) => calc.category === category
+        );
 
+        return (
+          <TabsContent key={category} value={category} className="mt-8">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {calculatorsInCategory.map((calculator) => {
+                const Icon = calculator.icon || CalculatorIcon;
+
+                return (
+                  <Card
+                    key={calculator.calculatorIdentifier}
+                    className="flex flex-col shadow-md hover:shadow-xl transition-shadow rounded-xl"
+                  >
+                    <CardHeader className="flex flex-row items-start space-x-4">
+                      <Icon className="h-8 w-8 text-accent mt-1 flex-shrink-0" />
+                      <CardTitle className="text-lg text-primary">
+                        {calculator.name}
+                      </CardTitle>
+                    </CardHeader>
+
+                    <CardContent className="flex-grow">
+                      <CardDescription className="text-sm text-muted-foreground">
+                        {calculator.description}
+                      </CardDescription>
+                    </CardContent>
+
+                    <CardFooter>
+                      <Button
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        aria-label={`Open ${calculator.name} calculator`}
+                      >
+                        {calculator.ctaText || "Open Calculator"}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </TabsContent>
+        );
+      })}
+    </Tabs>
+  </div>
+</section>
       {/* Why Choose Tax TT */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">

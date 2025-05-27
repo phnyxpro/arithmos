@@ -29,7 +29,6 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import {
-  Briefcase,
   ShieldCheck,
   BarChart3,
   FileText,
@@ -400,7 +399,7 @@ export default function LandingPage() {
       {/* Footer Section */}
       <footer id="footer" className="py-12 bg-primary text-primary-foreground mt-16">
         <div className="container mx-auto px-4 text-center">
-          <Briefcase className="h-10 w-10 text-primary-foreground/80 mx-auto mb-4" />
+          <img src=\"https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06\" alt=\"TaxTT Logo\" className=\"h-10 w-10 text-primary-foreground/80 mx-auto mb-4\" />
           <h3 className="text-2xl font-bold mb-2">{pageHeroData.headline}</h3>
           <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
             Your trusted partner for Trinidad & Tobago SME financial solutions.

@@ -1,22 +1,8 @@
 import type { SVGProps } from 'react';
+import Image from 'next/image';
 
 export function AppLogo(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12 2L2 7l10 5 10-5-10-5z" />
-      <path d="M2 17l10 5 10-5" />
-      <path d="M2 12l10 5 10-5" />
-      <line x1="12" y1="22" x2="12" y2="17" />
-      <line x1="12" y1="12" x2="12" y2="7" />
-    </svg>
+    <img src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06" alt="TaxTT Logo" className="h-6 w-auto" />
   );
 }

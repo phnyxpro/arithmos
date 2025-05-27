@@ -219,6 +219,7 @@ export default function LandingPage() {
   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
   aria-label={`Open ${calculator.name} calculator`}
   onClick={() => {
+    console.log("Opening calculator:", calculator);
     setActiveCalculator({
       key: calculator.calculatorIdentifier,
       component: calculator.componentName,

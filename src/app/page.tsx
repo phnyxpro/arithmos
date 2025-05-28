@@ -121,7 +121,13 @@ export default function LandingPage() {
       setCalculatorToReview(activeCalculator.title); // Pass the title for review
       setIsReviewDialogOpen(true);
     }
-    closeCalculatorDialog();
+    // The Dialog's onOpenChange handler now directly sets activeCalculator to null.
+    // We no longer need to call closeCalculatorDialog() here, as the state is
+    // being managed by the Dialog's onOpenChange based on user interaction.
+    // Keep this function for potential side effects on close (like review dialog)
+    // but remove the state-setting part.
+    // closeCalculatorDialog(); // Removed
+
   }, [activeCalculator, closeCalculatorDialog]);
 
   const handleSubmitReview = (calculatorName: string, rating: number) => {
@@ -450,7 +456,13 @@ export default function LandingPage() {
 
       {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
         <React.Suspense fallback={<div>Loading Calculator...</div>}>
-          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => {
+          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => { // Modified onOpenChange handler
+             if (!isOpen) {
+               // When the dialog is closed by user interaction, trigger the review logic
+               if (activeCalculator) {
+                 setCalculatorToReview(activeCalculator.title);
+                 setIsReviewDialogOpen(true);
+               }
              if (!isOpen) {
                handleCalculatorDialogClose(isOpen); // This will handle setting review state and then call closeCalculatorDialog
              }
@@ -464,6 +476,8 @@ export default function LandingPage() {
                  {/* Add DialogDescription for accessibility */}
  {activeCalculator.description && (
  <DialogDescription>Calculator for {activeCalculator.title}</DialogDescription>
+               // Then, clear the active calculator state to truly close the dialog
+               setActiveCalculator(null);
                 )}
               </DialogHeader>
               {React.createElement(LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap], { key: activeCalculator.key })}

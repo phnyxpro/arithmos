@@ -82,12 +82,12 @@ export const benefitsData: BenefitItem[] = [
   {
     icon: ShieldCheck,
     title: "Stay Compliant with Confidence",
-    description: "Tax TT is built on the latest local tax laws and aligned with the Inland Revenue Division (IRD) of Trinidad & Tobago, helping you calculate and file with accuracy.",
+    description: "Arithmos is built on the latest local tax laws and aligned with the Inland Revenue Division (IRD) of Trinidad & Tobago, helping you calculate and file with accuracy.",
   },
   {
     icon: UsersIcon,
     title: "Tailored for SMEs, Freelancers, and Professionals",
-    description: "Whether you are managing a growing team, running a side hustle, or consulting independently, Tax TT is built with your workflow in mind, with no unnecessary complexity, just what you need.",
+    description: "Whether you are managing a growing team, running a side hustle, or consulting independently, Arithmos is built with your workflow in mind, with no unnecessary complexity, just what you need.",
   },
   {
     icon: CalculatorIcon,
@@ -97,7 +97,7 @@ export const benefitsData: BenefitItem[] = [
   {
     icon: Smartphone,
     title: "Seamless Across Devices",
-    description: "From desktop to mobile, Tax TT works wherever you are, whether at the office, in the field, or on the move.",
+    description: "From desktop to mobile, Arithmos works wherever you are, whether at the office, in the field, or on the move.",
   },
 ];
 

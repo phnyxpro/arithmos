@@ -1,4 +1,4 @@
-# **App Name**: TaxTT
+# **App Name**: Arithmos
 
 ## Core Features:
 

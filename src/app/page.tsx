@@ -249,7 +249,7 @@ export default function LandingPage() {
        <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Why Choose TaxTT?
+            Why Choose Arithmos?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {pageBenefitsData.map((benefit) => (
@@ -390,7 +390,7 @@ export default function LandingPage() {
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-lg hover:no-underline">Is this platform officially endorsed by the IRD?</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                No, TaxTT is an independent platform designed to assist users with understanding and calculating their tax obligations. While we strive for accuracy based on public information, always refer to official IRD (Inland Revenue Division) publications and seek professional advice for definitive guidance.
+                No, Arithmos is an independent platform designed to assist users with understanding and calculating their tax obligations. While we strive for accuracy based on public information, always refer to official IRD (Inland Revenue Division) publications and seek professional advice for definitive guidance.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
@@ -402,7 +402,7 @@ export default function LandingPage() {
             <AccordionItem value="item-3">
               <AccordionTrigger className="text-lg hover:no-underline">Can I file my taxes directly through this platform?</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                Currently, TaxTT does not offer direct tax filing services. Our platform is designed to help you prepare, calculate, and understand your tax information, which you can then use for official filing through the IRD's e-Tax portal or with the assistance of a tax professional.
+                Currently, Arithmos does not offer direct tax filing services. Our platform is designed to help you prepare, calculate, and understand your tax information, which you can then use for official filing through the IRD's e-Tax portal or with the assistance of a tax professional.
               </AccordionContent>
             </AccordionItem>
              <AccordionItem value="item-4">
@@ -414,7 +414,7 @@ export default function LandingPage() {
              <AccordionItem value="item-5">
               <AccordionTrigger className="text-lg hover:no-underline">Who is this platform for?</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
-                TaxTT is designed for individuals, sole traders, small to medium-sized enterprises (SMEs), and financial professionals in Trinidad & Tobago who need tools to simplify tax calculations, financial planning, and compliance.
+                Arithmos is designed for individuals, sole traders, small to medium-sized enterprises (SMEs), and financial professionals in Trinidad & Tobago who need tools to simplify tax calculations, financial planning, and compliance.
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -422,28 +422,28 @@ export default function LandingPage() {
       </section>
 
       {/* Footer Section */}
-      <footer id="footer" className="py-12 bg-primary text-primary-foreground mt-16">
+      <footer id="footer" className="py-12 text-teal-500 mt-16">
         <div className="container mx-auto px-4 text-center">
         <Image
   src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06"
-  alt="TaxTT Logo"
-  width={40}
-  height={40}
+  alt="Arithmos Logo"
+  width={50}
+  height={50}
   className="mx-auto mb-4"
   priority
 />
           <h3 className="text-2xl font-bold mb-2">{pageHeroData.headline}</h3>
           <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
-            Your trusted partner for Trinidad & Tobago SME financial solutions.
+            Your trusted partner for smart tax filing and financial solutions in Trinidad & Tobago.
+
           </p>
-          <div className="text-xs text-primary-foreground/70">
-            <Link href="#" className="hover:underline">Privacy Policy</Link> • <Link href="#" className="hover:underline">Terms of Service</Link>
+          <div className="text-xs text-teal-600">
+            <Link href="#" className="hover:underline text-teal-600">Privacy Policy</Link> • <Link href="#" className="hover:underline text-teal-600">Terms of Service</Link>
           </div>
-          <p className="text-xs text-primary-foreground/60 mt-4">
-            © {new Date().getFullYear()} TaxTT for SMEs. All rights reserved.
-          </p>
+          <p className="text-xs text-teal-700 mt-4">
+            © {new Date().getFullYear()} Arithmos. All rights reserved.
            <p className="text-[10px] text-primary-foreground/50 mt-4 max-w-xl mx-auto">
-            Disclaimer: TaxTT provides tools and information for general guidance only. It is not a substitute for professional financial or legal advice.
+            Disclaimer: Arithmos provides tools and information for general guidance only. It is not a substitute for professional financial or legal advice.
             All calculations should be verified with official IRD guidelines and qualified professionals. Tax laws are subject to change.
           </p>
         </div>

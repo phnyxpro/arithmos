@@ -4,7 +4,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
-export function RentalYieldCalculator() {
+export default function RentalYieldCalculator() {
   return (
     <div className="py-4">
       <Card className="border-none shadow-none">

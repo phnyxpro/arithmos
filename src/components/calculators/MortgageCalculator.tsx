@@ -35,7 +35,7 @@ const initialCalculationResults = {
   totalCostDisplay: "0.00",
 };
 
-export function MortgageCalculator() {
+export default function MortgageCalculator() {
   const { toast } = useToast();
 
   const [propertyPrice, setPropertyPrice] = useState<string>("");

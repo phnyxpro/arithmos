@@ -46,7 +46,7 @@ const initialCalculationResults = {
   totalInterestEarnedDisplay: "0.00",
 };
 
-export function SavingsInvestmentCalculator() {
+export default function SavingsInvestmentCalculator() {
   const { toast } = useToast();
 
   const [initialPrincipal, setInitialPrincipal] = useState<string>("10000");

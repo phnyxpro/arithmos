@@ -448,8 +448,8 @@ export default function LandingPage() {
       </footer>
     </div>
 
-    
-{activeCalculator &&
+
+  {activeCalculator &&
   LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
     <React.Suspense fallback={<div>Loading Calculator...</div>}>
       <Dialog

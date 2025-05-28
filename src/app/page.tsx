@@ -116,19 +116,14 @@ export default function LandingPage() {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
 
-  const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
+  const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => { // This function is now primarily for handling the review dialog logic on close
     if (!isOpen && activeCalculator) {
       setCalculatorToReview(activeCalculator.title); // Pass the title for review
       setIsReviewDialogOpen(true);
+      // Explicitly close the dialog by setting state to null
+      setActiveCalculator(null);
     }
-    // The Dialog's onOpenChange handler now directly sets activeCalculator to null.
-    // We no longer need to call closeCalculatorDialog() here, as the state is
-    // being managed by the Dialog's onOpenChange based on user interaction.
-    // Keep this function for potential side effects on close (like review dialog)
-    // but remove the state-setting part.
-    // closeCalculatorDialog(); // Removed
-
-  }, [activeCalculator, closeCalculatorDialog]);
+  }, [activeCalculator, setIsReviewDialogOpen, setCalculatorToReview, setActiveCalculator]); // Added setActiveCalculator to dependency array
 
   const handleSubmitReview = (calculatorName: string, rating: number) => {
     console.log(`Review submitted for ${calculatorName}: ${rating} stars`);
@@ -456,15 +451,9 @@ export default function LandingPage() {
 
       {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
         <React.Suspense fallback={<div>Loading Calculator...</div>}>
-          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => { // Modified onOpenChange handler
+          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => { // Keep onOpenChange to control the Dialog's open state
              if (!isOpen) {
-               // When the dialog is closed by user interaction, trigger the review logic
-               if (activeCalculator) {
-                 setCalculatorToReview(activeCalculator.title);
-                 setIsReviewDialogOpen(true);
-               }
-             if (!isOpen) {
-               handleCalculatorDialogClose(isOpen); // This will handle setting review state and then call closeCalculatorDialog
+               handleCalculatorDialogClose(isOpen); // Call our handler to potentially trigger review and set state to null
              }
           }}>
             <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
@@ -475,8 +464,6 @@ export default function LandingPage() {
                 </DialogTitle>
                  {/* Add DialogDescription for accessibility */}
  {activeCalculator.description && (
- <DialogDescription>Calculator for {activeCalculator.title}</DialogDescription>
-               // Then, clear the active calculator state to truly close the dialog
                setActiveCalculator(null);
                 )}
               </DialogHeader>

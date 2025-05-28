@@ -141,7 +141,7 @@ export default function LandingPage() {
   const uniqueCategories = Array.from(new Set(dialogCalculators.map(calc => calc.category)));
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
   <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
@@ -422,7 +422,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer Section */}
-      <footer id="footer" className="py-12 text-teal-500 mt-16">
+      <footer id="footer" className="py-12 text-teal-500 mt-16 bg-transparent">
         <div className="container mx-auto px-4 text-center">
         <Image
   src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06"
@@ -433,18 +433,15 @@ export default function LandingPage() {
   priority
 />
           <h3 className="text-2xl font-bold mb-2">{pageHeroData.headline}</h3>
-          <p className="text-sm text-primary-foreground/80 mb-6 max-w-md mx-auto">
+          <p className="text-sm text-teal-600 mb-6 max-w-md mx-auto">
             Your trusted partner for smart tax filing and financial solutions in Trinidad & Tobago.
 
           </p>
-          <div className="text-xs text-teal-600">
-            <Link href="#" className="hover:underline text-teal-600">Privacy Policy</Link> • <Link href="#" className="hover:underline text-teal-600">Terms of Service</Link>
+          <div className="text-xs">
+            <Link href="#" className="hover:underline text-teal-500">Privacy Policy</Link> • <Link href="#" className="hover:underline text-teal-500">Terms of Service</Link>
           </div>
           <p className="text-xs text-teal-700 mt-4">
             © {new Date().getFullYear()} Arithmos. All rights reserved.
-           <p className="text-[10px] text-primary-foreground/50 mt-4 max-w-xl mx-auto">
-            Disclaimer: Arithmos provides tools and information for general guidance only. It is not a substitute for professional financial or legal advice.
-            All calculations should be verified with official IRD guidelines and qualified professionals. Tax laws are subject to change.
           </p>
           </p>
       </footer>
@@ -483,7 +480,7 @@ export default function LandingPage() {
         onSubmitReview={handleSubmitReview}
       />
 
-    </main>
+    </div>
   );
 }
 

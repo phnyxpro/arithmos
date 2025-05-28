@@ -38,13 +38,10 @@ import {
   Users as UsersIcon,
   DollarSign,
   Clock,
-  FileHeart,
   Landmark,
   Percent,
   LineChart,
   Building as BuildingIconLucide,
-  Truck,
-  Ship,
   FileBox,
   Stamp,
   Home as HomeIconLucide,
@@ -52,9 +49,6 @@ import {
   Network,
   Building2,
   Calculator as CalculatorIcon,
-  Download,
-  Linkedin,
-  Facebook,
   Mail,
 } from "lucide-react";
 
@@ -65,6 +59,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
+import { faqData } from "@/constants/faqData";
 
 export default function LandingPage() {
   const { toast } = useToast();
@@ -246,7 +241,7 @@ export default function LandingPage() {
       key: calculator.calculatorIdentifier,
       component: calculator.componentName,
       title: calculator.name,
-      icon: calculator.icon || CalculatorIcon,
+      icon: calculator.icon ?? CalculatorIcon,
       description: calculator.description,
     });
   }}
@@ -422,29 +417,9 @@ export default function LandingPage() {
             Find answers to common questions about our platform and Trinidad & Tobago tax & finance.
           </p>
           <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-            {/* Define your FAQ data (replace with your actual data source or import) */}
-            {/* Example hardcoded data: */}
-            {[
-              { question: "Is this platform officially endorsed by the IRD?", answer: "No, Arithmos is an independent platform designed to assist users with understanding and calculating their tax obligations. While we strive for accuracy based on public information, always refer to official IRD (Inland Revenue Division) publications and seek professional advice for definitive guidance." },
-              { question: "Are the calculators always up-to-date with the latest tax laws?", answer: "We make every effort to keep our calculators and information current with the latest tax laws in Trinidad & Tobago. However, tax legislation can change. We recommend cross-referencing with official IRD announcements for the most recent updates, especially before making financial decisions based solely on calculator results." },
-              { question: "Can I file my taxes directly through this platform?", answer: "Currently, Arithmos does not offer direct tax filing services. Our platform is designed to help you prepare, calculate, and understand your tax information, which you can then use for official filing through the IRD's e-Tax portal or with the assistance of a tax professional." },
-              { question: "Is my data secure on this platform?", answer: "We take data privacy seriously. While many of our calculators can be used anonymously without storing personal data, if account features are introduced, we will implement industry-standard security measures. Please refer to our Privacy Policy for detailed information once account features are live." },
-              { question: "Who is this platform for?", answer: "Arithmos is designed for individuals, sole traders, small to medium-sized enterprises (SMEs), and financial professionals in Trinidad & Tobago who need tools to simplify tax calculations, financial planning, and compliance." },
-              // Add more FAQ items here as needed
-            ].map((item, index) => (
+            {faqData.map((item, index) => (
               <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
                 <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
-
-      {/* Footer Section */}
-      <footer id="footer" className="py-12 text-teal-500 mt-16 bg-transparent">
         <div className="container mx-auto px-4 text-center">
         <Image
   src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06"
@@ -467,6 +442,13 @@ export default function LandingPage() {
           </p>
           </div>
         
+                <AccordionContent className="text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </footer>
     </div>
 

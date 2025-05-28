@@ -61,7 +61,7 @@ import { faqData } from "@/constants/faqData";
 
 export default function LandingPage() {
   const { toast } = useToast();
-  const { activeCalculator, openDialog: openCalculatorDialog, // This appears unused, consider removing if not needed
+  const { activeCalculator, // This appears unused, consider removing if not needed
     closeDialog: closeCalculatorDialog,
     setActiveCalculator,
   } = useCalculatorDialogManager();
@@ -95,14 +95,6 @@ export default function LandingPage() {
     AMLRiskCalculator: React.lazy(() => import("@/components/calculators/AMLRiskCalculator")),
     FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator")),
   }), []);
-
-  type ActiveCalculator = {
-  key: string;
-  component: CalculatorComponentName;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description?: string;
-};
 
   type ActiveCalculator = {
   key: string;
@@ -416,28 +408,6 @@ export default function LandingPage() {
             {faqData.map((item, index) => (
               <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
                 <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
-        <div className="container mx-auto px-4 text-center">
-        <Image
-  src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06"
-  alt="Arithmos Logo"
-  width={50}
-  height={50}
-  className="mx-auto mb-4"
-  priority
-/>
-          <h3 className="text-2xl font-bold mb-2">{pageHeroData.headline}</h3>
-          <p className="text-sm text-teal-600 mb-6 max-w-md mx-auto">
-            Your trusted partner for smart tax filing and financial solutions in Trinidad & Tobago.
-
-          </p>
-          <div className="text-xs">
-            <Link href="#" className="hover:underline text-teal-500">Privacy Policy</Link> • <Link href="#" className="hover:underline text-teal-500">Terms of Service</Link>
-          </div>
-          <p className="text-xs text-teal-700 mt-4">
-            © {new Date().getFullYear()} Arithmos. All rights reserved.
-          </p>
-          </div>
-        
                 <AccordionContent className="text-muted-foreground">
                   {item.answer}
                 </AccordionContent>

@@ -141,7 +141,7 @@ export default function LandingPage() {
   const uniqueCategories = Array.from(new Set(dialogCalculators.map(calc => calc.category)));
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
   <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
@@ -446,7 +446,7 @@ export default function LandingPage() {
             Disclaimer: Arithmos provides tools and information for general guidance only. It is not a substitute for professional financial or legal advice.
             All calculations should be verified with official IRD guidelines and qualified professionals. Tax laws are subject to change.
           </p>
-        </div>
+          </p>
       </footer>
 
       {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
@@ -483,7 +483,7 @@ export default function LandingPage() {
         onSubmitReview={handleSubmitReview}
       />
 
-    </div>
+    </main>
   );
 }
 

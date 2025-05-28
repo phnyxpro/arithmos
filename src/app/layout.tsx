@@ -12,7 +12,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'TaxTT - Smart Tax Filing',
+  title: 'Arithmos - Smart Tax Filing',
   description: 'Simplify your tax filing with AI-powered suggestions and guided input.',
 };
 

@@ -161,7 +161,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
   <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
-    <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" />
+    <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" >
     <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
       {pageHeroData.headline}
     </h1>

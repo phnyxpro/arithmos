@@ -144,8 +144,7 @@ export default function LandingPage() {
     return Array.from(new Set(dialogCalculators.map(calc => calc.category)));
   }, [dialogCalculators]);
 
-  return (
-    <div className="flex flex-col min-h-screen">
+  return (<div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
   <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">

@@ -41,9 +41,7 @@ import {
   Landmark,
   Percent,
   LineChart,
-  Building as BuildingIconLucide,
-  FileBox,
-  Stamp,
+  Building as BuildingIconLucide, FileBox, Stamp,
   Home as HomeIconLucide,
   ShieldAlert,
   Network,
@@ -63,9 +61,7 @@ import { faqData } from "@/constants/faqData";
 
 export default function LandingPage() {
   const { toast } = useToast();
-  const {
-    activeCalculator,
- openDialog: openCalculatorDialog, // This appears unused, consider removing if not needed
+  const { activeCalculator, openDialog: openCalculatorDialog, // This appears unused, consider removing if not needed
     closeDialog: closeCalculatorDialog,
     setActiveCalculator,
   } = useCalculatorDialogManager();
@@ -161,7 +157,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
   <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
-    <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" >
+    <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
     <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
       {pageHeroData.headline}
     </h1>

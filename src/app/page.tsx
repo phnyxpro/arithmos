@@ -450,7 +450,11 @@ export default function LandingPage() {
 
       {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
         <React.Suspense fallback={<div>Loading Calculator...</div>}>
-          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => handleCalculatorDialogClose(isOpen)}>
+          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => {
+             if (!isOpen) {
+               handleCalculatorDialogClose(isOpen); // This will handle setting review state and then call closeCalculatorDialog
+             }
+          }}>
             <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-2xl text-primary flex items-center">

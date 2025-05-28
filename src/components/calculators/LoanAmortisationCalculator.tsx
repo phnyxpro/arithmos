@@ -49,7 +49,7 @@ const initialCalculationResults = {
   totalCostOfLoanDisplay: "0.00",
 };
 
-export function LoanAmortisationCalculator() {
+export default function LoanAmortisationCalculator() {
   const { toast } = useToast();
   const [loanAmount, setLoanAmount] = useState<string>("");
   const [annualInterestRate, setAnnualInterestRate] = useState<string>("");

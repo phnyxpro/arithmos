@@ -70,7 +70,7 @@ export default function LandingPage() {
   const { toast } = useToast();
   const {
     activeCalculator,
-    openDialog: openCalculatorDialog,
+ openDialog: openCalculatorDialog, // This appears unused, consider removing if not needed
     closeDialog: closeCalculatorDialog,
     setActiveCalculator,
   } = useCalculatorDialogManager();
@@ -104,6 +104,22 @@ export default function LandingPage() {
     AMLRiskCalculator: React.lazy(() => import("@/components/calculators/AMLRiskCalculator")),
     FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator")),
   }), []);
+
+  type ActiveCalculator = {
+  key: string;
+  component: CalculatorComponentName;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description?: string;
+};
+
+  type ActiveCalculator = {
+  key: string;
+  component: CalculatorComponentName;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  description?: string;
+};
 
   // Define a type for the map keys
   type CalculatorComponentName = keyof typeof LazyComponentMap;

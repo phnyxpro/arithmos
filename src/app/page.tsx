@@ -119,7 +119,7 @@ export default function LandingPage() {
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => { // This function is now primarily for handling the review dialog logic on close
     if (!isOpen && activeCalculator) {
       setCalculatorToReview(activeCalculator.title); // Pass the title for review
-      setIsReviewDialogOpen(true);
+ setIsReviewDialogOpen(true);
       // Explicitly close the dialog by setting state to null
       setActiveCalculator(null);
     }
@@ -464,7 +464,7 @@ export default function LandingPage() {
                 </DialogTitle>
                  {/* Add DialogDescription for accessibility */}
  {activeCalculator.description && (
-               setActiveCalculator(null);
+ <DialogDescription>{activeCalculator.description}</DialogDescription>
                 )}
               </DialogHeader>
               {React.createElement(LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap], { key: activeCalculator.key })}

@@ -448,41 +448,54 @@ export default function LandingPage() {
       </footer>
     </div>
 
-      {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
-        <React.Suspense fallback={<div>Loading Calculator...</div>}>
-          <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => { // Keep onOpenChange to control the Dialog's open state
-             if (!isOpen) {
-               // Only trigger review if a calculator was actively open and is now closing
-               handleCalculatorDialogClose(isOpen); // Call our handler to potentially trigger review and set state to null
-             }
-          }}>
-            <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-2xl text-primary flex items-center">
-                  {React.createElement(activeCalculator.icon, { className: "mr-2 h-6 w-6" })}
-                  {activeCalculator.title}
-                </DialogTitle>
-                 {/* Add DialogDescription for accessibility */}
- {activeCalculator.description && (
- <DialogDescription>{activeCalculator.description}</DialogDescription>
-                )}
-              </DialogHeader>
-              {React.createElement(LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap], { key: activeCalculator.key })}
-               <DialogClose asChild>
-                 <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-              </DialogClose>
-            </DialogContent>
-          </Dialog>
-        </React.Suspense>
-      )}
-      
-      <StarReviewDialog
-        isOpen={isReviewDialogOpen}
-        onOpenChange={setIsReviewDialogOpen}
-        calculatorName={calculatorToReview}
-        onSubmitReview={handleSubmitReview}
-      />
+{activeCalculator &&
+  LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
+    <React.Suspense fallback={<div>Loading Calculator...</div>}>
+      <Dialog
+        open={!!activeCalculator}
+        onOpenChange={(isOpen) => {
+          // Keep onOpenChange to control the Dialog's open state
+          if (!isOpen) {
+            // Only trigger review if a calculator was actively open and is now closing
+            handleCalculatorDialogClose(isOpen);
+          }
+        }}
+      >
+        <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-primary flex items-center">
+              {React.createElement(activeCalculator.icon, {
+                className: "mr-2 h-6 w-6",
+              })}
+              {activeCalculator.title}
+            </DialogTitle>
 
+            {activeCalculator.description && (
+              <DialogDescription>{activeCalculator.description}</DialogDescription>
+            )}
+          </DialogHeader>
+
+          {React.createElement(
+            LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap],
+            { key: activeCalculator.key }
+          )}
+
+          <DialogClose asChild>
+            <Button type="button" variant="outline" className="mt-4 w-full">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
+    </React.Suspense>
+  )}
+
+<StarReviewDialog
+  isOpen={isReviewDialogOpen}
+  onOpenChange={setIsReviewDialogOpen}
+  calculatorName={calculatorToReview}
+  onSubmitReview={handleSubmitReview}
+/>
   );
 }
 

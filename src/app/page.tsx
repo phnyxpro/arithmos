@@ -443,13 +443,16 @@ export default function LandingPage() {
           <p className="text-xs text-teal-700 mt-4">
             © {new Date().getFullYear()} Arithmos. All rights reserved.
           </p>
-          </p>
+          </div>
+        
       </footer>
+    </div>
 
       {activeCalculator && LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
         <React.Suspense fallback={<div>Loading Calculator...</div>}>
           <Dialog open={!!activeCalculator} onOpenChange={(isOpen) => { // Keep onOpenChange to control the Dialog's open state
              if (!isOpen) {
+               // Only trigger review if a calculator was actively open and is now closing
                handleCalculatorDialogClose(isOpen); // Call our handler to potentially trigger review and set state to null
              }
           }}>
@@ -480,7 +483,6 @@ export default function LandingPage() {
         onSubmitReview={handleSubmitReview}
       />
 
-    </div>
   );
 }
 

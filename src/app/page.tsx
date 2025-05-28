@@ -1,6 +1,3 @@
-
-"use client";
-
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image"; // Keep for potential future image use
@@ -137,8 +134,16 @@ export default function LandingPage() {
 
   const HeroIcon = pageHeroData.icon;
 
-  const dialogCalculators = detailedCalculatorList.filter(calc => calc.componentName);
-  const uniqueCategories = Array.from(new Set(dialogCalculators.map(calc => calc.category)));
+  // Memoize dialogCalculators and uniqueCategories
+  const dialogCalculators = React.useMemo(() => {
+    // Consider more granular lazy loading for calculators if the list becomes very large.
+    // For example, lazy load only components for the currently selected tab category.
+    return detailedCalculatorList.filter(calc => calc.componentName);
+  }, [detailedCalculatorList]);
+
+  const uniqueCategories = React.useMemo(() => {
+    return Array.from(new Set(dialogCalculators.map(calc => calc.category)));
+  }, [dialogCalculators]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -280,14 +285,28 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {pageDeadlineItems.map((item) => {
-                let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
-                const dueDate = parseISO(item.dueDate);
-                const isPast = dueDate < new Date(new Date().setHours(0,0,0,0));
+              let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+              let dueDate: Date | 'Invalid Date' = 'Invalid Date'; // Initialize as Invalid Date
 
-                if (item.status === "Urgent" && !isPast) badgeVariant = "destructive";
-                else if (item.status === "Upcoming" && !isPast) badgeVariant = "default";
-                else if (item.status === "Completed") badgeVariant = "outline";
-                else if (isPast) badgeVariant = "destructive";
+              try {
+                if (typeof item.dueDate === 'string') {
+                  const parsedDate = parseISO(item.dueDate);
+                  // Check if parseISO returned a valid date object
+                  if (!isNaN(parsedDate.getTime())) {
+                    dueDate = parsedDate;
+                  }
+                }
+              } catch (error) {
+                console.error("Error parsing date:", item.dueDate, error);
+                // dueDate remains 'Invalid Date'
+              }
+
+              const isPast = dueDate !== 'Invalid Date' && dueDate < new Date(new Date().setHours(0, 0, 0, 0));
+
+              if (item.status === "Urgent" && !isPast) badgeVariant = "destructive";
+              else if (item.status === "Upcoming" && !isPast) badgeVariant = "default";
+              else if (item.status === "Completed") badgeVariant = "outline";
+              else if (isPast) badgeVariant = "destructive";
 
 
               return (
@@ -387,36 +406,23 @@ export default function LandingPage() {
             Find answers to common questions about our platform and Trinidad & Tobago tax & finance.
           </p>
           <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-lg hover:no-underline">Is this platform officially endorsed by the IRD?</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                No, Arithmos is an independent platform designed to assist users with understanding and calculating their tax obligations. While we strive for accuracy based on public information, always refer to official IRD (Inland Revenue Division) publications and seek professional advice for definitive guidance.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger className="text-lg hover:no-underline">Are the calculators always up-to-date with the latest tax laws?</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                We make every effort to keep our calculators and information current with the latest tax laws in Trinidad & Tobago. However, tax legislation can change. We recommend cross-referencing with official IRD announcements for the most recent updates, especially before making financial decisions based solely on calculator results.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger className="text-lg hover:no-underline">Can I file my taxes directly through this platform?</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                Currently, Arithmos does not offer direct tax filing services. Our platform is designed to help you prepare, calculate, and understand your tax information, which you can then use for official filing through the IRD's e-Tax portal or with the assistance of a tax professional.
-              </AccordionContent>
-            </AccordionItem>
-             <AccordionItem value="item-4">
-              <AccordionTrigger className="text-lg hover:no-underline">Is my data secure on this platform?</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                We take data privacy seriously. While many of our calculators can be used anonymously without storing personal data, if account features are introduced, we will implement industry-standard security measures. Please refer to our Privacy Policy for detailed information once account features are live.
-              </AccordionContent>
-            </AccordionItem>
-             <AccordionItem value="item-5">
-              <AccordionTrigger className="text-lg hover:no-underline">Who is this platform for?</AccordionTrigger>
-              <AccordionContent className="text-muted-foreground">
-                Arithmos is designed for individuals, sole traders, small to medium-sized enterprises (SMEs), and financial professionals in Trinidad & Tobago who need tools to simplify tax calculations, financial planning, and compliance.
-              </AccordionContent>
-            </AccordionItem>
+            {/* Define your FAQ data (replace with your actual data source or import) */}
+            {/* Example hardcoded data: */}
+            {[
+              { question: "Is this platform officially endorsed by the IRD?", answer: "No, Arithmos is an independent platform designed to assist users with understanding and calculating their tax obligations. While we strive for accuracy based on public information, always refer to official IRD (Inland Revenue Division) publications and seek professional advice for definitive guidance." },
+              { question: "Are the calculators always up-to-date with the latest tax laws?", answer: "We make every effort to keep our calculators and information current with the latest tax laws in Trinidad & Tobago. However, tax legislation can change. We recommend cross-referencing with official IRD announcements for the most recent updates, especially before making financial decisions based solely on calculator results." },
+              { question: "Can I file my taxes directly through this platform?", answer: "Currently, Arithmos does not offer direct tax filing services. Our platform is designed to help you prepare, calculate, and understand your tax information, which you can then use for official filing through the IRD's e-Tax portal or with the assistance of a tax professional." },
+              { question: "Is my data secure on this platform?", answer: "We take data privacy seriously. While many of our calculators can be used anonymously without storing personal data, if account features are introduced, we will implement industry-standard security measures. Please refer to our Privacy Policy for detailed information once account features are live." },
+              { question: "Who is this platform for?", answer: "Arithmos is designed for individuals, sole traders, small to medium-sized enterprises (SMEs), and financial professionals in Trinidad & Tobago who need tools to simplify tax calculations, financial planning, and compliance." },
+              // Add more FAQ items here as needed
+            ].map((item, index) => (
+              <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
+                <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </div>
       </section>
@@ -498,5 +504,3 @@ export default function LandingPage() {
 />
   );
 }
-
-    

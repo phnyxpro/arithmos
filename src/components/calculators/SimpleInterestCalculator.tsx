@@ -36,7 +36,7 @@ const initialCalculationResults = {
   totalAmountDisplay: "0.00",
 };
 
-export function SimpleInterestCalculator() {
+export default function SimpleInterestCalculator() {
   const { toast } = useToast();
 
   const [principalAmount, setPrincipalAmount] = useState<string>("");

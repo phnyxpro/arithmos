@@ -132,7 +132,3 @@ body {
   }
 }
 
-/* custom CSS or utility */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}

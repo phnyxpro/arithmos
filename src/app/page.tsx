@@ -81,15 +81,14 @@ import {
 } from "@/app/landing-page-data";
 import { faqData } from "@/constants/faqData";
 
-
 export default function LandingPage() {
   const { toast } = useToast();
-  const { activeCalculator, // This appears unused, consider removing if not needed
+  const {
+    activeCalculator,
     closeDialog: closeCalculatorDialog,
     setActiveCalculator,
   } = useCalculatorDialogManager();
 
-  // Define LazyComponentMap using useMemo inside the component
   const LazyComponentMap = React.useMemo(() => ({
     BasicTimeCalculator: React.lazy(() => import("@/components/calculators/BasicTimeCalculator")),
     SimplifiedPayrollCalculator: React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator")),
@@ -119,30 +118,18 @@ export default function LandingPage() {
     FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator")),
   }), []);
 
-  type ActiveCalculator = {
-  key: string;
-  component: CalculatorComponentName;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description?: string;
-};
-
-  // Define a type for the map keys
-  type CalculatorComponentName = keyof typeof LazyComponentMap;
-
-  const calculatorComponents: Record<CalculatorComponentName, React.ComponentType<any>> = LazyComponentMap;
+  const HeroIcon = pageHeroData.icon;
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
 
-  const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => { // This function is now primarily for handling the review dialog logic on close
+  const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
-      setCalculatorToReview(activeCalculator.title); // Pass the title for review
- setIsReviewDialogOpen(true);
-      // Explicitly close the dialog by setting state to null
+      setCalculatorToReview(activeCalculator.title);
+      setIsReviewDialogOpen(true);
       setActiveCalculator(null);
     }
-  }, [activeCalculator, setIsReviewDialogOpen, setCalculatorToReview, setActiveCalculator]); // Added setActiveCalculator to dependency array
+  }, [activeCalculator, setIsReviewDialogOpen, setCalculatorToReview, setActiveCalculator]);
 
   const handleSubmitReview = (calculatorName: string, rating: number) => {
     console.log(`Review submitted for ${calculatorName}: ${rating} stars`);
@@ -153,47 +140,85 @@ export default function LandingPage() {
     setIsReviewDialogOpen(false);
     setCalculatorToReview(null);
   };
-  
-  export default function LandingPage() {
-    const HeroIcon = pageHeroData.icon;
-  
-    // Memoize dialogCalculators and uniqueCategories
-    const dialogCalculators = React.useMemo(() => {
-      // Consider more granular lazy loading for calculators if the list becomes very large.
-      // For example, lazy load only components for the currently selected tab category.
-      return detailedCalculatorList.filter((calc) => calc.componentName);
-    }, [detailedCalculatorList]);
-  
-    const uniqueCategories = React.useMemo(() => {
-      return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));
-    }, [dialogCalculators]);
-  
-    return (
-      <div className="flex flex-col min-h-screen">
-        {/* Hero Section */}
-        <section id="hero" className="relative w-full py-20 md:py-28 text-center">
-          <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
-            <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
-            <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-              {pageHeroData.headline}
-            </h1>
-            <h2 className="text-xl md:text-2xl font-semibold text-primary/90 mb-6">
-              {pageHeroData.primarySubheadline}
-            </h2>
-            <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 mb-10">
-              {pageHeroData.secondarySubheadline}
-            </p>
-            <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href={pageHeroData.primaryCtaLink}>
-                {pageHeroData.primaryCtaText}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
-        </section>
-      </div>
-    );
-  }
+
+  const dialogCalculators = React.useMemo(() => {
+    return detailedCalculatorList.filter((calc) => calc.componentName);
+  }, [detailedCalculatorList]);
+
+  const uniqueCategories = React.useMemo(() => {
+    return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));
+  }, [dialogCalculators]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      {/* Hero Section */}
+      <section id="hero" className="relative w-full py-20 md:py-28 text-center">
+        <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
+          <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
+          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+            {pageHeroData.headline}
+          </h1>
+          <h2 className="text-xl md:text-2xl font-semibold text-primary/90 mb-6">
+            {pageHeroData.primarySubheadline}
+          </h2>
+          <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 mb-10">
+            {pageHeroData.secondarySubheadline}
+          </p>
+          <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Link href={pageHeroData.primaryCtaLink}>
+              {pageHeroData.primaryCtaText}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* Insert additional sections here as needed */}
+
+      {activeCalculator &&
+        LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap] && (
+          <React.Suspense fallback={<div>Loading Calculator...</div>}>
+            <Dialog
+              open={!!activeCalculator}
+              onOpenChange={(isOpen) => {
+                if (!isOpen) handleCalculatorDialogClose(isOpen);
+              }}
+            >
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl text-primary flex items-center">
+                    {React.createElement(activeCalculator.icon, {
+                      className: "mr-2 h-6 w-6",
+                    })}
+                    {activeCalculator.title}
+                  </DialogTitle>
+                  {activeCalculator.description && (
+                    <DialogDescription>{activeCalculator.description}</DialogDescription>
+                  )}
+                </DialogHeader>
+                {React.createElement(
+                  LazyComponentMap[activeCalculator.component as keyof typeof LazyComponentMap],
+                  { key: activeCalculator.key }
+                )}
+                <DialogClose asChild>
+                  <Button type="button" variant="outline" className="mt-4 w-full">
+                    Close
+                  </Button>
+                </DialogClose>
+              </DialogContent>
+            </Dialog>
+          </React.Suspense>
+        )}
+
+      <StarReviewDialog
+        isOpen={isReviewDialogOpen}
+        onOpenChange={setIsReviewDialogOpen}
+        calculatorName={calculatorToReview}
+        onSubmitReview={handleSubmitReview}
+      />
+    </div>
+  );
+}
 
 <section id="popular-calculators" className="py-16 lg:py-24">
   <div className="container mx-auto px-4">

@@ -225,20 +225,19 @@ export default function LandingPage() {
     <h2 className="text-3xl font-bold text-center text-primary mb-12">
       Popular Financial Tools &amp; Calculators
     </h2>
-
     <Tabs defaultValue={uniqueCategories[0]} className="w-full">
       <ScrollArea className="max-w-full pb-4">
-      <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 p-1 text-muted-foreground">
-  {uniqueCategories.slice(0, 5).map((category) => (
-    <TabsTrigger
-      key={category}
-      value={category}
-      className="w-full data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
-    >
-      {category}
-    </TabsTrigger>
-  ))}
-</TabsList>
+        <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 p-1 text-muted-foreground">
+          {uniqueCategories.slice(0, 5).map((category) => (
+            <TabsTrigger
+              key={category}
+              value={category}
+              className="w-full data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
+            >
+              {category}
+            </TabsTrigger>
+          ))}
+        </TabsList>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
 
@@ -252,7 +251,6 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {calculatorsInCategory.map((calculator) => {
                 const Icon = calculator.icon || CalculatorIcon;
-
                 return (
                   <Card
                     key={calculator.calculatorIdentifier}
@@ -264,31 +262,28 @@ export default function LandingPage() {
                         {calculator.name}
                       </CardTitle>
                     </CardHeader>
-
                     <CardContent className="flex-grow">
                       <CardDescription className="text-sm text-muted-foreground">
                         {calculator.description}
                       </CardDescription>
                     </CardContent>
-
                     <CardFooter>
-                    <Button
-  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-  aria-label={`Open ${calculator.name} calculator`}
-  onClick={() => {
-    console.log("Opening calculator:", calculator);
-    setActiveCalculator({
-      key: calculator.calculatorIdentifier,
-      component: calculator.componentName,
-      title: calculator.name,
-      icon: calculator.icon ?? CalculatorIcon,
-      description: calculator.description,
-    });
-  }}
->
-  {calculator.ctaText || "Open Calculator"}
-  <ArrowRight className="ml-2 h-4 w-4" />
-</Button>
+                      <Button
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                        aria-label={`Open ${calculator.name} calculator`}
+                        onClick={() => {
+                          setActiveCalculator({
+                            key: calculator.calculatorIdentifier,
+                            component: calculator.componentName,
+                            title: calculator.name,
+                            icon: calculator.icon ?? CalculatorIcon,
+                            description: calculator.description,
+                          });
+                        }}
+                      >
+                        {calculator.ctaText || "Open Calculator"}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
                     </CardFooter>
                   </Card>
                 );

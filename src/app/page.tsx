@@ -1,16 +1,19 @@
+"use client";
+
 import * as React from "react";
+
+// Next.js core
 import Link from "next/link";
-import Image from "next/image"; // Keep for potential future image use
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+
+// Hooks
+import { useToast } from "@/hooks/use-toast";
+import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
+
+// Utilities
+import { format, parseISO, addDays } from "date-fns";
+
+// UI Components
 import {
   Accordion,
   AccordionContent,
@@ -18,46 +21,66 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
+  ScrollArea,
+  ScrollBar,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
+import { StarReviewDialog } from "@/components/ui/star-review-dialog";
+
+// Icons from Lucide
 import {
-  ShieldCheck,
-  BarChart3,
-  FileText,
-  CalendarDays,
   ArrowRight,
-  Target,
-  Zap,
-  BookOpen,
+  BarChart3,
   Bell,
-  Users as UsersIcon,
-  DollarSign,
-  Clock,
-  Landmark,
-  Percent,
-  LineChart,
-  Building as BuildingIconLucide, FileBox, Stamp,
-  Home as HomeIconLucide,
-  ShieldAlert,
-  Network,
+  BookOpen,
+  Building as BuildingIconLucide,
   Building2,
+  CalendarDays,
   Calculator as CalculatorIcon,
+  Clock,
+  DollarSign,
+  FileBox,
+  FileText,
+  Landmark,
+  LineChart,
   Mail,
+  Network,
+  Percent,
+  ShieldAlert,
+  ShieldCheck,
+  Stamp,
+  Target,
+  Users as UsersIcon,
+  Zap,
 } from "lucide-react";
 
-import { useToast } from "@/hooks/use-toast";
-import { format, parseISO, addDays } from 'date-fns';
-import { detailedCalculatorList, heroContentData as pageHeroData, benefitsData as pageBenefitsData, deadlineItems as pageDeadlineItems, resourceGuides as pageResourceGuides } from '@/app/landing-page-data';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
-import { StarReviewDialog } from "@/components/ui/star-review-dialog";
+// Static Data
+import {
+  detailedCalculatorList,
+  heroContentData as pageHeroData,
+  benefitsData as pageBenefitsData,
+  deadlineItems as pageDeadlineItems,
+  resourceGuides as pageResourceGuides,
+} from "@/app/landing-page-data";
 import { faqData } from "@/constants/faqData";
+
 
 export default function LandingPage() {
   const { toast } = useToast();

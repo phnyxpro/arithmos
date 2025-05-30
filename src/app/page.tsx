@@ -1,7 +1,7 @@
+
 "use client";
 
 import * as React from "react";
-// Removed LazyExoticComponent import
 
 // Next.js core
 import Link from "next/link";
@@ -46,29 +46,9 @@ import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 // Icons from Lucide
 import {
   ArrowRight,
-  Briefcase,
   BookOpen,
-  Building2,
-  CalendarDays,
   Calculator as CalculatorIcon,
-  Clock,
-  DollarSign,
-  FileBox,
-  FileHeart,
-  Home as HomeIconLucide,
-  Landmark,
-  Leaf,
-  LineChart,
-  Network,
-  Percent,
-  PercentCircle,
-  PiggyBank,
-  ShieldAlert,
-  Ship,
-  Stamp,
-  Target,
-  Truck,
-  Users as UsersIcon,
+  CalendarDays,
 } from "lucide-react";
 
 // Static Data
@@ -82,12 +62,9 @@ import {
 } from "@/app/landing-page-data";
 import { faqData } from "@/constants/faqData";
 
-// Removed LazyComponentMap and related types/logic
-
 // Define the type for ActiveCalculatorInfo to directly hold the component
 interface ActiveCalculatorInfo {
   key: string;
-  // component: CalculatorComponentName; // Removed
   component?: React.ComponentType<any>; // Now directly holds the component or is undefined
   title: string;
   icon: React.ElementType; // Assuming icon is a React component type
@@ -109,6 +86,39 @@ export default function LandingPage() {
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
+
+  const LazyComponentMap = React.useMemo(() => {
+    const map: Record<string, React.ComponentType<any>> = {
+      BasicTimeCalculator: React.lazy(() => import("@/components/calculators/BasicTimeCalculator").then(module => ({ default: module.default }))),
+      SimplifiedPayrollCalculator: React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator").then(module => ({ default: module.default }))),
+      VoluntaryNisCalculator: React.lazy(() => import("@/components/calculators/VoluntaryNisCalculator").then(module => ({ default: module.default }))),
+      SimplifiedLevyCalculator: React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator").then(module => ({ default: module.default }))),
+      SimpleVatCalculator: React.lazy(() => import("@/components/calculators/SimpleVatCalculator").then(module => ({ default: module.default }))),
+      ExciseDutyCalculator: React.lazy(() => import("@/components/calculators/ExciseDutyCalculator").then(module => ({ default: module.default }))),
+      GrossToNetSalaryCalculator: React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator").then(module => ({ default: module.default }))),
+      OvertimePayCalculator: React.lazy(() => import("@/components/calculators/OvertimePayCalculator").then(module => ({ default: module.default }))),
+      BonusCommissionCalculator: React.lazy(() => import("@/components/calculators/BonusCommissionCalculator").then(module => ({ default: module.BonusCommissionCalculator }))),
+      VacationPayCalculator: React.lazy(() => import("@/components/calculators/VacationPayCalculator").then(module => ({ default: module.default }))),
+      LoanAmortisationCalculator: React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator").then(module => ({ default: module.default }))),
+      MortgageCalculator: React.lazy(() => import("@/components/calculators/MortgageCalculator").then(module => ({ default: module.default }))),
+      SavingsInvestmentCalculator: React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator").then(module => ({ default: module.default }))),
+      CurrencyExchangeCalculator: React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator").then(module => ({ default: module.CurrencyExchangeCalculator }))),
+      SimpleInterestCalculator: React.lazy(() => import("@/components/calculators/SimpleInterestCalculator").then(module => ({ default: module.default }))),
+      MarkupMarginCalculator: React.lazy(() => import("@/components/calculators/MarkupMarginCalculator").then(module => ({ default: module.MarkupMarginCalculator }))),
+      BreakEvenCalculator: React.lazy(() => import("@/components/calculators/BreakEvenCalculator").then(module => ({ default: module.BreakEvenCalculator }))),
+      CashFlowProjectionCalculator: React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator").then(module => ({ default: module.CashFlowProjectionCalculator }))),
+      DepreciationCalculator: React.lazy(() => import("@/components/calculators/DepreciationCalculator").then(module => ({ default: module.DepreciationCalculator }))),
+      TariffCustomsDutyCalculator: React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator").then(module => ({ default: module.default }))),
+      FreightShippingCalculator: React.lazy(() => import("@/components/calculators/FreightShippingCalculator").then(module => ({ default: module.default }))),
+      CIFCalculator: React.lazy(() => import("@/components/calculators/CIFCalculator").then(module => ({ default: module.CIFCalculator }))),
+      StampDutyCalculator: React.lazy(() => import("@/components/calculators/StampDutyCalculator").then(module => ({ default: module.default }))),
+      PropertyTaxDialogCalculator: React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator").then(module => ({ default: module.PropertyTaxDialogCalculator }))),
+      RentalYieldCalculator: React.lazy(() => import("@/components/calculators/RentalYieldCalculator").then(module => ({ default: module.default }))),
+      AMLRiskCalculator: React.lazy(() => import("@/components/calculators/AMLRiskCalculator").then(module => ({ default: module.AMLRiskCalculator }))),
+      FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator").then(module => ({ default: module.FATCACRSCalculator }))),
+    };
+    return map;
+  }, []);
 
   // Add type annotation to isOpen parameter
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
@@ -132,8 +142,8 @@ export default function LandingPage() {
 
   const dialogCalculators = React.useMemo(() => {
     // Filter for items that have a component (dialogs)
-    return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => !!calc.component);
-  }, [detailedCalculatorList]);
+    return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component?: React.ComponentType<any> } => !!calc.component);
+  }, []);
 
   const uniqueCategories = React.useMemo(() => {
     // Add type annotation to category parameter
@@ -146,13 +156,13 @@ export default function LandingPage() {
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
-          <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground mb-4">
             {pageHeroData.headline}
           </h1>
-          <h2 className="text-xl md:text-2xl font-semibold text-primary/90 mb-6">
+          <h2 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground mb-6">
             {pageHeroData.primarySubheadline}
           </h2>
-          <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 mb-10">
+          <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 dark:text-primary-foreground/80 mb-10">
             {pageHeroData.secondarySubheadline}
           </p>
           <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -172,7 +182,7 @@ export default function LandingPage() {
           </h2>
           <Tabs defaultValue={uniqueCategories[0]} className="w-full">
             <ScrollArea className="max-w-full pb-4">
-              <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 p-1 text-muted-foreground">
+              <TabsList className="flex w-full items-center justify-between gap-x-2 rounded-md bg-muted p-1 text-muted-foreground">
                 {/* Add type annotation to category parameter */}
                 {uniqueCategories.slice(0, 5).map((category: string) => (
                   <TabsTrigger
@@ -191,15 +201,17 @@ export default function LandingPage() {
             {uniqueCategories.map((category: string) => {
               // Filter calculators by category, ensuring they have a component
               const calculatorsInCategory = detailedCalculatorList.filter(
-                (calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => calc.category === category && !!calc.component
+                (calc): calc is DetailedCalculatorListItem & { component?: React.ComponentType<any> } => calc.category === category && !!calc.component
               );
 
               return (
                 <TabsContent key={category} value={category} className="mt-8">
-                  <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
                     {/* Add type annotation to calculator parameter */}
                     {calculatorsInCategory.map((calculator) => {
                       const Icon = calculator.icon || CalculatorIcon;
+                      const ComponentToRender = LazyComponentMap[calculator.calculatorIdentifier];
+
                       return (
                         <Card
                           key={calculator.calculatorIdentifier}
@@ -221,14 +233,21 @@ export default function LandingPage() {
                               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                               aria-label={`Open ${calculator.name} calculator`}
                               onClick={() => {
-                                // Directly use the component from the list item
-                                if (calculator.component) {
+                                if (calculator.href) {
+                                  window.location.href = calculator.href; // Or use Next.js Link/router if preferred for internal links
+                                } else if (ComponentToRender) {
                                   setActiveCalculator({
                                     key: calculator.calculatorIdentifier,
-                                    component: calculator.component, // Use the component directly
+                                    component: ComponentToRender,
                                     title: calculator.name,
                                     icon: calculator.icon ?? CalculatorIcon,
                                     description: calculator.description,
+                                  });
+                                } else {
+                                  toast({
+                                    title: "Calculator Not Available",
+                                    description: `The ${calculator.name} calculator is currently not configured correctly.`,
+                                    variant: "destructive",
                                   });
                                 }
                               }}
@@ -366,31 +385,6 @@ export default function LandingPage() {
               </Link>
             </Button>
           </div>
-        </div>
-      </section>
-
-       {/* Tax Season Ready Section */}
-      <section id="tax-season-ready" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <Card className="bg-gradient-to-r from-primary to-accent/80 text-primary-foreground p-8 md:p-12 rounded-xl shadow-xl">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="md:w-1/2 text-center md:text-left">
-                <h2 className="text-3xl font-bold mb-4">Tax Season Ready? Simplify Your Filing.</h2>
-                <p className="text-lg opacity-90 mb-6">
-                  Our platform provides tools and guidance to help you prepare for tax season.
-                  While we don't file for you, we empower you to gather information and understand your obligations.
-                </p>
-                <ul className="space-y-2 text-left mb-8 opacity-90">
-                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Access relevant tax information and guides</li>
-                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Organize income and expenses for easy reporting</li>
-                  <li className="flex items-center"><CalculatorIcon className="h-5 w-5 mr-2 text-background/80" /> Use our calculators to estimate liabilities.</li>
-                </ul>
-              </div>
-              <div className="md:w-1/2 flex justify-center">
-                <Image src="https://placehold.co/400x300/ffffff/3F51B5?text=Tax+Prep+Illustration" alt="Tax Preparation Illustration" width={400} height={300} className="rounded-lg shadow-md" data-ai-hint="tax document organization" />
-              </div>
-            </div>
-          </Card>
         </div>
       </section>
 

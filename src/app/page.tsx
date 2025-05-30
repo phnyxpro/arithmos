@@ -63,7 +63,6 @@ import {
   type DetailedCalculatorListItem,
   type DeadlineItem,
 } from "@/app/landing-page-data";
-import { calculatorList } from "@/constants/calculators";
 import { faqData } from "@/constants/faqData";
 
 // Define the type for ActiveCalculatorInfo to directly hold the component

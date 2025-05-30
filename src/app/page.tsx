@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { LazyExoticComponent } from "react";
+// Removed LazyExoticComponent import
 
 // Next.js core
 import Link from "next/link";
@@ -78,76 +78,17 @@ import {
   benefitsData as pageBenefitsData,
   deadlineItems as pageDeadlineItems,
   resourceGuides as pageResourceGuides,
+  DetailedCalculatorListItem // Import the interface
 } from "@/app/landing-page-data";
 import { faqData } from "@/constants/faqData";
 
-// Define the type for the keys of the calculator components
-type CalculatorComponentName = 
-  | 'BasicTimeCalculator'
-  | 'SimplifiedPayrollCalculator'
-  | 'SimplifiedLevyCalculator'
-  | 'SimpleVatCalculator'
-  | 'ExciseDutyCalculator'
-  | 'GrossToNetSalaryCalculator'
-  | 'OvertimePayCalculator'
-  | 'BonusCommissionCalculator'
-  | 'VacationPayCalculator'
-  | 'LoanAmortisationCalculator'
-  | 'MortgageCalculator'
-  | 'SavingsInvestmentCalculator'
-  | 'CurrencyExchangeCalculator'
-  | 'SimpleInterestCalculator'
-  | 'MarkupMarginCalculator'
-  | 'BreakEvenCalculator'
-  | 'CashFlowProjectionCalculator'
-  | 'DepreciationCalculator'
-  | 'TariffCustomsDutyCalculator'
-  | 'FreightShippingCalculator'
-  | 'CIFCalculator'
-  | 'StampDutyCalculator'
-  | 'PropertyTaxDialogCalculator'
-  | 'RentalYieldCalculator'
-  | 'AMLRiskCalculator'
-  | 'FATCACRSCalculator';
+// Removed LazyComponentMap and related types/logic
 
-// Define the type for the LazyComponentMap
-type LazyComponentMapTypes = {
-  [K in CalculatorComponentName]: LazyExoticComponent<React.ComponentType<any>>;
-};
-
-// Create the LazyComponentMap using React.lazy with explicit named imports
-const LazyComponentMap: LazyComponentMapTypes = {
-  BasicTimeCalculator: React.lazy(() => import("@/components/calculators/BasicTimeCalculator").then(module => ({ default: module.BasicTimeCalculator }))),
-  SimplifiedPayrollCalculator: React.lazy(() => import("@/components/calculators/SimplifiedPayrollCalculator").then(module => ({ default: module.SimplifiedPayrollCalculator }))),
-  SimplifiedLevyCalculator: React.lazy(() => import("@/components/calculators/SimplifiedLevyCalculator").then(module => ({ default: module.SimplifiedLevyCalculator }))),
-  SimpleVatCalculator: React.lazy(() => import("@/components/calculators/SimpleVatCalculator").then(module => ({ default: module.SimpleVatCalculator }))),
-  ExciseDutyCalculator: React.lazy(() => import("@/components/calculators/ExciseDutyCalculator").then(module => ({ default: module.ExciseDutyCalculator }))),
-  GrossToNetSalaryCalculator: React.lazy(() => import("@/components/calculators/GrossToNetSalaryCalculator").then(module => ({ default: module.GrossToNetSalaryCalculator }))),
-  OvertimePayCalculator: React.lazy(() => import("@/components/calculators/OvertimePayCalculator").then(module => ({ default: module.OvertimePayCalculator }))),
-  BonusCommissionCalculator: React.lazy(() => import("@/components/calculators/BonusCommissionCalculator").then(module => ({ default: module.BonusCommissionCalculator }))),
-  VacationPayCalculator: React.lazy(() => import("@/components/calculators/VacationPayCalculator").then(module => ({ default: module.VacationPayCalculator }))),
-  LoanAmortisationCalculator: React.lazy(() => import("@/components/calculators/LoanAmortisationCalculator").then(module => ({ default: module.LoanAmortisationCalculator }))),
-  MortgageCalculator: React.lazy(() => import("@/components/calculators/MortgageCalculator").then(module => ({ default: module.MortgageCalculator }))),
-  SavingsInvestmentCalculator: React.lazy(() => import("@/components/calculators/SavingsInvestmentCalculator").then(module => ({ default: module.SavingsInvestmentCalculator }))),
-  CurrencyExchangeCalculator: React.lazy(() => import("@/components/calculators/CurrencyExchangeCalculator").then(module => ({ default: module.CurrencyExchangeCalculator }))),
-  SimpleInterestCalculator: React.lazy(() => import("@/components/calculators/SimpleInterestCalculator").then(module => ({ default: module.SimpleInterestCalculator }))),
-  MarkupMarginCalculator: React.lazy(() => import("@/components/calculators/MarkupMarginCalculator").then(module => ({ default: module.MarkupMarginCalculator }))),
-  BreakEvenCalculator: React.lazy(() => import("@/components/calculators/BreakEvenCalculator").then(module => ({ default: module.BreakEvenCalculator }))),
-  CashFlowProjectionCalculator: React.lazy(() => import("@/components/calculators/CashFlowProjectionCalculator").then(module => ({ default: module.CashFlowProjectionCalculator }))),
-  DepreciationCalculator: React.lazy(() => import("@/components/calculators/DepreciationCalculator").then(module => ({ default: module.DepreciationCalculator }))),
-  TariffCustomsDutyCalculator: React.lazy(() => import("@/components/calculators/TariffCustomsDutyCalculator").then(module => ({ default: module.TariffCustomsDutyCalculator }))),
-  FreightShippingCalculator: React.lazy(() => import("@/components/calculators/FreightShippingCalculator").then(module => ({ default: module.FreightShippingCalculator }))),
-  CIFCalculator: React.lazy(() => import("@/components/calculators/CIFCalculator").then(module => ({ default: module.CIFCalculator }))),
-  StampDutyCalculator: React.lazy(() => import("@/components/calculators/StampDutyCalculator").then(module => ({ default: module.StampDutyCalculator }))),
-  PropertyTaxDialogCalculator: React.lazy(() => import("@/components/calculators/PropertyTaxDialogCalculator").then(module => ({ default: module.PropertyTaxDialogCalculator }))),
-  RentalYieldCalculator: React.lazy(() => import("@/components/calculators/RentalYieldCalculator").then(module => ({ default: module.RentalYieldCalculator }))),
-  AMLRiskCalculator: React.lazy(() => import("@/components/calculators/AMLRiskCalculator").then(module => ({ default: module.AMLRiskCalculator }))),
-  FATCACRSCalculator: React.lazy(() => import("@/components/calculators/FATCACRSCalculator").then(module => ({ default: module.FATCACRSCalculator }))),
-};
-
+// Define the type for ActiveCalculatorInfo to directly hold the component
 interface ActiveCalculatorInfo {
   key: string;
-  component: CalculatorComponentName; // Use the defined type for component names
+  // component: CalculatorComponentName; // Removed
+  component?: React.ComponentType<any>; // Now directly holds the component or is undefined
   title: string;
   icon: React.ElementType; // Assuming icon is a React component type
   description?: string; // Make description optional if not always present
@@ -190,7 +131,8 @@ export default function LandingPage() {
   };
 
   const dialogCalculators = React.useMemo(() => {
-    return detailedCalculatorList.filter((calc) => calc.componentName);
+    // Filter for items that have a component (dialogs)
+    return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => !!calc.component);
   }, [detailedCalculatorList]);
 
   const uniqueCategories = React.useMemo(() => {
@@ -247,16 +189,16 @@ export default function LandingPage() {
 
             {/* Add type annotation to category parameter */}
             {uniqueCategories.map((category: string) => {
-              // Add type annotation to calc parameter
-              const calculatorsInCategory = dialogCalculators.filter(
-                (calc: { category: string }) => calc.category === category
+              // Filter calculators by category, ensuring they have a component
+              const calculatorsInCategory = detailedCalculatorList.filter(
+                (calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => calc.category === category && !!calc.component
               );
 
               return (
                 <TabsContent key={category} value={category} className="mt-8">
                   <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {/* Add type annotation to calculator parameter */}
-                    {calculatorsInCategory.map((calculator: typeof detailedCalculatorList[0]) => {
+                    {calculatorsInCategory.map((calculator) => {
                       const Icon = calculator.icon || CalculatorIcon;
                       return (
                         <Card
@@ -279,11 +221,11 @@ export default function LandingPage() {
                               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                               aria-label={`Open ${calculator.name} calculator`}
                               onClick={() => {
-                                // Ensure componentName is treated as a valid key
-                                if (calculator.componentName && calculator.componentName in LazyComponentMap) {
+                                // Directly use the component from the list item
+                                if (calculator.component) {
                                   setActiveCalculator({
                                     key: calculator.calculatorIdentifier,
-                                    component: calculator.componentName as CalculatorComponentName, // Cast to the specific type
+                                    component: calculator.component, // Use the component directly
                                     title: calculator.name,
                                     icon: calculator.icon ?? CalculatorIcon,
                                     description: calculator.description,
@@ -481,47 +423,46 @@ export default function LandingPage() {
       </footer>
 
       {/* Calculator Dialog */}
-      {activeCalculator &&
-        LazyComponentMap[activeCalculator.component] && (
-          <React.Suspense fallback={<div>Loading Calculator...</div>}>
-            <Dialog
-              open={!!activeCalculator}
-              // Use the custom hook's closeDialog function
-              onOpenChange={(isOpen) => {
-                // Only trigger review if a calculator was actively open and is now closing
-                if (!isOpen) {
-                   handleCalculatorDialogClose(isOpen); // Use the local handler
-                }
-              }}
-            >
-              <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl text-primary flex items-center">
-                    {React.createElement(activeCalculator.icon, {
-                      className: "mr-2 h-6 w-6",
-                    })}
-                    {activeCalculator.title}
-                  </DialogTitle>
-                  {activeCalculator.description && (
-                    <DialogDescription>{activeCalculator.description}</DialogDescription>
-                  )}
-                </DialogHeader>
-
-                {/* Render the lazy-loaded calculator component */}
-                {React.createElement(
-                  LazyComponentMap[activeCalculator.component],
-                  { key: activeCalculator.key } // Pass key or other props
+      {activeCalculator && activeCalculator.component && (
+        <React.Suspense fallback={<div>Loading Calculator...</div>}>
+          <Dialog
+            open={!!activeCalculator}
+            // Use the custom hook's closeDialog function
+            onOpenChange={(isOpen) => {
+              // Only trigger review if a calculator was actively open and is now closing
+              if (!isOpen) {
+                 handleCalculatorDialogClose(isOpen); // Use the local handler
+              }
+            }}
+          >
+            <DialogContent className="w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-2xl text-primary flex items-center">
+                  {React.createElement(activeCalculator.icon, {
+                    className: "mr-2 h-6 w-6",
+                  })}
+                  {activeCalculator.title}
+                </DialogTitle>
+                {activeCalculator.description && (
+                  <DialogDescription>{activeCalculator.description}</DialogDescription>
                 )}
+              </DialogHeader>
 
-                <DialogClose asChild>
-                  <Button type="button" variant="outline" className="mt-4 w-full">
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
-          </React.Suspense>
-        )}
+              {/* Render the calculator component directly */}
+              {React.createElement(
+                activeCalculator.component,
+                { key: activeCalculator.key } // Pass key or other props
+              )}
+
+              <DialogClose asChild>
+                <Button type="button" variant="outline" className="mt-4 w-full">
+                  Close
+                </Button>
+              </DialogClose>
+            </DialogContent>
+          </Dialog>
+        </React.Suspense>
+      )}
 
       {/* Review Dialog */}
       <StarReviewDialog

@@ -93,7 +93,7 @@ const initialCalculationResults = {
   yearDisplay: "",
 };
 
-export default function BonusCommissionCalculator() {
+export function BonusCommissionCalculator() {
   const { toast } = useToast();
   const [regularMonthlySalary, setRegularMonthlySalary] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");
@@ -397,4 +397,3 @@ Disclaimer: Estimates based on standard T&T tax rules. Consult official IRD & NI
 }
 
 
-    

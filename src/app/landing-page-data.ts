@@ -485,7 +485,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/payroll",
       ctaText: "View Page",
       calculatorIdentifier: "Payroll Calculator (Full Page)",
-    },\
+    },
     {
       name: "Time Calculator (Full Page)",
       description: "Includes basic time duration/pay and advanced daily pay calculations with breaks and overtime.",

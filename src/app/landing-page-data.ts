@@ -55,37 +55,34 @@ import {
   Settings,
 } from "lucide-react";
 
-// Import Calculator Components for Dialogs
-// Default Exports
-import BasicTimeCalculator from "@/components/calculators/BasicTimeCalculator";
-import SimplifiedPayrollCalculator from "@/components/calculators/SimplifiedPayrollCalculator";
-import SimplifiedLevyCalculator from "@/components/calculators/SimplifiedLevyCalculator";
-import SimpleVatCalculator from "@/components/calculators/SimpleVatCalculator";
-import ExciseDutyCalculator from "@/components/calculators/ExciseDutyCalculator";
-import GrossToNetSalaryCalculator from "@/components/calculators/GrossToNetSalaryCalculator";
-import OvertimePayCalculator from "@/components/calculators/OvertimePayCalculator";
-import BonusCommissionCalculator from "@/components/calculators/BonusCommissionCalculator";
-import VacationPayCalculator from "@/components/calculators/VacationPayCalculator";
-import LoanAmortisationCalculator from "@/components/calculators/LoanAmortisationCalculator";
-import MortgageCalculator from "@/components/calculators/MortgageCalculator";
-import SavingsInvestmentCalculator from "@/components/calculators/SavingsInvestmentCalculator";
-import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCalculator";
-import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
-import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
-import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculator";
-
-// Named Exports
+// Import Calculator Components for Dialogs (using named imports)
+import { BasicTimeCalculator } from "@/components/calculators/BasicTimeCalculator";
+import { SimplifiedPayrollCalculator } from "@/components/calculators/SimplifiedPayrollCalculator";
+import { SimplifiedLevyCalculator } from "@/components/calculators/SimplifiedLevyCalculator";
+import { SimpleVatCalculator } from "@/components/calculators/SimpleVatCalculator";
+import { ExciseDutyCalculator } from "@/components/calculators/ExciseDutyCalculator";
+import { GrossToNetSalaryCalculator } from "@/components/calculators/GrossToNetSalaryCalculator";
+import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
+import { BonusCommissionCalculator } from "@/components/calculators/BonusCommissionCalculator";
+import { VacationPayCalculator } from "@/components/calculators/VacationPayCalculator";
+import { LoanAmortisationCalculator } from "@/components/calculators/LoanAmortisationCalculator";
+import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
+import { SavingsInvestmentCalculator } from "@/components/calculators/SavingsInvestmentCalculator";
 import { CurrencyExchangeCalculator } from "@/components/calculators/CurrencyExchangeCalculator";
+import { SimpleInterestCalculator } from "@/components/calculators/SimpleInterestCalculator";
 import { MarkupMarginCalculator } from "@/components/calculators/MarkupMarginCalculator";
 import { BreakEvenCalculator } from "@/components/calculators/BreakEvenCalculator";
 import { CashFlowProjectionCalculator } from "@/components/calculators/CashFlowProjectionCalculator";
 import { DepreciationCalculator } from "@/components/calculators/DepreciationCalculator";
 import { TariffCustomsDutyCalculator } from "@/components/calculators/TariffCustomsDutyCalculator";
+import { FreightShippingCalculator } from "@/components/calculators/FreightShippingCalculator";
 import { CIFCalculator } from "@/components/calculators/CIFCalculator";
+import { StampDutyCalculator } from "@/components/calculators/StampDutyCalculator";
 import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
+import { RentalYieldCalculator } from "@/components/calculators/RentalYieldCalculator";
 import { AMLRiskCalculator } from "@/components/calculators/AMLRiskCalculator";
 import { FATCACRSCalculator } from "@/components/calculators/FATCACRSCalculator";
-
+import { VoluntaryNisCalculator } from "@/components/calculators/VoluntaryNisCalculator"; // Added missing import
 
 export interface HeroContent {
   icon: React.ElementType;
@@ -336,7 +333,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Analyze Pricing",
       component: MarkupMarginCalculator, // Use the imported component
       calculatorIdentifier: "Markup & Margin Calculator",
-    },\
+    },
     {
       name: "Break-even Analysis Calculator",
       description: "Determine sales volume (units and revenue) needed to cover fixed and variable expenses.",
@@ -354,7 +351,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Project Cash Flow",
       component: CashFlowProjectionCalculator, // Use the imported component
       calculatorIdentifier: "Cash Flow Projection Calculator",
-    },\
+    },
     {
       name: "Depreciation Calculator",
       description: "Calculate depreciation using Straight-Line or Reducing Balance methods and view the schedule.",
@@ -363,7 +360,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Calculate Depreciation",
       component: DepreciationCalculator, // Use the imported component
       calculatorIdentifier: "Depreciation Calculator",
-    },\
+    },
     {
       name: "Tariff & Customs Duty Calculator",
       description: "Estimate import duties and taxes based on CIF value and user-provided rates. Helps understand landed cost.",
@@ -372,16 +369,16 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Estimate Duties",
       component: TariffCustomsDutyCalculator, // Use the imported component
       calculatorIdentifier: "Tariff & Customs Duty Calculator",
-    },\
+    },
     {
-      name: "Freight & Shipping Cost Calculator",
+      name: "Freight Shipping Calculator",
       description: "Estimate total landed costs by inputting product value, shipping, insurance, and applicable duty/tax rates.",
       icon: Truck,
       category: "Trade & Customs",
       ctaText: "Estimate Landed Cost",
       component: FreightShippingCalculator, // Use the imported component
       calculatorIdentifier: "Freight & Shipping Cost Calculator",
-    },\
+    },
     {
       name: "Cost, Insurance, and Freight (CIF) Calculator",
       description: "Compute total Cost, Insurance, and Freight (CIF) value for imports. This value is often the basis for customs duties.",
@@ -390,7 +387,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Calculate CIF",
       component: CIFCalculator, // Use the imported component
       calculatorIdentifier: "CIF Calculator",
-    },\
+    },
     {
       name: "Stamp Duty Calculator",
       description: "Estimate stamp duty payable on residential property transfers based on property value using tiered rates.",
@@ -399,7 +396,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Estimate Stamp Duty",
       component: StampDutyCalculator, // Use the imported component
       calculatorIdentifier: "Stamp Duty Calculator",
-    },\
+    },
     {
       name: "Property Tax Calculator (Dialog)",
       description: "Quickly estimate annual property tax obligations based on Annual Rental Value (ARV).",
@@ -408,7 +405,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Estimate Property Tax",
       component: PropertyTaxDialogCalculator, // Use the imported component
       calculatorIdentifier: "Property Tax Calculator (Dialog)",
-    },\
+    },
     {
       name: "Rental Yield Calculator",
       description: "Calculate gross and net rental yield to evaluate the profitability of rental property investments.",
@@ -417,7 +414,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Calculate Yield",
       component: RentalYieldCalculator, // Use the imported component
       calculatorIdentifier: "Rental Yield Calculator",
-    },\
+    },
     {
       name: "AML Compliance Risk Calculator",
       description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions based on various factors.",
@@ -426,7 +423,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Assess AML Risk",
       component: AMLRiskCalculator, // Use the imported component
       calculatorIdentifier: "AML Risk Calculator",
-    },\
+    },
     {
       name: "FATCA & CRS Compliance Calculator",
       description: "Assess and report obligations under FATCA & CRS regulations based on account holder information.",
@@ -435,7 +432,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Assess FATCA/CRS",
       component: FATCACRSCalculator, // Use the imported component
       calculatorIdentifier: "FATCA & CRS Calculator",
-    },\
+    },
     {
       name: "Income Tax (Full Page)",
       description: "Comprehensive personal income tax calculation including PAYE, NIS, and Health Surcharge.",
@@ -444,7 +441,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/income-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Income Tax (Full Page)",
-    },\
+    },
     {
       name: "Corporation Tax (Full Page)",
       description: "Detailed corporation tax calculation with various income types, deductions, and offsets.",
@@ -453,7 +450,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/corporation-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Corporation Tax (Full Page)",
-    },\
+    },
     {
       name: "VAT Calculator (Full Page)",
       description: "Calculate VAT, check registration eligibility, and explore VAT guides.",
@@ -462,7 +459,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/vat",
       ctaText: "View Page",
       calculatorIdentifier: "VAT Calculator (Full Page)",
-    },\
+    },
     {
       name: "Property Tax Estimator (Full Page)",
       description: "Estimate property taxes based on Annual Rental Value (ARV) and property type.",
@@ -471,7 +468,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/property-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Property Tax Estimator (Full Page)",
-    },\
+    },
     {
       name: "Business Levy (Full Page)",
       description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).",
@@ -480,7 +477,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/business-levy",
       ctaText: "View Page",
       calculatorIdentifier: "Business Levy (Full Page)",
-    },\
+    },
     {
       name: "Green Fund Levy (Full Page)",
       description: "Calculate Green Fund Levy with options for annual, quarterly, or monthly income input and quarterly tracking.",
@@ -489,7 +486,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/green-fund-levy",
       ctaText: "View Page",
       calculatorIdentifier: "Green Fund Levy (Full Page)",
-    },\
+    },
     {
       name: "Payroll Calculator (Full Page)",
       description: "Full payroll processing including PAYE, NIS, Health Surcharge, overtime, and other earnings/deductions.",
@@ -498,7 +495,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/payroll",
       ctaText: "View Page",
       calculatorIdentifier: "Payroll Calculator (Full Page)",
-    },\
+    },
     {
       name: "Time Calculator (Full Page)",
       description: "Includes basic time duration/pay and advanced daily pay calculations with breaks and overtime.",

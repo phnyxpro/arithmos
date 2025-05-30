@@ -90,8 +90,8 @@ export default function LandingPage() {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
   const calculatorCategories = React.useMemo(() => [
-    "All",
-    ...Array.from(new Set(calculatorList.map((calc) => calc.category))),
+ "All",
+ ...Array.from(new Set(detailedCalculatorList.map((calc) => calc.category))),
   ], []);
   const [activeCalculatorFilter, setActiveCalculatorFilter] = React.useState<string>("All");
   const [activeDeadlineFilter, setActiveDeadlineFilter] = React.useState<string>("All");

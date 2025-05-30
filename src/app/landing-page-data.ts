@@ -223,7 +223,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Estimate Business Levy and Green Fund Levy from gross income. Considers exemptions for new companies.",
       icon: Landmark,
       category: "Business Tax",
-      ctaText: "Estimate Levies",
+ ctaText: "Open Calculator",
       component: SimplifiedLevyCalculator, // Use the imported component
       calculatorIdentifier: "Levy Calculator",
     },
@@ -233,7 +233,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Quickly add or remove 12.5% VAT from a price. Includes VAT registration eligibility checker.",
       icon: Percent,
       category: "Tax",
-      ctaText: "Calculate VAT",
+ ctaText: "Open Calculator",
       component: SimpleVatCalculator, // Use the imported component
       calculatorIdentifier: "Simple VAT Calculator",
     },
@@ -242,7 +242,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Compute excise duties on specific imports like alcohol, tobacco, and fuels.",
       icon: Cigarette,
       category: "Trade & Customs",
-      ctaText: "Calculate Excise Duty",
+ ctaText: "Open Calculator",
       component: ExciseDutyCalculator, // Use the imported component
       calculatorIdentifier: "Excise Duty Calculator",
     },
@@ -251,7 +251,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Quickly calculate net take-home pay after PAYE, NIS, and Health Surcharge deductions.",
       icon: DollarSign,
       category: "Payroll & HR",
-      ctaText: "Calculate Net Salary",
+ ctaText: "Open Calculator",
       component: GrossToNetSalaryCalculator, // Use the imported component
       calculatorIdentifier: "Gross to Net Salary Calculator",
     },
@@ -260,7 +260,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Compute overtime pay accurately for hourly paid workers by entering regular rate, hours, and OT conditions.",
       icon: Clock,
       category: "Payroll & HR",
-      ctaText: "Calculate Overtime",
+ ctaText: "Open Calculator",
       component: OvertimePayCalculator, // Use the imported component
       calculatorIdentifier: "Overtime Pay Calculator",
     },
@@ -269,7 +269,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Determine tax impacts (PAYE, NIS, HS) of bonuses or commissions in addition to regular salary.",
       icon: Gift,
       category: "Payroll & HR",
-      ctaText: "Assess Tax Impact",
+ ctaText: "Open Calculator",
       component: BonusCommissionCalculator, // Use the imported component
       calculatorIdentifier: "Bonus & Commission Calculator",
     },
@@ -278,7 +278,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Easily estimate accrued vacation pay entitlements based on regular pay rate and vacation days.",
       icon: Plane,
       category: "Payroll & HR",
-      ctaText: "Estimate Vacation Pay",
+ ctaText: "Open Calculator",
       component: VacationPayCalculator, // Use the imported component
       calculatorIdentifier: "Vacation Pay Calculator",
     },
@@ -287,7 +287,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Calculate loan repayments (monthly, quarterly, annually) and view amortisation schedule.",
       icon: Landmark,
       category: "Financial Planning",
-      ctaText: "View Schedule",
+ ctaText: "Open Calculator",
       component: LoanAmortisationCalculator, // Use the imported component
       calculatorIdentifier: "Loan Amortisation Calculator",
     },
@@ -296,7 +296,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Calculate mortgage repayments, including down payments and interest. View indicative bank rates.",
       icon: HomeIconLucide,
       category: "Financial Planning",
-      ctaText: "Estimate Payments",
+ ctaText: "Open Calculator",
       component: MortgageCalculator, // Use the imported component
       calculatorIdentifier: "Mortgage Calculator",
     },
@@ -305,7 +305,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Project returns from savings accounts, fixed deposits, and investment products with various contribution and compounding frequencies.",
       icon: PiggyBank,
       category: "Financial Planning",
-      ctaText: "Project Growth",
+ ctaText: "Open Calculator",
       component: SavingsInvestmentCalculator, // Use the imported component
       calculatorIdentifier: "Savings & Investment Calculator",
     },
@@ -314,7 +314,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Get indicative exchange rates using AI for various currencies. Includes popular rates (TTD base).",
       icon: ArrowRightLeft,
       category: "Business Tools",
-      ctaText: "Convert Currency",
+ ctaText: "Open Calculator",
       component: CurrencyExchangeCalculator, // Use the imported component
       calculatorIdentifier: "Currency Exchange Calculator",
     },
@@ -323,7 +323,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Quickly calculate simple interest amounts for short-term loans or deposits.",
       icon: PercentCircle,
       category: "Financial Planning",
-      ctaText: "Calculate Interest",
+ ctaText: "Open Calculator",
       component: SimpleInterestCalculator, // Use the imported component
       calculatorIdentifier: "Simple Interest Calculator",
     },
@@ -332,7 +332,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Accurately determine product/service pricing and profit margins by calculating markup or margin based on cost and selling price.",
       icon: Target,
       category: "Business Tools",
-      ctaText: "Analyze Pricing",
+ ctaText: "Open Calculator",
       component: MarkupMarginCalculator, // Use the imported component
       calculatorIdentifier: "Markup & Margin Calculator",
     },
@@ -341,7 +341,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Determine sales volume (units and revenue) needed to cover fixed and variable expenses.",
       icon: LineChart,
       category: "Business Tools",
-      ctaText: "Find Break-even Point",
+ ctaText: "Open Calculator",
       component: BreakEvenCalculator, // Use the imported component
       calculatorIdentifier: "Break-even Analysis Calculator",
     },
@@ -350,7 +350,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Forecast your business's cash inflows and outflows over several periods.",
       icon: AreaChart,
       category: "Business Tools",
-      ctaText: "Project Cash Flow",
+ ctaText: "Open Calculator",
       component: CashFlowProjectionCalculator, // Use the imported component
       calculatorIdentifier: "Cash Flow Projection Calculator",
     },
@@ -359,7 +359,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Calculate depreciation using Straight-Line or Reducing Balance methods and view the schedule.",
       icon: BuildingIconLucide,
       category: "Business Tools",
-      ctaText: "Calculate Depreciation",
+ ctaText: "Open Calculator",
       component: DepreciationCalculator, // Use the imported component
       calculatorIdentifier: "Depreciation Calculator",
     },
@@ -368,7 +368,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Estimate import duties and taxes based on CIF value and user-provided rates. Helps understand landed cost.",
       icon: Ship,
       category: "Trade & Customs",
-      ctaText: "Estimate Duties",
+ ctaText: "Open Calculator",
       component: TariffCustomsDutyCalculator, // Use the imported component
       calculatorIdentifier: "Tariff & Customs Duty Calculator",
     },
@@ -377,7 +377,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Estimate total landed costs by inputting product value, shipping, insurance, and applicable duty/tax rates.",
       icon: Truck,
       category: "Trade & Customs",
-      ctaText: "Estimate Landed Cost",
+ ctaText: "Open Calculator",
       component: FreightShippingCalculator, // Use the imported component
       calculatorIdentifier: "Freight & Shipping Cost Calculator",
     },
@@ -386,7 +386,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Compute total Cost, Insurance, and Freight (CIF) value for imports. This value is often the basis for customs duties.",
       icon: FileBox,
       category: "Trade & Customs",
-      ctaText: "Calculate CIF",
+ ctaText: "Open Calculator",
       component: CIFCalculator, // Use the imported component
       calculatorIdentifier: "CIF Calculator",
     },
@@ -395,7 +395,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Estimate stamp duty payable on residential property transfers based on property value using tiered rates.",
       icon: Stamp,
       category: "Tax",
-      ctaText: "Estimate Stamp Duty",
+ ctaText: "Open Calculator",
       component: StampDutyCalculator, // Use the imported component
       calculatorIdentifier: "Stamp Duty Calculator",
     },
@@ -404,7 +404,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Quickly estimate annual property tax obligations based on Annual Rental Value (ARV).",
       icon: HomeIconLucide,
       category: "Tax",
-      ctaText: "Estimate Property Tax",
+ ctaText: "Open Calculator",
       component: PropertyTaxDialogCalculator, // Use the imported component
       calculatorIdentifier: "Property Tax Calculator (Dialog)",
     },
@@ -413,7 +413,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Calculate gross and net rental yield to evaluate the profitability of rental property investments.",
       icon: Building2,
       category: "Financial Planning",
-      ctaText: "Calculate Yield",
+ ctaText: "Open Calculator",
       component: RentalYieldCalculator, // Use the imported component
       calculatorIdentifier: "Rental Yield Calculator",
     },
@@ -422,7 +422,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions based on various factors.",
       icon: ShieldAlert,
       category: "Compliance",
-      ctaText: "Assess AML Risk",
+ ctaText: "Open Calculator",
       component: AMLRiskCalculator, // Use the imported component
       calculatorIdentifier: "AML Risk Calculator",
     },
@@ -431,7 +431,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       description: "Assess and report obligations under FATCA & CRS regulations based on account holder information.",
       icon: Network,
       category: "Compliance",
-      ctaText: "Assess FATCA/CRS",
+ ctaText: "Open Calculator",
       component: FATCACRSCalculator, // Use the imported component
       calculatorIdentifier: "FATCA & CRS Calculator",
     },

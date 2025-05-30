@@ -63,6 +63,7 @@ import {
   type DetailedCalculatorListItem,
   type DeadlineItem,
 } from "@/app/landing-page-data";
+import { calculatorList } from "@/constants/calculators";
 import { faqData } from "@/constants/faqData";
 
 // Define the type for ActiveCalculatorInfo to directly hold the component
@@ -89,6 +90,11 @@ export default function LandingPage() {
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
+  const calculatorCategories = React.useMemo(() => [
+    "All",
+    ...Array.from(new Set(calculatorList.map((calc) => calc.category))),
+  ], []);
+  const [activeCalculatorFilter, setActiveCalculatorFilter] = React.useState<string>("All");
   const [activeDeadlineFilter, setActiveDeadlineFilter] = React.useState<string>("All");
 
   const LazyComponentMap = React.useMemo(() => {
@@ -141,10 +147,6 @@ export default function LandingPage() {
     setIsReviewDialogOpen(false);
     setCalculatorToReview(null);
   };
-
-  const dialogCalculators = React.useMemo(() => {
-    return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component?: React.ComponentType<any> } => !!calc.component);
-  }, []);
 
   const uniqueCategories = React.useMemo(() => {
     return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));

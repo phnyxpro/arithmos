@@ -138,15 +138,17 @@ export interface DeadlineItem {
   description: string;
   periodicity: string;
   status: "Urgent" | "Upcoming" | "Completed" | "Overdue";
+  category: string; // Added for filtering
 }
 
 export const deadlineItems: DeadlineItem[] = [
-  { id: "paye", title: "PAYE Monthly Remittance", dueDate: "2025-06-15", description: "Remittance of PAYE deducted from employees for the previous month.", periodicity: "Monthly", status: "Upcoming" },
-  { id: "vat", title: "VAT Return & Payment", dueDate: "2025-07-25", description: "For tax period May-Jun 2025.", periodicity: "Bi-Monthly", status: "Upcoming" },
-  { id: "levies", title: "Business & Green Fund Levy (Q2)", dueDate: "2025-06-30", description: "Second quarterly installment for 2025.", periodicity: "Quarterly", status: "Upcoming" },
-  { id: "corp-tax-return", title: "Corporation Tax Return", dueDate: "2025-04-30", description: "For income year 2024.", periodicity: "Annually", status: "Upcoming" },
-  { id: "corp-tax-install", title: "Corporation Tax Installment (Q3)", dueDate: "2025-09-30", description: "Third quarterly installment for 2025.", periodicity: "Quarterly", status: "Upcoming" },
-  { id: "income-tax-return", title: "Individual Income Tax Return", dueDate: "2025-04-30", description: "For income year 2024.", periodicity: "Annually", status: "Upcoming" },
+  { id: "paye", title: "PAYE Monthly Remittance", dueDate: "2025-06-15", description: "Remittance of PAYE deducted from employees for the previous month.", periodicity: "Monthly", status: "Upcoming", category: "PAYE" },
+  { id: "nis-monthly", title: "NIS Monthly Payment", dueDate: "2025-07-15", description: "Remittance of NIS contributions (employee and employer) for June 2025.", periodicity: "Monthly", status: "Upcoming", category: "NIS" },
+  { id: "vat", title: "VAT Return & Payment", dueDate: "2025-07-25", description: "For tax period May-Jun 2025.", periodicity: "Bi-Monthly", status: "Upcoming", category: "VAT" },
+  { id: "levies", title: "Business & Green Fund Levy (Q2)", dueDate: "2025-06-30", description: "Second quarterly installment for 2025. Business Levy at 0.6%, Green Fund Levy at 0.3% of gross income.", periodicity: "Quarterly", status: "Upcoming", category: "Levies" },
+  { id: "corp-tax-return", title: "Corporation Tax Return", dueDate: "2025-04-30", description: "Annual Corporation Tax return filing for income year 2024.", periodicity: "Annually", status: "Upcoming", category: "Corporation Tax" },
+  { id: "corp-tax-install", title: "Corporation Tax Installment (Q3)", dueDate: "2025-09-30", description: "Third quarterly installment payment for Corporation Tax for 2025.", periodicity: "Quarterly", status: "Upcoming", category: "Corporation Tax" },
+  { id: "income-tax-return", title: "Individual Income Tax Return", dueDate: "2025-04-30", description: "Annual Income Tax return filing for individuals for income year 2024.", periodicity: "Annually", status: "Upcoming", category: "Income Tax" },
 ];
 
 export interface ResourceGuide {
@@ -506,3 +508,4 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       calculatorIdentifier: "Time Calculator (Full Page)",
     }
 ];
+

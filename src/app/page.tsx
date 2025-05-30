@@ -13,6 +13,8 @@ import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 
 // Utilities
 import { format, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
+
 
 // UI Components
 import {
@@ -58,7 +60,8 @@ import {
   benefitsData as pageBenefitsData,
   deadlineItems as pageDeadlineItems,
   resourceGuides as pageResourceGuides,
-  DetailedCalculatorListItem // Import the interface
+  type DetailedCalculatorListItem,
+  type DeadlineItem,
 } from "@/app/landing-page-data";
 import { faqData } from "@/constants/faqData";
 
@@ -76,7 +79,7 @@ export default function LandingPage() {
   const {
     activeCalculator,
     setActiveCalculator,
-  } = useCalculatorDialogManager() as { // Cast to include description
+  } = useCalculatorDialogManager() as { 
     activeCalculator: ActiveCalculatorInfo | null;
     closeDialog: (isOpen: boolean) => void;
     setActiveCalculator: (calculator: ActiveCalculatorInfo | null) => void;
@@ -86,6 +89,7 @@ export default function LandingPage() {
 
   const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
   const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
+  const [activeDeadlineFilter, setActiveDeadlineFilter] = React.useState<string>("All");
 
   const LazyComponentMap = React.useMemo(() => {
     const map: Record<string, React.ComponentType<any>> = {
@@ -120,7 +124,6 @@ export default function LandingPage() {
     return map;
   }, []);
 
-  // Add type annotation to isOpen parameter
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
       setCalculatorToReview(activeCalculator.title);
@@ -129,7 +132,6 @@ export default function LandingPage() {
     }
   }, [activeCalculator, setIsReviewDialogOpen, setCalculatorToReview, setActiveCalculator]);
 
-  // Add type annotations to parameters
   const handleSubmitReview = (calculatorName: string, rating: number) => {
     console.log(`Review submitted for ${calculatorName}: ${rating} stars`);
     toast({
@@ -141,14 +143,24 @@ export default function LandingPage() {
   };
 
   const dialogCalculators = React.useMemo(() => {
-    // Filter for items that have a component (dialogs)
     return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component?: React.ComponentType<any> } => !!calc.component);
   }, []);
 
   const uniqueCategories = React.useMemo(() => {
-    // Add type annotation to category parameter
     return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));
   }, [dialogCalculators]);
+
+  const deadlineFilterCategories = React.useMemo(() => {
+    const categories = new Set(pageDeadlineItems.map(item => item.category));
+    return ["All", ...Array.from(categories)];
+  }, []);
+
+  const filteredDeadlines = React.useMemo(() => {
+    if (activeDeadlineFilter === "All") {
+      return pageDeadlineItems;
+    }
+    return pageDeadlineItems.filter(item => item.category === activeDeadlineFilter);
+  }, [activeDeadlineFilter]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -156,12 +168,12 @@ export default function LandingPage() {
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
-          <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground mb-4">
+           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground bg-clip-text text-transparent mb-4">
             {pageHeroData.headline}
           </h1>
-          <h2 className="text-xl md:text-2xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground mb-6">
+          <p className="text-xl md:text-2xl font-semibold bg-gradient-to-r from-primary via-accent to-primary-foreground dark:from-primary-foreground dark:via-accent dark:to-primary-foreground bg-clip-text text-transparent mb-6">
             {pageHeroData.primarySubheadline}
-          </h2>
+          </p>
           <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 dark:text-primary-foreground/80 mb-10">
             {pageHeroData.secondarySubheadline}
           </p>
@@ -183,12 +195,11 @@ export default function LandingPage() {
           <Tabs defaultValue={uniqueCategories[0]} className="w-full">
             <ScrollArea className="max-w-full pb-4">
               <TabsList className="flex w-full items-center justify-between gap-x-2 rounded-md bg-muted p-1 text-muted-foreground">
-                {/* Add type annotation to category parameter */}
                 {uniqueCategories.slice(0, 5).map((category: string) => (
                   <TabsTrigger
                     key={category}
                     value={category}
-                    className="w-full data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
+                    className="flex-1 data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
                   >
                     {category}
                   </TabsTrigger>
@@ -197,9 +208,7 @@ export default function LandingPage() {
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
 
-            {/* Add type annotation to category parameter */}
             {uniqueCategories.map((category: string) => {
-              // Filter calculators by category, ensuring they have a component
               const calculatorsInCategory = detailedCalculatorList.filter(
                 (calc): calc is DetailedCalculatorListItem & { component?: React.ComponentType<any> } => calc.category === category && !!calc.component
               );
@@ -207,7 +216,6 @@ export default function LandingPage() {
               return (
                 <TabsContent key={category} value={category} className="mt-8">
                   <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
-                    {/* Add type annotation to calculator parameter */}
                     {calculatorsInCategory.map((calculator) => {
                       const Icon = calculator.icon || CalculatorIcon;
                       const ComponentToRender = LazyComponentMap[calculator.calculatorIdentifier];
@@ -234,7 +242,7 @@ export default function LandingPage() {
                               aria-label={`Open ${calculator.name} calculator`}
                               onClick={() => {
                                 if (calculator.href) {
-                                  window.location.href = calculator.href; // Or use Next.js Link/router if preferred for internal links
+                                  window.location.href = calculator.href; 
                                 } else if (ComponentToRender) {
                                   setActiveCalculator({
                                     key: calculator.calculatorIdentifier,
@@ -300,26 +308,43 @@ export default function LandingPage() {
               Stay informed about crucial tax and statutory deadlines. Dates are illustrative. Always verify with official IRD publications.
             </p>
           </div>
+          
+          <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
+            {deadlineFilterCategories.map((category) => (
+              <Button
+                key={category}
+                variant={activeDeadlineFilter === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveDeadlineFilter(category)}
+                className={cn(
+                  "text-xs h-8 px-3 rounded-full",
+                  activeDeadlineFilter === category 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "border-primary text-primary hover:bg-primary/10"
+                )}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Add type annotations to item and index parameters */}
-            {pageDeadlineItems.map((item: typeof pageDeadlineItems[0], index: number) => {
+            {filteredDeadlines.map((item: DeadlineItem) => {
               let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "secondary";
-              let dueDate: Date | 'Invalid Date' = 'Invalid Date'; // Initialize as Invalid Date
+              let dueDateObj: Date | 'Invalid Date' = 'Invalid Date'; 
 
               try {
                 if (typeof item.dueDate === 'string') {
                   const parsedDate = parseISO(item.dueDate);
-                  // Check if parseISO returned a valid date object
                   if (!isNaN(parsedDate.getTime())) {
-                    dueDate = parsedDate;
+                    dueDateObj = parsedDate;
                   }
                 }
               } catch (error) {
                 console.error("Error parsing date:", item.dueDate, error);
-                // dueDate remains 'Invalid Date'
               }
 
-              const isPast = dueDate !== 'Invalid Date' && dueDate < new Date(new Date().setHours(0, 0, 0, 0));
+              const isPast = dueDateObj !== 'Invalid Date' && dueDateObj < new Date(new Date().setHours(0, 0, 0, 0));
 
               if (item.status === "Urgent" && !isPast) badgeVariant = "destructive";
               else if (item.status === "Upcoming" && !isPast) badgeVariant = "default";
@@ -328,7 +353,11 @@ export default function LandingPage() {
 
 
               return (
-                <Card key={item.id} className={`flex flex-col shadow-md rounded-xl ${isPast && item.status !== "Completed" ? 'opacity-70' : ''}`}>
+                <Card key={item.id} className={cn(
+                    "flex flex-col shadow-md rounded-xl transition-opacity duration-300",
+                    isPast && item.status !== "Completed" ? 'opacity-70' : 'opacity-100'
+                  )}
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle className="text-lg text-primary">{item.title}</CardTitle>
@@ -336,19 +365,22 @@ export default function LandingPage() {
                         {isPast && item.status !== "Completed" ? "Overdue" : item.status}
                       </Badge>
                     </div>
-                    <CardDescription className="text-xs pt-1">Periodicity: {item.periodicity}</CardDescription>
+                    <CardDescription className="text-xs pt-1">Periodicity: {item.periodicity} | Category: {item.category}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                     <div className="flex items-center text-sm font-medium text-foreground">
                       <CalendarDays className="mr-2 h-4 w-4 text-accent" />
-                      {item.dueDate && typeof item.dueDate === 'string' ? format(parseISO(item.dueDate), 'MMMM dd, yyyy') : 'Invalid Date'}
+                      {dueDateObj !== 'Invalid Date' ? format(dueDateObj, 'MMMM dd, yyyy') : 'Invalid Date'}
                     </div>
                   </CardContent>
                 </Card>
               );
             })}
           </div>
+          {filteredDeadlines.length === 0 && (
+            <p className="text-center text-muted-foreground mt-8">No deadlines match the selected filter.</p>
+          )}
         </div>
       </section>
 
@@ -398,7 +430,6 @@ export default function LandingPage() {
             Find answers to common questions about our platform and Trinidad & Tobago tax & finance.
           </p>
           <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-            {/* Add type annotations to item and index parameters */}
             {faqData.map((item: {question: string; answer: string}, index: number) => (
               <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
                 <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
@@ -421,11 +452,9 @@ export default function LandingPage() {
         <React.Suspense fallback={<div>Loading Calculator...</div>}>
           <Dialog
             open={!!activeCalculator}
-            // Use the custom hook's closeDialog function
             onOpenChange={(isOpen) => {
-              // Only trigger review if a calculator was actively open and is now closing
               if (!isOpen) {
-                 handleCalculatorDialogClose(isOpen); // Use the local handler
+                 handleCalculatorDialogClose(isOpen); 
               }
             }}
           >
@@ -442,10 +471,9 @@ export default function LandingPage() {
                 )}
               </DialogHeader>
 
-              {/* Render the calculator component directly */}
               {React.createElement(
                 activeCalculator.component,
-                { key: activeCalculator.key } // Pass key or other props
+                { key: activeCalculator.key } 
               )}
 
               <DialogClose asChild>
@@ -468,3 +496,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

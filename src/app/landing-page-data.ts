@@ -55,29 +55,32 @@ import {
   Settings,
 } from "lucide-react";
 
-// Import Calculator Components for Dialogs (using named imports based on inspection)
-import { BasicTimeCalculator } from "@/components/calculators/BasicTimeCalculator";
-import { SimplifiedPayrollCalculator } from "@/components/calculators/SimplifiedPayrollCalculator";
-import { SimplifiedLevyCalculator } from "@/components/calculators/SimplifiedLevyCalculator";
-import { SimpleVatCalculator } from "@/components/calculators/SimpleVatCalculator";
-import { ExciseDutyCalculator } from "@/components/calculators/ExciseDutyCalculator";
-import { GrossToNetSalaryCalculator } from "@/components/calculators/GrossToNetSalaryCalculator";
-import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
+// Import Calculator Components for Dialogs
+// Default Exports
+import BasicTimeCalculator from "@/components/calculators/BasicTimeCalculator";
+import SimplifiedPayrollCalculator from "@/components/calculators/SimplifiedPayrollCalculator";
+import SimplifiedLevyCalculator from "@/components/calculators/SimplifiedLevyCalculator";
+import SimpleVatCalculator from "@/components/calculators/SimpleVatCalculator";
+import ExciseDutyCalculator from "@/components/calculators/ExciseDutyCalculator";
+import GrossToNetSalaryCalculator from "@/components/calculators/GrossToNetSalaryCalculator";
+import OvertimePayCalculator from "@/components/calculators/OvertimePayCalculator";
+import VacationPayCalculator from "@/components/calculators/VacationPayCalculator";
+import LoanAmortisationCalculator from "@/components/calculators/LoanAmortisationCalculator";
+import MortgageCalculator from "@/components/calculators/MortgageCalculator";
+import SavingsInvestmentCalculator from "@/components/calculators/SavingsInvestmentCalculator";
+import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCalculator";
+import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
+import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
+
+// Named Exports
 import { BonusCommissionCalculator } from "@/components/calculators/BonusCommissionCalculator";
-import { VacationPayCalculator } from "@/components/calculators/VacationPayCalculator";
-import { LoanAmortisationCalculator } from "@/components/calculators/LoanAmortisationCalculator";
-import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
-import { SavingsInvestmentCalculator } from "@/components/calculators/SavingsInvestmentCalculator";
 import { CurrencyExchangeCalculator } from "@/components/calculators/CurrencyExchangeCalculator";
-import { SimpleInterestCalculator } from "@/components/calculators/SimpleInterestCalculator";
 import { MarkupMarginCalculator } from "@/components/calculators/MarkupMarginCalculator";
 import { BreakEvenCalculator } from "@/components/calculators/BreakEvenCalculator";
 import { CashFlowProjectionCalculator } from "@/components/calculators/CashFlowProjectionCalculator";
 import { DepreciationCalculator } from "@/components/calculators/DepreciationCalculator";
 import { TariffCustomsDutyCalculator } from "@/components/calculators/TariffCustomsDutyCalculator";
-import { FreightShippingCalculator } from "@/components/calculators/FreightShippingCalculator";
-import CIFCalculator from "@/components/calculators/CIFCalculator"; // Corrected import to default
-import { StampDutyCalculator } from "@/components/calculators/StampDutyCalculator";
+import { CIFCalculator } from "@/components/calculators/CIFCalculator";
 import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
 import { RentalYieldCalculator } from "@/components/calculators/RentalYieldCalculator";
 import { AMLRiskCalculator } from "@/components/calculators/AMLRiskCalculator";
@@ -123,7 +126,8 @@ export const benefitsData: BenefitItem[] = [
     icon: CalculatorIcon,
     title: "Accurate, IRD-Aligned Calculations",
     description: "Our tools reflect real-world rates and thresholds for PAYE, NIS, Health Surcharge, VAT, Business Levy, and more, so your numbers always match local requirements.",
-  },
+  },\
+
   {
     icon: Smartphone,
     title: "Seamless Across Devices",
@@ -224,7 +228,8 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Estimate Levies",
       component: SimplifiedLevyCalculator, // Use the imported component
       calculatorIdentifier: "Levy Calculator",
-    },
+    },\
+
     {
       name: "Simple VAT Calculator",
       description: "Quickly add or remove 12.5% VAT from a price. Includes VAT registration eligibility checker.",
@@ -323,7 +328,8 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Calculate Interest",
       component: SimpleInterestCalculator, // Use the imported component
       calculatorIdentifier: "Simple Interest Calculator",
-    },
+    },\
+
     {
       name: "Markup & Margin Calculator",
       description: "Accurately determine product/service pricing and profit margins by calculating markup or margin based on cost and selling price.",
@@ -341,6 +347,15 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       ctaText: "Find Break-even Point",
       component: BreakEvenCalculator, // Use the imported component
       calculatorIdentifier: "Break-even Analysis Calculator",
+    },
+    {
+      name: "Cash Flow Projection Calculator",
+      description: "Forecast your business's cash inflows and outflows over several periods.",
+      icon: AreaChart,
+      category: "Business Tools",
+      ctaText: "Project Cash Flow",
+      component: CashFlowProjectionCalculator, // Use the imported component
+      calculatorIdentifier: "Cash Flow Projection Calculator",
     },
     {
       name: "Depreciation Calculator",
@@ -361,7 +376,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       calculatorIdentifier: "Tariff & Customs Duty Calculator",
     },
     {
-      name: "Freight Shipping Calculator",
+      name: "Freight & Shipping Cost Calculator",
       description: "Estimate total landed costs by inputting product value, shipping, insurance, and applicable duty/tax rates.",
       icon: Truck,
       category: "Trade & Customs",
@@ -431,7 +446,8 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       href: "/calculators/income-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Income Tax (Full Page)",
-    },
+    },\
+
     {
       name: "Corporation Tax (Full Page)",
       description: "Detailed corporation tax calculation with various income types, deductions, and offsets.",

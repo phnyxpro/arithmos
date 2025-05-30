@@ -22,7 +22,7 @@ const initialCalculationResults = {
   cifValueDisplay: "0.00",
 };
 
-export default function CIFCalculator() {
+export function CIFCalculator() {
   const { toast } = useToast();
 
   const [costOfGoods, setCostOfGoods] = useState<string>("");

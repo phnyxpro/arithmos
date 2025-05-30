@@ -55,33 +55,33 @@ import {
   Settings,
 } from "lucide-react";
 
-// Import Calculator Components for Dialogs (using default imports)
-import BasicTimeCalculator from "@/components/calculators/BasicTimeCalculator";
-import SimplifiedPayrollCalculator from "@/components/calculators/SimplifiedPayrollCalculator";
-import SimplifiedLevyCalculator from "@/components/calculators/SimplifiedLevyCalculator";
-import SimpleVatCalculator from "@/components/calculators/SimpleVatCalculator";
-import ExciseDutyCalculator from "@/components/calculators/ExciseDutyCalculator";
-import GrossToNetSalaryCalculator from "@/components/calculators/GrossToNetSalaryCalculator";
-import OvertimePayCalculator from "@/components/calculators/OvertimePayCalculator";
-import BonusCommissionCalculator from "@/components/calculators/BonusCommissionCalculator";
-import VacationPayCalculator from "@/components/calculators/VacationPayCalculator";
-import LoanAmortisationCalculator from "@/components/calculators/LoanAmortisationCalculator";
-import MortgageCalculator from "@/components/calculators/MortgageCalculator";
-import SavingsInvestmentCalculator from "@/components/calculators/SavingsInvestmentCalculator";
-import CurrencyExchangeCalculator from "@/components/calculators/CurrencyExchangeCalculator";
-import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCalculator";
-import MarkupMarginCalculator from "@/components/calculators/MarkupMarginCalculator";
-import BreakEvenCalculator from "@/components/calculators/BreakEvenCalculator";
-import CashFlowProjectionCalculator from "@/components/calculators/CashFlowProjectionCalculator";
-import DepreciationCalculator from "@/components/calculators/DepreciationCalculator";
-import TariffCustomsDutyCalculator from "@/components/calculators/TariffCustomsDutyCalculator";
-import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
-import CIFCalculator from "@/components/calculators/CIFCalculator";
-import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
-import PropertyTaxDialogCalculator from "@/components/calculators/PropertyTaxDialogCalculator";
-import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculator";
-import AMLRiskCalculator from "@/components/calculators/AMLRiskCalculator";
-import FATCACRSCalculator from "@/components/calculators/FATCACRSCalculator";
+// Import Calculator Components for Dialogs (using named imports based on inspection)
+import { BasicTimeCalculator } from "@/components/calculators/BasicTimeCalculator";
+import { SimplifiedPayrollCalculator } from "@/components/calculators/SimplifiedPayrollCalculator";
+import { SimplifiedLevyCalculator } from "@/components/calculators/SimplifiedLevyCalculator";
+import { SimpleVatCalculator } from "@/components/calculators/SimpleVatCalculator";
+import { ExciseDutyCalculator } from "@/components/calculators/ExciseDutyCalculator";
+import { GrossToNetSalaryCalculator } from "@/components/calculators/GrossToNetSalaryCalculator";
+import { OvertimePayCalculator } from "@/components/calculators/OvertimePayCalculator";
+import { BonusCommissionCalculator } from "@/components/calculators/BonusCommissionCalculator";
+import { VacationPayCalculator } from "@/components/calculators/VacationPayCalculator";
+import { LoanAmortisationCalculator } from "@/components/calculators/LoanAmortisationCalculator";
+import { MortgageCalculator } from "@/components/calculators/MortgageCalculator";
+import { SavingsInvestmentCalculator } from "@/components/calculators/SavingsInvestmentCalculator";
+import { CurrencyExchangeCalculator } from "@/components/calculators/CurrencyExchangeCalculator";
+import { SimpleInterestCalculator } from "@/components/calculators/SimpleInterestCalculator";
+import { MarkupMarginCalculator } from "@/components/calculators/MarkupMarginCalculator";
+import { BreakEvenCalculator } from "@/components/calculators/BreakEvenCalculator";
+import { CashFlowProjectionCalculator } from "@/components/calculators/CashFlowProjectionCalculator";
+import { DepreciationCalculator } from "@/components/calculators/DepreciationCalculator";
+import { TariffCustomsDutyCalculator } from "@/components/calculators/TariffCustomsDutyCalculator";
+import { FreightShippingCalculator } from "@/components/calculators/FreightShippingCalculator";
+import CIFCalculator from "@/components/calculators/CIFCalculator"; // Corrected import to default
+import { StampDutyCalculator } from "@/components/calculators/StampDutyCalculator";
+import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
+import { RentalYieldCalculator } from "@/components/calculators/RentalYieldCalculator";
+import { AMLRiskCalculator } from "@/components/calculators/AMLRiskCalculator";
+import { FATCACRSCalculator } from "@/components/calculators/FATCACRSCalculator";
 
 
 export interface HeroContent {
@@ -361,7 +361,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       calculatorIdentifier: "Tariff & Customs Duty Calculator",
     },
     {
-      name: "Freight & Shipping Cost Calculator",
+      name: "Freight Shipping Calculator",
       description: "Estimate total landed costs by inputting product value, shipping, insurance, and applicable duty/tax rates.",
       icon: Truck,
       category: "Trade & Customs",

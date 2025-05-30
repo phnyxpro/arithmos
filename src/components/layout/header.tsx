@@ -109,7 +109,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <AppLogo className="h-8 w-8 text-header-foreground" />
-          <span className="font-bold text-xl text-header-foreground sm:inline-block">TaxTT</span>
+          <span className="font-bold text-xl text-header-foreground sm:inline-block">Arithmos</span>
         </Link>
         
         {/* Desktop Navigation */}
@@ -266,7 +266,7 @@ export default function Header() {
               <SheetHeader className="mb-4">
                 <SheetTitle className="text-sidebar-primary flex items-center">
                   <AppLogo className="h-7 w-7 mr-2" />
-                  TaxTT Menu
+                  Arithmos Menu
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col space-y-2 text-sm">

@@ -12,8 +12,36 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: 'Arithmos - Smart Tax Filing',
-  description: 'Simplify your tax filing with AI-powered suggestions and guided input.',
+  title: {
+    default: 'Arithmos: Financial Tools for Trinidad and Tobago SMEs',
+    template: '%s | Arithmos', // This allows page.tsx to override the title
+  },
+  description: 'Explore Arithmos suite of free financial calculators tailored for Trinidad & Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
+  keywords: ['Trinidad Tobago tax calculator', 'T&T tax tools', 'SME finance T&T', 'freelancer tax T&T', 'PAYE calculator T&T', 'VAT calculator T&T', 'Business Levy T&T', 'payroll calculator T&T', 'Trinidad Tobago compliance', 'financial tools T&T', 'small business tax T&T'],
+  openGraph: {
+    title: 'Arithmos: Free Tax Calculators & Financial Tools for T&T SMEs',
+    description: 'Explore Arithmos's suite of free financial calculators tailored for Trinidad & Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
+    url: 'https://yourwebsite.com', // Replace with your actual website URL
+    siteName: 'Arithmos',
+    images: [
+      {
+        url: 'https://yourwebsite.com/og-image.jpg', // Replace with a URL to your OGP image
+        width: 1200,
+        height: 630,
+        alt: 'Arithmos - Tax Calculators and Financial Tools for T&T',
+      },
+    ],
+    locale: 'en_TT', // Specify locale if appropriate
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@yourtwitterhandle', // Replace with your Twitter handle
+    creator: '@yourtwitterhandle', // Replace with your Twitter handle
+    title: 'Arithmos: Free Tax Calculators & Financial Tools for T&T SMEs',
+    description: 'Explore Arithmos suite of free financial calculators tailored for Trinidad & Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
+    images: ['https://yourwebsite.com/twitter-image.jpg'], // Replace with a URL to your Twitter card image
+  },
 };
 
 export default function RootLayout({

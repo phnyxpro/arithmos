@@ -85,7 +85,6 @@ import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculato
 import {AMLRiskCalculator} from "@/components/calculators/AMLRiskCalculator";
 import {FATCACRSCalculator} from "@/components/calculators/FATCACRSCalculator";
 import VoluntaryNisCalculator from "@/components/calculators/VoluntaryNisCalculator"; // Added missing import
-import { AppLogo } from "@/components/icons/app-logo";
 
 export interface HeroContent {
   icon: React.ElementType;

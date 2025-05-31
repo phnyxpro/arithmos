@@ -9,7 +9,6 @@ export function AppLogo(props: ImgHTMLAttributes<HTMLImageElement>) {
       alt="Arithmos Logo"
       className={cn(
         "h-6 w-auto", // Default size, can be overridden by passed className
-        "bg-gray-100 p-0.5 rounded-sm", // Added light background, padding, and rounding
         className // Apply passed className, allowing overrides
       )}
       {...rest}

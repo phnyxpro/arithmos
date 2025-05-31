@@ -64,6 +64,17 @@ export default function RootLayout({
               <main className="flex-grow container mx-auto px-4 py-8">
                 {children}
               </main>
+              {/* Added Footer */}
+              <footer className="w-full py-6 text-center text-muted-foreground text-sm">
+                <div className="container mx-auto px-4">
+                  <p>
+                    Developed with ❤️ by <a href="https://phnyx.dev" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">phnyx.dev</a>
+                  </p>
+                  <p className="mt-1">
+                    In partnership with Innovation Activators
+                  </p>
+                </div>
+              </footer>
               <Toaster />
             </div>
           </AppProviders>

@@ -109,7 +109,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 max-w-screen-2xl items-center px-10">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <AppLogo className="h-8 w-8 text-header-foreground" />
-          <span className="font-bold text-xl text-header-foreground sm:inline-block">Arithmos</span>
+          <span className="font-bold text-xl text-header-accent sm:inline-block">Arithmos</span>
         </Link>
         
         {/* Desktop Navigation */}

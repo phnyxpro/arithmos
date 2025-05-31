@@ -194,12 +194,10 @@ export interface DetailedCalculatorListItem {
 
 export const calculatorCategories = [
   "Payroll & HR",
-  "Business Tax",
-  "Tax",
+  "Tax & Compliance",
   "Financial Planning",
   "Business Tools",
   "Trade & Customs",
-  "Compliance",
 ];
 
 export const detailedCalculatorList: DetailedCalculatorListItem[] = [
@@ -234,7 +232,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Levy Calculator (Business & Green Fund)",
       description: "Estimate Business Levy and Green Fund Levy from gross income. Considers exemptions for new companies.",
       icon: Landmark,
-      category: "Business Tax",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: SimplifiedLevyCalculator, // Use the imported component
       calculatorIdentifier: "Levy Calculator",
@@ -244,7 +242,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Simple VAT Calculator",
       description: "Quickly add or remove 12.5% VAT from a price. Includes VAT registration eligibility checker.",
       icon: Percent,
-      category: "Tax",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: SimpleVatCalculator, // Use the imported component
       calculatorIdentifier: "Simple VAT Calculator",
@@ -406,7 +404,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Stamp Duty Calculator",
       description: "Estimate stamp duty payable on residential property transfers based on property value using tiered rates.",
       icon: Stamp,
-      category: "Tax",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: StampDutyCalculator, // Use the imported component
       calculatorIdentifier: "Stamp Duty Calculator",
@@ -415,7 +413,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Property Tax Calculator (Dialog)",
       description: "Quickly estimate annual property tax obligations based on Annual Rental Value (ARV).",
       icon: HomeIconLucide,
-      category: "Tax",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: PropertyTaxDialogCalculator, // Use the imported component
       calculatorIdentifier: "Property Tax Calculator (Dialog)",
@@ -442,7 +440,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "FATCA & CRS Compliance Calculator",
       description: "Assess and report obligations under FATCA & CRS regulations based on account holder information.",
       icon: Network,
-      category: "Compliance",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: FATCACRSCalculator, // Use the imported component
       calculatorIdentifier: "FATCA & CRS Calculator",

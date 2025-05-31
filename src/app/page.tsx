@@ -124,7 +124,10 @@ export default function LandingPage() {
     return dialogCalculators.filter(calc => calc.category === activeCalculatorFilter);
   }, [activeCalculatorFilter, dialogCalculators]);
 
-
+  const calculatorCategories = Array.from(
+    new Set(detailedCalculatorList.map((calc) => calc.category))
+  );
+  
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
       setCalculatorToReview(activeCalculator.title);

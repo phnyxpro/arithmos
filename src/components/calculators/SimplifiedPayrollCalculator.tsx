@@ -349,8 +349,8 @@ export default function SimplifiedPayrollCalculator() {
               <strong className="text-muted-foreground">TT$ {calculationResults.employerNISMonthly}</strong>
             </div>
              {/* Added Total Payroll Tax display with updated classes */} 
-             <div className="flex justify-between font-bold text-sm mt-2 items-center">
-              <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span> <strong className="text-primary">TT$ {calculationResults.totalPayrollTaxDisplay}</strong>
+             <div className="flex justify-between font-medium text-foreground mt-2 items-center">
+              <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span> <p className="text-primary">TT$ {calculationResults.totalPayrollTaxDisplay}</p>
             </div>
             <Separator className="my-2" />
             <div className="flex justify-between text-base font-bold text-primary mt-1">

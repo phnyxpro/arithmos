@@ -213,7 +213,7 @@ export default function SimplifiedPayrollCalculator() {
     ---------------------------------
     Employer's NIS Contribution (Monthly): TT$ ${calculationResults.employerNISMonthly}
     ---------------------------------
-    Total Payroll Tax (Employee Deductions + Employer NIS): TT$ ${calculationResults.totalPayrollTaxDisplay} // Added to copied text
+    Total Payroll Tax (Employee Deductions + Employer NIS): TT$ ${calculationResults.totalPayrollTaxDisplay}
     ---------------------------------
     Net Take-Home Pay (Employee): TT$ ${calculationResults.netTakeHomePay}
     ---------------------------------
@@ -341,15 +341,15 @@ export default function SimplifiedPayrollCalculator() {
             <div className="flex justify-between font-semibold">
               <span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground flex items-center">
-                <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
+            {/* Removed Briefcase icon and wrapping span */} 
+             <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">
                 Employer's NIS Contribution (Monthly):
               </span>
               <strong className="text-muted-foreground">TT$ {calculationResults.employerNISMonthly}</strong>
             </div>
-             {/* Added Total Payroll Tax display */} 
-             <div className="flex justify-between font-bold text-sm mt-2">
+             {/* Added Total Payroll Tax display with updated classes */} 
+             <div className="flex justify-between font-bold text-sm mt-2 items-center">
               <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span> <strong className="text-primary">TT$ {calculationResults.totalPayrollTaxDisplay}</strong>
             </div>
             <Separator className="my-2" />

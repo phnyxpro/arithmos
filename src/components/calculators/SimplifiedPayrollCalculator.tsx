@@ -50,13 +50,26 @@ const nisClassesData: NisClass[] = [
     { class: "X", weeklyEarnings: { min: 1710.00, max: 1909.99 }, monthlyEarnings: { min: 7410.00, max: 8276.99 }, assumedAverageWeekly: 1810.00, employeeWeekly: 79.60, employerWeekly: 159.20, totalWeekly: 238.80, classZWeekly: 11.94 },
     { class: "XI", weeklyEarnings: { min: 1910.00, max: 2139.99 }, monthlyEarnings: { min: 8277.00, max: 9272.99 }, assumedAverageWeekly: 2025.00, employeeWeekly: 89.10, employerWeekly: 178.20, totalWeekly: 267.30, classZWeekly: 13.37 },
     { class: "XII", weeklyEarnings: { min: 2140.00, max: 2379.99 }, monthlyEarnings: { min: 9273.00, max: 10312.99 }, assumedAverageWeekly: 2260.00, employeeWeekly: 99.40, employerWeekly: 198.80, totalWeekly: 298.20, classZWeekly: 14.91 },
-    { class: "XIII", weeklyEarnings: { min: 2380.00, max: 2629.99 }, monthlyEarnings: { min: 10313.00, max: 11396.99 }, assumedAverageWeekly: 2505.00, employeeWeekly: 110.20, employerWeekly: 220.40, totalWeekly: 330.60, classZWeekly: 16.53 },
-    { class: "XIV", weeklyEarnings: { min: 2630.00, max: 2919.99 }, monthlyEarnings: { min: 11397.00, max: 12652.99 }, assumedAverageWeekly: 2775.00, employeeWeekly: 122.10, employerWeekly: 244.20, totalWeekly: 366.30, classZWeekly: 18.32 },
-    { class: "XV", weeklyEarnings: { min: 2920.00, max: 3137.99 }, monthlyEarnings: { min: 12653.00, max: 13599.99 }, assumedAverageWeekly: 3029.00, employeeWeekly: 133.30, employerWeekly: 266.60, totalWeekly: 399.90, classZWeekly: 20.00 },
-    { class: "XVI", weeklyEarnings: { min: 3138.00, max: null }, monthlyEarnings: { min: 13600.00, max: null }, assumedAverageWeekly: 3138.00, employeeWeekly: 138.10, employerWeekly: 276.20, totalWeekly: 414.30, classZWeekly: 20.72 },
+    { class: "XIII", weeklyEarnings: { min: 2380.00, max: 2629.99 }, monthlyEarnings: { min: 10313.00, max: 11396.99 }, assumedAverageWeekly: 2505.00, voluntaryWeekly: 110.20, voluntaryMonthly: 477.54, voluntaryQuarterly: 1432.62, employeeWeekly: 110.20, employerWeekly: 220.40, totalWeekly: 330.60, classZWeekly: 16.53 },
+    { class: "XIV", weeklyEarnings: { min: 2630.00, max: 2919.99 }, monthlyEarnings: { min: 11397.00, max: 12652.99 }, assumedAverageWeekly: 2775.00, voluntaryWeekly: 122.10, voluntaryMonthly: 528.83, voluntaryQuarterly: 1586.49, employeeWeekly: 122.10, employerWeekly: 244.20, totalWeekly: 366.30, classZWeekly: 18.32 },
+    { class: "XV", weeklyEarnings: { min: 2920.00, max: 3137.99 }, monthlyEarnings: { min: 12653.00, max: 13599.99 }, assumedAverageWeekly: 3029.00, voluntaryWeekly: 133.30, voluntaryMonthly: 577.62, voluntaryQuarterly: 1732.86, employeeWeekly: 133.30, employerWeekly: 266.60, totalWeekly: 399.90, classZWeekly: 20.00 },
+    { class: "XVI", weeklyEarnings: { min: 3138.00, max: null }, monthlyEarnings: { min: 13600.00, max: null }, assumedAverageWeekly: 3138.00, voluntaryWeekly: 138.10, voluntaryMonthly: 598.59, voluntaryQuarterly: 1795.77, employeeWeekly: 138.10, employerWeekly: 276.20, totalWeekly: 414.30, classZWeekly: 20.72 },
 ];
 
-const initialCalculationResults = {
+const PERSONAL_ALLOWANCE = 90000;
+const PAYE_BRACKET_1_LIMIT = 72000;
+const PAYE_RATE_1 = 0.25;
+const PAYE_RATE_2 = 0.30;
+
+const WEEKS_IN_MONTH_APPROX = 4.3333; // Approximation for Health Surcharge calculation
+
+export default function SimplifiedPayrollCalculator() {
+  const { toast } = useToast();
+  const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString());
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+  const [grossMonthlyIncome, setGrossMonthlyIncome] = useState<string>("");
+  
+  const initialCalculationResults = {
     grossMonthlyIncomeDisplay: "0.00",
     estAnnualIncome: "0.00",
     mondaysInMonth: "0",
@@ -69,15 +82,10 @@ const initialCalculationResults = {
     totalMonthlyDeductions: "0.00",
     netTakeHomePay: "0.00",
     employerNISMonthly: "0.00",
+    totalPayrollTaxDisplay: "0.00", // Added Total Payroll Tax field
     monthName: "",
     yearDisplay: "",
-};
-
-export default function SimplifiedPayrollCalculator() {
-  const { toast } = useToast();
-  const [selectedMonth, setSelectedMonth] = useState<string>((new Date().getMonth() + 1).toString());
-  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
-  const [grossMonthlyIncome, setGrossMonthlyIncome] = useState<string>("");
+  };
   const [calculationResults, setCalculationResults] = useState(initialCalculationResults);
 
   const countMondays = (year: number, month: number): number => {
@@ -137,7 +145,7 @@ export default function SimplifiedPayrollCalculator() {
     }
     const payeMonthly = annualPAYE / 12;
 
-    const weeklyGrossIncome = gmi / 4.3333; 
+    const weeklyGrossIncome = gmi / WEEKS_IN_MONTH_APPROX; 
     let weeklyHS = 0;
     if (weeklyGrossIncome <= 110) {
       weeklyHS = 4.13;
@@ -148,6 +156,8 @@ export default function SimplifiedPayrollCalculator() {
 
     const totalMonthlyDeductions = payeMonthly + nisMonthlyEmployee + healthSurchargeMonthly;
     const netTakeHomePay = gmi - totalMonthlyDeductions;
+    
+    const totalPayrollTax = totalMonthlyDeductions + employerNISMonthly; // Calculate Total Payroll Tax
 
     setCalculationResults({
       grossMonthlyIncomeDisplay: formatCurrency(gmi),
@@ -162,6 +172,7 @@ export default function SimplifiedPayrollCalculator() {
       totalMonthlyDeductions: formatCurrency(totalMonthlyDeductions),
       netTakeHomePay: formatCurrency(netTakeHomePay),
       employerNISMonthly: formatCurrency(employerNISMonthly),
+      totalPayrollTaxDisplay: formatCurrency(totalPayrollTax), // Added to results
       monthName: monthLabel,
       yearDisplay: selectedYear,
     });
@@ -198,10 +209,13 @@ export default function SimplifiedPayrollCalculator() {
     PAYE: TT$ ${calculationResults.payeMonthly}
     NIS (Employee): TT$ ${calculationResults.nisMonthlyEmployee}
     Health Surcharge: TT$ ${calculationResults.healthSurchargeMonthly}
-    Total Monthly Deductions: TT$ ${calculationResults.totalMonthlyDeductions}
-    Net Take-Home Pay: TT$ ${calculationResults.netTakeHomePay}
+    Total Monthly Deductions (Employee): TT$ ${calculationResults.totalMonthlyDeductions}
     ---------------------------------
     Employer's NIS Contribution (Monthly): TT$ ${calculationResults.employerNISMonthly}
+    ---------------------------------
+    Total Payroll Tax (Employee Deductions + Employer NIS): TT$ ${calculationResults.totalPayrollTaxDisplay} // Added to copied text
+    ---------------------------------
+    Net Take-Home Pay (Employee): TT$ ${calculationResults.netTakeHomePay}
     ---------------------------------
     Note: These are estimates. Consult official guidelines.
     `;
@@ -299,7 +313,7 @@ export default function SimplifiedPayrollCalculator() {
             <p className="font-medium text-foreground">NIS Details:</p>
             <div className="pl-2 space-y-0.5">
                 <div className="flex justify-between">
-                    <span>NIS Class:</span> <span className="font-semibold">{calculationResults.nisClass}</span>
+                    <span>NIS Earnings Class:</span> <span className="font-semibold">{calculationResults.nisClass}</span>
                 </div>
                 <div className="flex justify-between">
                     <span>Est. Weekly NIS (Employee):</span> <span>TT$ {calculationResults.estWeeklyNISEmployee}</span>
@@ -325,13 +339,8 @@ export default function SimplifiedPayrollCalculator() {
 
             <Separator className="my-1" />
             <div className="flex justify-between font-semibold">
-              <span>Total Monthly Deductions:</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
+              <span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
             </div>
-            <div className="flex justify-between text-base font-bold text-primary mt-1">
-              <span>Net Take-Home Pay:</span><span>TT$ {calculationResults.netTakeHomePay}</span>
-            </div>
-
-            <Separator className="my-2" />
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground flex items-center">
                 <Briefcase className="mr-2 h-4 w-4 text-muted-foreground" />
@@ -339,6 +348,15 @@ export default function SimplifiedPayrollCalculator() {
               </span>
               <strong className="text-muted-foreground">TT$ {calculationResults.employerNISMonthly}</strong>
             </div>
+             {/* Added Total Payroll Tax display */} 
+             <div className="flex justify-between font-bold text-sm mt-2">
+              <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span> <strong className="text-primary">TT$ {calculationResults.totalPayrollTaxDisplay}</strong>
+            </div>
+            <Separator className="my-2" />
+            <div className="flex justify-between text-base font-bold text-primary mt-1">
+              <span>Net Take-Home Pay (Employee):</span><span>TT$ {calculationResults.netTakeHomePay}</span>
+            </div>
+
           </CardContent>
         </Card>
 
@@ -353,7 +371,7 @@ export default function SimplifiedPayrollCalculator() {
         
         <CardFooter className="p-0 pt-2">
             <p className="text-xs text-muted-foreground text-center mt-2">
-            Note: Calculations are estimates. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on NIBTT Earnings Classes. Health Surcharge based on weekly income (TT$4.13/wk up to TT$110/wk, TT$8.25/wk above) & Mondays in month. Employer's NIS is an additional cost to the employer. Always consult official IRD & NIBTT guidelines.
+            Note: Calculations are estimates. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on official NIBTT earnings classes (approx. monthly contribution shown). Health Surcharge based on weekly income thresholds and approx. weeks per month. Employer's NIS is an additional cost to the employer. Always consult official IRD & NIBTT guidelines.
             </p>
         </CardFooter>
       </div>

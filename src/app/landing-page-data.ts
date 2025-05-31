@@ -99,8 +99,7 @@ export const heroContentData: HeroContent = {
   icon: AppLogo,
   headline: "Calculate. Track. Comply.", // Changed from title to headline
   primarySubheadline: "Your Tools in One Place.",
-  secondarySubheadline: "Your Finance & Compliance Tools in One Hub
-Whether you're calculating PAYE or tracking VAT returns, Arithmos helps you stay compliant — accurately, automatically, and free.",
+  secondarySubheadline: "Your Business Tools in One Hub. Whether you're calculating PAYE or tracking VAT returns, Arithmos helps you manage or stay compliant — accurately and automatically.",
   primaryCtaText: "Try Our Calculators",
   primaryCtaLink: "#popular-calculators",
 };

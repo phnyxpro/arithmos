@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,8 +9,18 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming cn utility is available
+import { format } from 'date-fns'; // Assuming date-fns is available
+
+interface LineItem {
+  id: number;
+  description: string;
+  qty: number;
+  unitPrice: number;
+  amount: number;
+}
 
 export default function BillingPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,10 +29,28 @@ export default function BillingPage() {
     client: '',
     template: '',
     frequency: '',
-    startDate: '2025-05-17', // Placeholder date
+    startDate: format(new Date(), 'yyyy-MM-dd'), // Use date-fns for consistent format
     endDate: '',
     neverEnds: true,
   });
+
+  // State for Create New Invoice Modal
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newInvoice, setNewInvoice] = useState({
+    clientName: '',
+    clientEmail: '',
+    clientAddress: '',
+    invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000), // Simple random placeholder
+    invoiceDate: format(new Date(), 'yyyy-MM-dd'),
+    dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'), // Due date 30 days from now
+    lineItems: [] as LineItem[],
+    applyVat: false,
+    discountType: 'None', // or 'Percentage', 'Amount'
+    discountValue: 0,
+    notes: '',
+    terms: 'Payment due upon receipt.',
+  });
+  const [lineItemCounter, setLineItemCounter] = useState(0); // Counter for unique line item IDs
 
   // Placeholder data for selects (replace with actual data fetching if needed)
   const clients = [{ value: 'client1', label: 'Client A' }, { value: 'client2', label: 'Client B' }];
@@ -35,9 +63,30 @@ export default function BillingPage() {
     // Implement search logic
   };
 
-  const handleCreateInvoice = () => {
-    console.log('Creating new invoice');
-    // Implement create invoice logic
+  const handleCreateInvoiceClick = () => {
+    setIsCreateModalOpen(true);
+    // Reset new invoice state with default values when opening modal
+    setNewInvoice({
+      clientName: '',
+      clientEmail: '',
+      clientAddress: '',
+      invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000), // New random invoice number
+      invoiceDate: format(new Date(), 'yyyy-MM-dd'),
+      dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'),
+      lineItems: [],
+      applyVat: false,
+      discountType: 'None',
+      discountValue: 0,
+      notes: '',
+      terms: 'Payment due upon receipt.',
+    });
+    setLineItemCounter(0); // Reset counter
+  };
+
+  const handleSaveInvoice = () => {
+    console.log('Saving invoice:', newInvoice);
+    // Implement save invoice logic (e.g., to local storage, API)
+    setIsCreateModalOpen(false);
   };
 
   const handleCreateRecurringInvoice = () => {
@@ -49,6 +98,46 @@ export default function BillingPage() {
     console.log('Saving reminder settings:', enableReminders);
     // Implement save reminder settings logic
   };
+
+  const handleAddLineItem = () => {
+    setLineItemCounter(lineItemCounter + 1);
+    setNewInvoice({
+      ...newInvoice,
+      lineItems: [...newInvoice.lineItems, { id: lineItemCounter, description: '', qty: 1, unitPrice: 0, amount: 0 }],
+    });
+  };
+
+  const handleRemoveLineItem = (id: number) => {
+    setNewInvoice({
+      ...newInvoice,
+      lineItems: newInvoice.lineItems.filter(item => item.id !== id),
+    });
+  };
+
+  const handleLineItemChange = (id: number, field: string, value: any) => {
+    const updatedLineItems = newInvoice.lineItems.map(item => {
+      if (item.id === id) {
+        const updatedItem = { ...item, [field]: value };
+        // Recalculate amount based on qty and unit price
+        if (field === 'qty' || field === 'unitPrice') {
+          updatedItem.amount = updatedItem.qty * updatedItem.unitPrice;
+        }
+        return updatedItem;
+      }
+      return item;
+    });
+    setNewInvoice({ ...newInvoice, lineItems: updatedLineItems });
+  };
+
+  // Calculate totals dynamically
+  const { subtotal, vatAmount, totalAmountDue } = useMemo(() => {
+    const subtotal = newInvoice.lineItems.reduce((sum, item) => sum + item.amount, 0);
+    const vatRate = newInvoice.applyVat ? 0.125 : 0;
+    const vatAmount = subtotal * vatRate;
+    const totalAmountDue = subtotal + vatAmount - (newInvoice.discountType === 'Amount' ? newInvoice.discountValue : subtotal * (newInvoice.discountValue / 100)); // Basic discount logic
+    return { subtotal, vatAmount, totalAmountDue };
+  }, [newInvoice.lineItems, newInvoice.applyVat, newInvoice.discountType, newInvoice.discountValue]);
+
 
   // Placeholder for invoice list rendering (replace with actual data mapping)
   const renderInvoiceList = () => {
@@ -84,7 +173,7 @@ export default function BillingPage() {
                 className="w-full pl-8"
               />
             </div>
-            <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleCreateInvoice}>
+            <Button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleCreateInvoiceClick}>
               <CirclePlus className="mr-2 h-5 w-5" /> Create New Invoice
             </Button>
           </div>
@@ -152,8 +241,7 @@ export default function BillingPage() {
                                 // !date && "text-muted-foreground"
                                 )}>
                                 <Calendar className="mr-2 h-3 w-3" />
-                                {recurringInvoiceSettings.startDate ? recurringInvoiceSettings.startDate : "Pick a date"}
-                                {/* Format date here if using a date picker */}
+                                {recurringInvoiceSettings.startDate ? format(new Date(recurringInvoiceSettings.startDate), 'MMM dd, yyyy') : "Pick a date"}
                             </Button>
                             {/* DatePicker Component Needed */}
                         </div>
@@ -166,10 +254,8 @@ export default function BillingPage() {
                                 disabled={recurringInvoiceSettings.neverEnds} // Disable if never ends
                                 >
                                 <Calendar className="mr-2 h-3 w-3" />
-                                {recurringInvoiceSettings.endDate ? recurringInvoiceSettings.endDate : "Pick a date"}
-                                 {/* Format date here if using a date picker */}
-                            </Button>
-                             {/* DatePicker Component Needed */}
+                                {recurringInvoiceSettings.endDate ? format(new Date(recurringInvoiceSettings.endDate), 'MMM dd, yyyy') : "Pick a date"}
+                             </Button>
                              <div className="flex items-center space-x-2 mt-1.5">
                                 <Checkbox
                                     id="neverEnds"
@@ -281,6 +367,162 @@ export default function BillingPage() {
           </p>
         </CardFooter>
       </Card>
+
+      {/* Create New Invoice Dialog */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-primary flex items-center">
+              <CirclePlus className="mr-2 h-6 w-6" /> Create New Invoice
+            </DialogTitle>
+            <DialogDescription>
+              Fill in the details below to generate a new invoice.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Client Details */}
+            <div>
+              <h4 className="text-lg font-semibold text-primary mb-3">Client Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="clientName">Client Name</Label>
+                  <Input id="clientName" placeholder="Client's full name or company" value={newInvoice.clientName} onChange={(e) => setNewInvoice({...newInvoice, clientName: e.target.value})} />
+                  {/* Add validation message here if client name is required */}
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="clientEmail">Client Email</Label>
+                  <Input id="clientEmail" type="email" placeholder="client@example.com" value={newInvoice.clientEmail} onChange={(e) => setNewInvoice({...newInvoice, clientEmail: e.target.value})} />
+                </div>
+              </div>
+              <div className="space-y-1 mt-4">
+                <Label htmlFor="clientAddress">Client Address</Label>
+                <Input id="clientAddress" placeholder="Client's mailing address" value={newInvoice.clientAddress} onChange={(e) => setNewInvoice({...newInvoice, clientAddress: e.target.value})} />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Invoice Details */}
+            <div>
+              <h4 className="text-lg font-semibold text-primary mb-3">Invoice Details</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label htmlFor="invoiceNumber">Invoice Number</Label>
+                  <Input id="invoiceNumber" value={newInvoice.invoiceNumber} onChange={(e) => setNewInvoice({...newInvoice, invoiceNumber: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="invoiceDate">Invoice Date</Label>
+                  <Input id="invoiceDate" type="date" value={newInvoice.invoiceDate} onChange={(e) => setNewInvoice({...newInvoice, invoiceDate: e.target.value})} />
+                </div>
+              </div>
+              <div className="space-y-1 mt-4">
+                <Label htmlFor="dueDate">Due Date</Label>
+                 <Input id="dueDate" type="date" value={newInvoice.dueDate} onChange={(e) => setNewInvoice({...newInvoice, dueDate: e.target.value})} />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Line Items */}
+            <div>
+              <h4 className="text-lg font-semibold text-primary mb-3">Line Items</h4>
+              <div className="space-y-4">
+                {newInvoice.lineItems.map(item => (
+                  <div key={item.id} className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-center p-3 border rounded-md bg-muted/50">
+                    <div className="col-span-full sm:col-span-2 space-y-1">
+                      <Label htmlFor={`description-${item.id}`} className="text-xs">Description</Label>
+                      <Input id={`description-${item.id}`} placeholder="Service or Product" value={item.description} onChange={(e) => handleLineItemChange(item.id, 'description', e.target.value)} className="h-8 text-xs" />
+                      {/* Add validation message here */}
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor={`qty-${item.id}`} className="text-xs">Qty</Label>
+                      <Input id={`qty-${item.id}`} type="number" placeholder="1" value={item.qty} onChange={(e) => handleLineItemChange(item.id, 'qty', parseFloat(e.target.value) || 0)} className="h-8 text-xs" min="0" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor={`unitPrice-${item.id}`} className="text-xs">Unit Price (TT$)</Label>
+                      <Input id={`unitPrice-${item.id}`} type="number" step="0.01" placeholder="0" value={item.unitPrice} onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)} className="h-8 text-xs" min="0" />
+                      {/* Add validation message here */}
+                    </div>
+                    <div className="space-y-1 text-right">
+                      <Label htmlFor={`amount-${item.id}`} className="text-xs">Amount (TT$)</Label>
+                      <div id={`amount-${item.id}`} className="h-8 text-xs font-medium flex items-center justify-end border rounded-md px-2 bg-background/50">{item.amount.toFixed(2)}</div>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => handleRemoveLineItem(item.id)} className="w-7 h-7 justify-self-end">
+                        <Trash2 className="h-3 w-3 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="outline" onClick={handleAddLineItem} className="w-full text-sm">
+                   <CirclePlus className="mr-2 h-4 w-4" /> Add Line Item
+                </Button>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Totals */}
+            <div className="grid grid-cols-2 gap-4 self-end w-full sm:w-1/2">
+                <div className="text-right font-semibold">Subtotal:</div>
+                <div className="text-right">TT$ {subtotal.toFixed(2)}</div>
+
+                 {/* VAT */} 
+                 <div className="flex items-center justify-end">
+                     <Checkbox
+                        id="applyVat"
+                        checked={newInvoice.applyVat}
+                        onCheckedChange={(checked) => setNewInvoice({...newInvoice, applyVat: Boolean(checked)})}
+                        className="mr-2"
+                    />
+                    <Label htmlFor="applyVat" className="font-semibold text-right">VAT (12.5%):</Label>
+                </div>
+                <div className="text-right">+ TT$ {vatAmount.toFixed(2)}</div>
+
+                {/* Discount (Basic Placeholder) */} 
+                 <div className="text-right font-semibold">Discount:</div>
+                <div className="text-right">
+                    {/* Implement Discount Input/Select here */}
+                    - TT$ {newInvoice.discountType === 'Amount' ? newInvoice.discountValue.toFixed(2) : (subtotal * (newInvoice.discountValue / 100)).toFixed(2)}
+                 </div>
+
+                <Separator className="col-span-full" />
+
+                <div className="text-right text-lg font-bold text-primary">Total Amount Due:</div>
+                <div className="text-right text-lg font-bold text-primary">TT$ {totalAmountDue.toFixed(2)}</div>
+            </div>
+
+            <Separator />
+
+             {/* Payment Options (Placeholder) */}
+             <div>
+                <h4 className="text-lg font-semibold text-primary mb-3">Payment Options</h4>
+                <p className="text-sm text-muted-foreground">Placeholder for payment methods and online payment options.</p>
+                {/* Add payment options UI here */}
+             </div>
+
+            <Separator />
+
+             {/* Notes */}
+             <div>
+                <h4 className="text-lg font-semibold text-primary mb-3">Notes</h4>
+                 <Input placeholder="E.g., Thank you for your business!" value={newInvoice.notes} onChange={(e) => setNewInvoice({...newInvoice, notes: e.target.value})} />
+            </div>
+
+             {/* Terms & Conditions */}
+             <div>
+                <h4 className="text-lg font-semibold text-primary mb-3">Terms & Conditions</h4>
+                 <Input placeholder="Payment due upon receipt." value={newInvoice.terms} onChange={(e) => setNewInvoice({...newInvoice, terms: e.target.value})} />
+            </div>
+
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-6">
+            <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveInvoice}>Save Invoice</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

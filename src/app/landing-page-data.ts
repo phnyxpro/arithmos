@@ -190,6 +190,16 @@ export interface DetailedCalculatorListItem {
   calculatorIdentifier: string; // For review modal and unique keys
 }
 
+export const calculatorCategories = [
+  "Payroll & HR",
+  "Business Tax",
+  "Tax",
+  "Financial Planning",
+  "Business Tools",
+  "Trade & Customs",
+  "Compliance",
+];
+
 export const detailedCalculatorList: DetailedCalculatorListItem[] = [
     {
       name: "Time Calculator",

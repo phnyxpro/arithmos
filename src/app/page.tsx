@@ -10,6 +10,7 @@ import Image from "next/image";
 // Hooks
 import { useToast } from "@/hooks/use-toast";
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
+import { calculatorCategories } from "@/app/landing-page-data";
 
 // Utilities
 import { format, parseISO } from "date-fns";

@@ -10,7 +10,6 @@ import Image from "next/image";
 // Hooks
 import { useToast } from "@/hooks/use-toast";
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
-import { calculatorCategories } from "@/app/landing-page-data";
 
 // Utilities
 import { format, parseISO } from "date-fns";
@@ -52,6 +51,45 @@ import {
   BookOpen,
   Calculator as CalculatorIcon,
   CalendarDays,
+  Briefcase,
+  DollarSign,
+  Users as UsersIcon,
+  Clock,
+  ShieldCheck,
+  Smartphone,
+  FileHeart,
+  Leaf,
+  Building,
+  House,
+  ReceiptText,
+  Percent,
+  Landmark,
+  PiggyBank,
+  ArrowRightLeft,
+  Target,
+  LineChart,
+  AreaChart,
+  Building as BuildingIconLucide,
+  Truck,
+  Ship,
+  FileBox,
+  Stamp,
+  Home as HomeIconLucide,
+  ShieldAlert,
+  Network,
+  Cigarette,
+  Gift,
+  Plane,
+  PercentCircle,
+  Building2,
+  Download,
+  Mail,
+  Save,
+  ListChecks,
+  Eye,
+  Loader2,
+  HelpCircle,
+  Settings,
 } from "lucide-react";
 
 // Static Data
@@ -101,6 +139,8 @@ export default function LandingPage() {
     return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));
   }, [dialogCalculators]);
 
+  // Removed incorrect calculatorCategories definition
+
   const [activeCalculatorFilter, setActiveCalculatorFilter] = React.useState<string>(uniqueCategories[0] || "All");
   const [activeDeadlineFilter, setActiveDeadlineFilter] = React.useState<string>("All");
 
@@ -124,10 +164,7 @@ export default function LandingPage() {
     return dialogCalculators.filter(calc => calc.category === activeCalculatorFilter);
   }, [activeCalculatorFilter, dialogCalculators]);
 
-  const calculatorCategories = Array.from(
-    new Set(detailedCalculatorList.map((calc) => calc.category))
-  );
-  
+
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
       setCalculatorToReview(activeCalculator.title);
@@ -170,94 +207,93 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Popular Calculators Section */}
+      {/* Popular Calculators Section - Using Filters */}
       <section id="popular-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
             Popular Financial Tools &amp; Calculators
           </h2>
-          <Tabs defaultValue={uniqueCategories[0]} className="w-full">
-            <ScrollArea className="max-w-full pb-4">
-              <TabsList className="flex w-full items-center justify-between gap-x-2 rounded-md bg-muted p-1 text-muted-foreground">
-                {calculatorCategories.map((category: string) => (
-                  <TabsTrigger
-                    key={category}
-                    value={category}
-                    onClick={() => setActiveCalculatorFilter(category)}
-                    className="flex-1 data-[state=active]:text-primary data-[state=active]:bg-background rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all hover:bg-accent hover:text-accent-foreground"
-                  >
-                    {category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
 
-            {/* Use filteredCalculators here */}
-            {uniqueCategories.map((category: string) => {
-              const calculatorsInCategory = filteredCalculators.filter(
-                (calc) => calc.category === category
-              );
+          {/* Filter Buttons */}
+          <div className="mb-8 flex flex-wrap justify-center gap-2">
+            {uniqueCategories.map((category: string) => (
+              <Button
+                key={category}
+                variant={activeCalculatorFilter === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveCalculatorFilter(category)}
+                className={cn(
+                  "text-xs h-8 px-3 rounded-full",
+                  activeCalculatorFilter === category 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "border-primary text-primary hover:bg-primary/10"
+                )}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+
+          {/* Display Filtered Calculators */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
+            {filteredCalculators.map((calculator) => {
+              const Icon = calculator.icon || CalculatorIcon;
 
               return (
-                <TabsContent key={category} value={category} className="mt-8">
-                  <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
-                    {calculatorsInCategory.map((calculator) => {
-                      const Icon = calculator.icon || CalculatorIcon;
-                      // Removed LazyComponentMap usage
-
-                      return (
-                        <Card
-                          key={calculator.calculatorIdentifier}
-                          className="flex flex-col shadow-md hover:shadow-xl transition-shadow rounded-xl"
-                        >
-                          <CardHeader className="flex flex-row items-start space-x-4">
-                            <Icon className="h-8 w-8 text-accent mt-1 flex-shrink-0" />
-                            <CardTitle className="text-lg text-primary">
-                              {calculator.name}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="flex-grow">
-                            <CardDescription className="text-sm text-muted-foreground">
-                              {calculator.description}
-                            </CardDescription>
-                          </CardContent>
-                          <CardFooter>
-                            <Button
-                              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                              aria-label={`Open ${calculator.name} calculator`}
-                              onClick={() => {
-                                if (calculator.href) {
-                                  window.location.href = calculator.href; 
-                                } else if (calculator.component) { // Check if component exists
-                                  setActiveCalculator({
-                                    key: calculator.calculatorIdentifier,
-                                    component: calculator.component, // Use the component directly
-                                    title: calculator.name,
-                                    icon: calculator.icon ?? CalculatorIcon,
-                                    description: calculator.description,
-                                  });
-                                } else {
-                                  toast({
-                                    title: "Calculator Not Available",
-                                    description: `The ${calculator.name} calculator is currently not configured correctly.`,
-                                    variant: "destructive",
-                                  });
-                                }
-                              }}
-                            >
-                              {calculator.ctaText || "Open Calculator"}
-                              <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                          </CardFooter>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                </TabsContent>
+                <Card
+                  key={calculator.calculatorIdentifier}
+                  className="flex flex-col shadow-md hover:shadow-xl transition-shadow rounded-xl"
+                >
+                  <CardHeader className="flex flex-row items-start space-x-4">
+                    <Icon className="h-8 w-8 text-accent mt-1 flex-shrink-0" />
+                    <CardTitle className="text-lg text-primary">
+                      {calculator.name}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <CardDescription className="text-sm text-muted-foreground">
+                      {calculator.description}
+                    </CardDescription>
+                  </CardContent>
+                  <CardFooter>
+                    <Button
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                      aria-label={`Open ${calculator.name} calculator`}
+                      onClick={() => {
+                        if (calculator.href) {
+                          window.location.href = calculator.href; 
+                        } else if (calculator.component) { 
+                          setActiveCalculator({
+                            key: calculator.calculatorIdentifier,
+                            component: calculator.component,
+                            title: calculator.name,
+                            icon: calculator.icon ?? CalculatorIcon,
+                            description: calculator.description,
+                          });
+                        } else {
+                          toast({
+                            title: "Calculator Not Available",
+                            description: `The ${calculator.name} calculator is currently not configured correctly.`,
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      {calculator.ctaText || "Open Calculator"}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardFooter>
+                </Card>
               );
             })}
-          </Tabs>
+          </div>
+          {filteredCalculators.length === 0 && activeCalculatorFilter !== "All" && (
+            <p className="text-center text-muted-foreground mt-8">No calculators found in this category.</p>
+          )}
+           {filteredCalculators.length === 0 && activeCalculatorFilter === "All" && dialogCalculators.length === 0 && (
+            <p className="text-center text-muted-foreground mt-8">No calculators available at this time.</p>
+          )}
+
         </div>
       </section>
 
@@ -403,31 +439,6 @@ export default function LandingPage() {
               </Link>
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* Tax Season Ready Section */}
-      <section id="tax-season-ready" className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <Card className="bg-gradient-to-r from-primary to-accent/80 text-primary-foreground p-8 md:p-12 rounded-xl shadow-xl">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="md:w-1/2 text-center md:text-left">
-                <h2 className="text-3xl font-bold mb-4">Tax Season Ready? Simplify Your Filing.</h2>
-                <p className="text-lg opacity-90 mb-6">
-                  Our platform provides tools and guidance to help you prepare for tax season.
-                  While we don't file for you, we empower you to gather information and understand your obligations.
-                </p>
-                <ul className="space-y-2 text-left mb-8 opacity-90">
-                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Access relevant tax information and guides</li>
-                  <li className="flex items-center"><BookOpen className="h-5 w-5 mr-2 text-background/80" /> Organize income and expenses for easy reporting</li>
-                  <li className="flex items-center"><CalculatorIcon className="h-5 w-5 mr-2 text-background/80" /> Use our calculators to estimate liabilities.</li>
-                </ul>
-              </div>
-              <div className="md:w-1/2 flex justify-center">
-                <Image src="https://placehold.co/400x300/ffffff/3F51B5?text=Tax+Prep+Illustration" alt="Illustration showing tax documents and a calculator, symbolizing tax preparation." width={400} height={300} className="rounded-lg shadow-md" data-ai-hint="tax document organization" />
-              </div>
-            </div>
-          </Card>
         </div>
       </section>
 

@@ -16,11 +16,11 @@ export const metadata: Metadata = {
     default: 'Arithmos: Financial Tools for Trinidad and Tobago SMEs',
     template: '%s | Arithmos', // This allows page.tsx to override the title
   },
-  description: 'Explore Arithmos suite of free financial calculators tailored for Trinidad & Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
+  description: 'Explore Arithmos suite of financial calculators tailored for Trinidad & Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
   keywords: ['Trinidad Tobago tax calculator', 'T&T tax tools', 'SME finance T&T', 'freelancer tax T&T', 'PAYE calculator T&T', 'VAT calculator T&T', 'Business Levy T&T', 'payroll calculator T&T', 'Trinidad Tobago compliance', 'financial tools T&T', 'small business tax T&T'],
   openGraph: {
-    title: 'Arithmos: Free Tax Calculators & Financial Tools for T&T SMEs',
-    description: 'Explore Arithmos suite of free financial calculators tailored for Trinidad and Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
+    title: 'Arithmos:  Tax Calculators & Financial Tools for T&T SMEs',
+    description: 'Explore Arithmos suite of  financial calculators tailored for Trinidad and Tobago businesses and freelancers. Simplify PAYE, VAT, Business Levy, payroll, and compliance with our easy-to-use tools.',
     url: 'https://yourwebsite.com', // Replace with your actual website URL
     siteName: 'Arithmos',
     images: [

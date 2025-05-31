@@ -5,7 +5,7 @@ export function AppLogo(props: ImgHTMLAttributes<HTMLImageElement>) {
   const { className, ...rest } = props;
   return (
     <img
-      src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/file.svg?alt=media&token=970ecef0-bfd9-4df4-911b-87c0ad9a5a06"
+      src="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/tax.tt%20(2).png?alt=media&token=b5a3a9f2-7f3c-4d77-b673-7a8b1105da12"
       alt="Arithmos Logo"
       className={cn(
         "h-6 w-auto", // Default size, can be overridden by passed className

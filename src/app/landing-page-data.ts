@@ -431,7 +431,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "AML Compliance Risk Calculator",
       description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions based on various factors.",
       icon: ShieldAlert,
-      category: "Compliance",
+      category: "Tax & Compliance",
  ctaText: "Open Calculator",
       component: AMLRiskCalculator, // Use the imported component
       calculatorIdentifier: "AML Risk Calculator",

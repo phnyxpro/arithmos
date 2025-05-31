@@ -55,6 +55,8 @@ import {
   Settings,
 } from "lucide-react";
 
+import { AppLogo } from "@/components/icons/app-logo";
+
 // Default Exports
 import BasicTimeCalculator from "@/components/calculators/BasicTimeCalculator";
 import SimplifiedPayrollCalculator from "@/components/calculators/SimplifiedPayrollCalculator";
@@ -83,6 +85,7 @@ import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculato
 import {AMLRiskCalculator} from "@/components/calculators/AMLRiskCalculator";
 import {FATCACRSCalculator} from "@/components/calculators/FATCACRSCalculator";
 import VoluntaryNisCalculator from "@/components/calculators/VoluntaryNisCalculator"; // Added missing import
+import { AppLogo } from "@/components/icons/app-logo";
 
 export interface HeroContent {
   icon: React.ElementType;
@@ -94,7 +97,7 @@ export interface HeroContent {
 }
 
 export const heroContentData: HeroContent = {
-  icon: Briefcase,
+  icon: AppLogo,
   headline: "Calculate. Track. Comply.", // Changed from title to headline
   primarySubheadline: "Your Tools in One Place.",
   secondarySubheadline: "From time calculations to payroll to levies simplify compliance with powerful, free tools.",

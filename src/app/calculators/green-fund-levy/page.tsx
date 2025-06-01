@@ -319,12 +319,12 @@ export default function GreenFundLevyPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-            {faqItems.map(item => (
+          <Accordion type="single" collapsible className="w-full">
+            {faqItems.map(item => (              
               <AccordionItem value={item.value} key={item.value}>
                 <AccordionTrigger>{item.trigger}</AccordionTrigger>
                 <AccordionContent>{item.content}</AccordionContent>
               </AccordionItem>
-            ))}
           </Accordion>
         </CardContent>
       </Card>

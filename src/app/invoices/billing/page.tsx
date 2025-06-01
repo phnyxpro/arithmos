@@ -342,10 +342,6 @@ export default function BillingPage() {
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-
- </CardContent>
-            </Card>
-          </div>
               </CardContent>
             </Card>
           </div>

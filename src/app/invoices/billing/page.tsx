@@ -341,4 +341,14 @@ export default function BillingPage() {
                            Placeholder for Stripe integration settings.
                         </AccordionContent>
                     </AccordionItem>
-                
+                </Accordion>
+
+ </CardContent>
+            </Card>
+          </div>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </div>

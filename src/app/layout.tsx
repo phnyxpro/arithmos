@@ -65,13 +65,13 @@ export default function RootLayout({
  <main className="flex-grow container mx-auto px-4 py-8">
  {children}
  </main>
-              <footer className="w-full py-8 text-muted-foreground text-sm bg-gray-100 dark:bg-gray-900 text-center">
-                <div className="container mx-auto px-4 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg font-semibold text-foreground mb-2">Arithmos</p>
-                    <p>
-                      Developed by{' '}
-                      <a
+ <footer className="w-full py-8 text-muted-foreground text-sm bg-gray-100 dark:bg-gray-900 text-center">
+ <div className="container mx-auto px-4 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+ <div className="flex flex-col items-center">
+ <p className="text-lg font-semibold text-foreground mb-2">Arithmos</p>
+ <p>
+ Developed by{' '}
+ <a
                         href="https://phnyx.dev"
                         target="_blank"
                         rel="noopener noreferrer"
@@ -121,7 +121,7 @@ export default function RootLayout({
                 </div>
               </footer>
               <Toaster />
-            </div>
+            </div>}
           </AppProviders>
         </ThemeProvider>
       </body>

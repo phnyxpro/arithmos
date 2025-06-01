@@ -345,14 +345,12 @@ export default function BusinessLevyPage() {
         </CardHeader>
         <CardContent>
             {faqItems.map(item => (
-              // The Accordion component should wrap the AccordionItem elements
               <AccordionItem value={item.value} key={item.value}>
                 <AccordionTrigger>{item.trigger}</AccordionTrigger>
                 <AccordionContent>{item.content}</AccordionContent>
-              </AccordionItem>
+              </AccordionItem>              
             ))}
           </Accordion>
-          </div>
         </CardContent>
       </Card>
 

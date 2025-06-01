@@ -1,6 +1,9 @@
+import { enableFirebaseTelemetry } from '@genkit-ai/firebase';
 import { askArithmos } from './ai/flows/ask-arithmos-flow';
 import { onCall } from 'firebase-functions/v2/https';
 import type { CallableRequest } from 'firebase-functions/v2/https';
+
+enableFirebaseTelemetry();
 
 /**
  * Callable Cloud Function to invoke Arithmos AI.

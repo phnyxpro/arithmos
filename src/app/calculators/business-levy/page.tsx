@@ -344,15 +344,14 @@ export default function BusinessLevyPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-            {faqItems.map(item => (
+ <Accordion type="single" collapsible>
+ {faqItems.map(item => (
  <AccordionItem value={item.value} key={item.value}>
- {/* Moved the closing tag outside the map */}
- {/* </Accordion> */}
-                <AccordionTrigger>{item.trigger}</AccordionTrigger>
-                <AccordionContent>{item.content}</AccordionContent>
-              </AccordionItem>              
-            ))}
-          </Accordion>
+ <AccordionTrigger>{item.trigger}</AccordionTrigger>
+ <AccordionContent>{item.content}</AccordionContent>
+ </AccordionItem>
+ ))}
+ </Accordion>
         </CardContent>
       </Card>
 

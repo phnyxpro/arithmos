@@ -160,6 +160,7 @@ export default function GreenFundLevyPage() {
     },
   ];
 
+ const unpaidQuarters = quarterlyData.filter(q => !q.isPaid).length;
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
       <Card className="w-full max-w-4xl shadow-xl rounded-xl">
@@ -299,6 +300,12 @@ export default function GreenFundLevyPage() {
                   </TableBody>
                 </Table>
               </div>
+             {unpaidQuarters > 0 && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded mt-4">
+                  💡 You have {unpaidQuarters} unpaid {unpaidQuarters === 1 ? "quarter" : "quarters"}.
+                  Consider paying early to avoid interest or late penalties.
+                </div>
+              )}
             </CardContent>
           </Card>
         </CardContent>
@@ -319,12 +326,13 @@ export default function GreenFundLevyPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
+ <Accordion type="single" collapsible className="w-full">
             {faqItems.map(item => (              
               <AccordionItem value={item.value} key={item.value}>
                 <AccordionTrigger>{item.trigger}</AccordionTrigger>
                 <AccordionContent>{item.content}</AccordionContent>
-              </AccordionItem>
+              </AccordionItem>              
+            ))} {/* ✅ Correctly closing the map callback here */}
           </Accordion>
         </CardContent>
       </Card>
@@ -359,5 +367,3 @@ export default function GreenFundLevyPage() {
     </div>
   );
 }
-
-    

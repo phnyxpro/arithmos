@@ -93,7 +93,7 @@ const initialCalculationResults = {
   yearDisplay: "",
 };
 
-export function BonusCommissionCalculator() {
+export default function BonusCommissionCalculator() {
   const { toast } = useToast();
   const [regularMonthlySalary, setRegularMonthlySalary] = useState<string>("");
   const [bonusAmount, setBonusAmount] = useState<string>("");
@@ -255,10 +255,10 @@ Health Surcharge (Monthly): TT$ ${calculationResults.hsOnTotalMonthly}
 ---------------------------------
 Additional Impact of Bonus/Commission:
 Additional PAYE: TT$ ${calculationResults.additionalPaye}
-Additional NIS: TT$ ${calculationResults.additionalNis}
+Additional NIS (if applicable to total): TT$ ${calculationResults.additionalNis}
 Additional Health Surcharge: TT$ ${calculationResults.additionalHs}
 Total Additional Deductions on Bonus/Commission: TT$ ${calculationResults.totalAdditionalDeductions}
-Net Bonus/Commission after Additional Deductions: TT$ ${calculationResults.netBonusCommissionDisplay}
+Net Bonus/Commission After Tax: TT$ ${calculationResults.netBonusCommissionDisplay}
 ---------------------------------
 Overall Net Pay for Period: TT$ ${calculationResults.totalNetPayForPeriodDisplay}
 ---------------------------------

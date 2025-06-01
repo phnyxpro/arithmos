@@ -23,7 +23,7 @@ const initialCalculationResults = {
   breakEvenRevenueDisplay: "0.00",
 };
 
-export function BreakEvenCalculator() {
+export default function BreakEvenCalculator() {
   const { toast } = useToast();
 
   const [fixedCosts, setFixedCosts] = useState<string>("");

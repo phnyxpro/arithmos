@@ -52,7 +52,7 @@ const initialCalculationResults = {
   overallNetCashFlowDisplay: "0.00",
 };
 
-export function CashFlowProjectionCalculator() {
+export default function CashFlowProjectionCalculator() {
   const { toast } = useToast();
 
   const [openingBalance, setOpeningBalance] = useState<string>("10000");
@@ -165,10 +165,12 @@ Projection Details (First 5 Periods):
 Period | Opening Bal. | Inflows | Outflows | Net Flow | Closing Bal.
 `;
     projectionData.slice(0, 5).forEach(entry => {
-        textToCopy += `${entry.period} | ${entry.openingBalanceDisplay} | ${entry.inflowsDisplay} | ${entry.outflowsDisplay} | ${entry.netCashFlowDisplay} | ${entry.closingBalanceDisplay}\n`;
+        textToCopy += `${entry.period} | ${entry.openingBalanceDisplay} | ${entry.inflowsDisplay} | ${entry.outflowsDisplay} | ${entry.netCashFlowDisplay} | ${entry.closingBalanceDisplay}
+`;
     });
     if (projectionData.length > 5) {
-        textToCopy += "... and more periods ...\n";
+        textToCopy += "... and more periods ...
+";
     }
     textToCopy += `---------------------------------
 Disclaimer: This is an estimate. Actual cash flows may vary.

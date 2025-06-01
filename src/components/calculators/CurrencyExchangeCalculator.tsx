@@ -1,4 +1,3 @@
-
 // src/components/calculators/CurrencyExchangeCalculator.tsx
 "use client";
 
@@ -187,7 +186,7 @@ const initialConversionResults = {
   conversionDisclaimer: "",
 };
 
-export function CurrencyExchangeCalculator() {
+export default function CurrencyExchangeCalculator() {
   const { toast } = useToast();
 
   const [amount, setAmount] = useState<string>("100");

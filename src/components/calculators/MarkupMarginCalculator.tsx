@@ -18,7 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { Target, DollarSign, Percent as PercentIcon, Copy, Trash2, Info } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-export function MarkupMarginCalculator() {
+export default function MarkupMarginCalculator() {
   const { toast } = useToast();
 
   const [cost, setCost] = useState<string>("");

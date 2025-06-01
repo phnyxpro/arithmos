@@ -49,7 +49,7 @@ const initialSummary = {
   annualDepreciationSL: "0.00", // For straight-line
 };
 
-export function DepreciationCalculator() {
+export default function DepreciationCalculator() {
   const { toast } = useToast();
 
   const [assetCost, setAssetCost] = useState<string>("");
@@ -180,10 +180,12 @@ Depreciation Schedule:
 Year | Opening BV | Depreciation | Acc. Depreciation | Closing BV
 `;
     depreciationSchedule.slice(0, 10).forEach(entry => { // Copy first 10 entries for brevity
-        textToCopy += `${entry.year} | ${entry.openingBookValue} | ${entry.depreciationExpense} | ${entry.accumulatedDepreciation} | ${entry.closingBookValue}\n`;
+        textToCopy += `${entry.year} | ${entry.openingBookValue} | ${entry.depreciationExpense} | ${entry.accumulatedDepreciation} | ${entry.closingBookValue}
+`;
     });
     if (depreciationSchedule.length > 10) {
-        textToCopy += "... and more entries ...\n";
+        textToCopy += "... and more entries ...
+";
     }
     textToCopy += `---------------------------------
 Disclaimer: Estimates only. Consult accounting standards and professionals.
@@ -219,7 +221,7 @@ Disclaimer: Estimates only. Consult accounting standards and professionals.
               </Label>
               <Input
                 id="usefulLife" type="number" step="1" placeholder="e.g., 5"
-                value={usefulLife} onChange={(e) => setUsefulLife(e.target.value)}
+                value={usefulLife} onChange={(e) => setUsefulLife(e.target.value)}\
                 className="h-9 text-sm"
               />
             </div>

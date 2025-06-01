@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox'; // Added Checkbox
 import { Watch, Copy, Trash2, Plus, Minus } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast"; // Uncommented useToast
 
-export function BasicTimeCalculator() {
+export default function BasicTimeCalculator() {
   const { toast } = useToast();
 
   // State for "Calculate Duration & Pay"
@@ -286,5 +286,3 @@ export function BasicTimeCalculator() {
     </div>
   );
 }
-
-export default BasicTimeCalculator;

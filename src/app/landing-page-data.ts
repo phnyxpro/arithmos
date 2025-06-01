@@ -64,25 +64,25 @@ import SimpleVatCalculator from "@/components/calculators/SimpleVatCalculator";
 import ExciseDutyCalculator from "@/components/calculators/ExciseDutyCalculator";
 import GrossToNetSalaryCalculator from "@/components/calculators/GrossToNetSalaryCalculator";
 import OvertimePayCalculator from "@/components/calculators/OvertimePayCalculator";
-import {BonusCommissionCalculator} from "@/components/calculators/BonusCommissionCalculator";
+import BonusCommissionCalculator from "@/components/calculators/BonusCommissionCalculator";
 import VacationPayCalculator from "@/components/calculators/VacationPayCalculator";
 import LoanAmortisationCalculator from "@/components/calculators/LoanAmortisationCalculator";
 import MortgageCalculator from "@/components/calculators/MortgageCalculator";
 import SavingsInvestmentCalculator from "@/components/calculators/SavingsInvestmentCalculator";
-import {CurrencyExchangeCalculator} from "@/components/calculators/CurrencyExchangeCalculator";
+import CurrencyExchangeCalculator from "@/components/calculators/CurrencyExchangeCalculator";
 import SimpleInterestCalculator from "@/components/calculators/SimpleInterestCalculator";
-import {MarkupMarginCalculator} from "@/components/calculators/MarkupMarginCalculator";
-import {BreakEvenCalculator} from "@/components/calculators/BreakEvenCalculator";
-import {CashFlowProjectionCalculator} from "@/components/calculators/CashFlowProjectionCalculator";
-import {DepreciationCalculator} from "@/components/calculators/DepreciationCalculator";
+import MarkupMarginCalculator from "@/components/calculators/MarkupMarginCalculator";
+import BreakEvenCalculator from "@/components/calculators/BreakEvenCalculator";
+import CashFlowProjectionCalculator from "@/components/calculators/CashFlowProjectionCalculator";
+import DepreciationCalculator from "@/components/calculators/DepreciationCalculator";
 import TariffCustomsDutyCalculator from "@/components/calculators/TariffCustomsDutyCalculator";
 import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
-import {CIFCalculator} from "@/components/calculators/CIFCalculator";
+import CIFCalculator from "@/components/calculators/CIFCalculator";
 import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
-import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
+import PropertyTaxDialogCalculator from "@/components/calculators/PropertyTaxDialogCalculator";
 import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculator";
-import {AMLRiskCalculator} from "@/components/calculators/AMLRiskCalculator";
-import {FATCACRSCalculator} from "@/components/calculators/FATCACRSCalculator";
+import AMLRiskCalculator from "@/components/calculators/AMLRiskCalculator";
+import FATCACRSCalculator from "@/components/calculators/FATCACRSCalculator";
 import VoluntaryNisCalculator from "@/components/calculators/VoluntaryNisCalculator"; // Added missing import
 
 export interface HeroContent {

@@ -1,4 +1,3 @@
-
 import * as React from "react";
 
 // Icons from Lucide
@@ -80,7 +79,7 @@ import TariffCustomsDutyCalculator from "@/components/calculators/TariffCustomsD
 import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
 import {CIFCalculator} from "@/components/calculators/CIFCalculator";
 import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
-import PropertyTaxDialogCalculator from "@/components/calculators/PropertyTaxDialogCalculator";
+import { PropertyTaxDialogCalculator } from "@/components/calculators/PropertyTaxDialogCalculator";
 import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculator";
 import {AMLRiskCalculator} from "@/components/calculators/AMLRiskCalculator";
 import {FATCACRSCalculator} from "@/components/calculators/FATCACRSCalculator";
@@ -165,19 +164,19 @@ export const resourceGuides: ResourceGuide[] = [
       title: "Understanding VAT",
       description: "An in-depth guide to VAT registration, obligations, and filing.",
       link: "/knowledge-base/vat",
-      category: "VAT"
+      category: "Tax & Compliance"
     },
     {
       title: "Income & Corporation Tax",
       description: "Overview of personal and corporate income tax laws.",
       link: "/knowledge-base/income-corporation-tax",
-      category: "Income Tax"
+      category: "Tax & Compliance"
     },
     {
       title: "Property Tax Essentials",
       description: "Key aspects of the Property Tax Act explained.",
       link: "/knowledge-base/property-tax",
-      category: "Property Tax"
+      category: "Real Estate & Property"
     },
 ];
 
@@ -195,9 +194,10 @@ export interface DetailedCalculatorListItem {
 export const calculatorCategories = [
   "Payroll & HR",
   "Tax & Compliance",
-  "Financial Planning",
-  "Business Tools",
   "Trade & Customs",
+  "Financial Planning",
+  "Real Estate & Property",
+  "Risk & Legal",
 ];
 
 export const detailedCalculatorList: DetailedCalculatorListItem[] = [
@@ -207,7 +207,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Clock,
       category: "Payroll & HR",
       ctaText: "Open Calculator",
-      component: BasicTimeCalculator, // Use the imported component
+      component: BasicTimeCalculator,
       calculatorIdentifier: "Time Calculator",
     },
     {
@@ -216,7 +216,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: UsersIcon,
       category: "Payroll & HR",
       ctaText: "Open Calculator",
-      component: SimplifiedPayrollCalculator, // Use the imported component
+      component: SimplifiedPayrollCalculator,
       calculatorIdentifier: "Payroll Calculator",
     },
     {
@@ -225,7 +225,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: FileHeart,
       category: "Payroll & HR",
       ctaText: "Estimate Voluntary NIS",
-      component: VoluntaryNisCalculator, // Use the imported component
+      component: VoluntaryNisCalculator,
       calculatorIdentifier: "Voluntary NIS Calculator",
     },
     {
@@ -234,7 +234,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Landmark,
       category: "Tax & Compliance",
  ctaText: "Open Calculator",
-      component: SimplifiedLevyCalculator, // Use the imported component
+      component: SimplifiedLevyCalculator,
       calculatorIdentifier: "Levy Calculator",
     },
 
@@ -244,7 +244,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Percent,
       category: "Tax & Compliance",
  ctaText: "Open Calculator",
-      component: SimpleVatCalculator, // Use the imported component
+      component: SimpleVatCalculator,
       calculatorIdentifier: "Simple VAT Calculator",
     },
     {
@@ -253,7 +253,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Cigarette,
       category: "Trade & Customs",
  ctaText: "Open Calculator",
-      component: ExciseDutyCalculator, // Use the imported component
+      component: ExciseDutyCalculator,
       calculatorIdentifier: "Excise Duty Calculator",
     },
     {
@@ -262,7 +262,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: DollarSign,
       category: "Payroll & HR",
  ctaText: "Open Calculator",
-      component: GrossToNetSalaryCalculator, // Use the imported component
+      component: GrossToNetSalaryCalculator,
       calculatorIdentifier: "Gross to Net Salary Calculator",
     },
     {
@@ -271,7 +271,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Clock,
       category: "Payroll & HR",
  ctaText: "Open Calculator",
-      component: OvertimePayCalculator, // Use the imported component
+      component: OvertimePayCalculator,
       calculatorIdentifier: "Overtime Pay Calculator",
     },
     {
@@ -280,7 +280,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Gift,
       category: "Payroll & HR",
  ctaText: "Open Calculator",
-      component: BonusCommissionCalculator, // Use the imported component
+      component: BonusCommissionCalculator,
       calculatorIdentifier: "Bonus & Commission Calculator",
     },
     {
@@ -289,7 +289,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Plane,
       category: "Payroll & HR",
  ctaText: "Open Calculator",
-      component: VacationPayCalculator, // Use the imported component
+      component: VacationPayCalculator,
       calculatorIdentifier: "Vacation Pay Calculator",
     },
     {
@@ -298,7 +298,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Landmark,
       category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: LoanAmortisationCalculator, // Use the imported component
+      component: LoanAmortisationCalculator,
       calculatorIdentifier: "Loan Amortisation Calculator",
     },
     {
@@ -307,7 +307,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: HomeIconLucide,
       category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: MortgageCalculator, // Use the imported component
+      component: MortgageCalculator,
       calculatorIdentifier: "Mortgage Calculator",
     },
     {
@@ -316,16 +316,16 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: PiggyBank,
       category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: SavingsInvestmentCalculator, // Use the imported component
+      component: SavingsInvestmentCalculator,
       calculatorIdentifier: "Savings & Investment Calculator",
     },
     {
       name: "Currency Exchange Calculator",
       description: "Get indicative exchange rates using AI for various currencies. Includes popular rates (TTD base).",
       icon: ArrowRightLeft,
-      category: "Business Tools",
+      category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: CurrencyExchangeCalculator, // Use the imported component
+      component: CurrencyExchangeCalculator,
       calculatorIdentifier: "Currency Exchange Calculator",
     },
     {
@@ -334,43 +334,43 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: PercentCircle,
       category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: SimpleInterestCalculator, // Use the imported component
+      component: SimpleInterestCalculator,
       calculatorIdentifier: "Simple Interest Calculator",
     },
     {
       name: "Markup & Margin Calculator",
       description: "Accurately determine product/service pricing and profit margins by calculating markup or margin based on cost and selling price.",
       icon: Target,
-      category: "Business Tools",
+      category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: MarkupMarginCalculator, // Use the imported component
+      component: MarkupMarginCalculator,
       calculatorIdentifier: "Markup & Margin Calculator",
     },
     {
       name: "Break-even Analysis Calculator",
       description: "Determine sales volume (units and revenue) needed to cover fixed and variable expenses.",
       icon: LineChart,
-      category: "Business Tools",
+      category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: BreakEvenCalculator, // Use the imported component
+      component: BreakEvenCalculator,
       calculatorIdentifier: "Break-even Analysis Calculator",
     },
     {
       name: "Cash Flow Projection Calculator",
       description: "Forecast your business's cash inflows and outflows over several periods.",
       icon: AreaChart,
-      category: "Business Tools",
+      category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: CashFlowProjectionCalculator, // Use the imported component
+      component: CashFlowProjectionCalculator,
       calculatorIdentifier: "Cash Flow Projection Calculator",
     },
     {
       name: "Depreciation Calculator",
       description: "Calculate depreciation using Straight-Line or Reducing Balance methods and view the schedule.",
       icon: BuildingIconLucide,
-      category: "Business Tools",
+      category: "Financial Planning",
  ctaText: "Open Calculator",
-      component: DepreciationCalculator, // Use the imported component
+      component: DepreciationCalculator,
       calculatorIdentifier: "Depreciation Calculator",
     },
     {
@@ -379,7 +379,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Ship,
       category: "Trade & Customs",
  ctaText: "Open Calculator",
-      component: TariffCustomsDutyCalculator, // Use the imported component
+      component: TariffCustomsDutyCalculator,
       calculatorIdentifier: "Tariff & Customs Duty Calculator",
     },
     {
@@ -388,7 +388,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: Truck,
       category: "Trade & Customs",
  ctaText: "Open Calculator",
-      component: FreightShippingCalculator, // Use the imported component
+      component: FreightShippingCalculator,
       calculatorIdentifier: "Freight & Shipping Cost Calculator",
     },
     {
@@ -397,59 +397,59 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       icon: FileBox,
       category: "Trade & Customs",
  ctaText: "Open Calculator",
-      component: CIFCalculator, // Use the imported component
+      component: CIFCalculator,
       calculatorIdentifier: "CIF Calculator",
     },
     {
       name: "Stamp Duty Calculator",
       description: "Estimate stamp duty payable on residential property transfers based on property value using tiered rates.",
       icon: Stamp,
-      category: "Tax & Compliance",
+      category: "Real Estate & Property",
  ctaText: "Open Calculator",
-      component: StampDutyCalculator, // Use the imported component
+      component: StampDutyCalculator,
       calculatorIdentifier: "Stamp Duty Calculator",
     },
     {
       name: "Property Tax Calculator (Dialog)",
       description: "Quickly estimate annual property tax obligations based on Annual Rental Value (ARV).",
       icon: HomeIconLucide,
-      category: "Tax & Compliance",
+      category: "Real Estate & Property",
  ctaText: "Open Calculator",
-      component: PropertyTaxDialogCalculator, // Use the imported component
+      component: PropertyTaxDialogCalculator,
       calculatorIdentifier: "Property Tax Calculator (Dialog)",
     },
     {
       name: "Rental Yield Calculator",
       description: "Calculate gross and net rental yield to evaluate the profitability of rental property investments.",
       icon: Building2,
-      category: "Financial Planning",
+      category: "Real Estate & Property",
  ctaText: "Open Calculator",
-      component: RentalYieldCalculator, // Use the imported component
+      component: RentalYieldCalculator,
       calculatorIdentifier: "Rental Yield Calculator",
     },
     {
       name: "AML Compliance Risk Calculator",
       description: "Quickly determine the Anti-Money Laundering (AML) risk of transactions based on various factors.",
       icon: ShieldAlert,
-      category: "Tax & Compliance",
+      category: "Risk & Legal",
  ctaText: "Open Calculator",
-      component: AMLRiskCalculator, // Use the imported component
+      component: AMLRiskCalculator,
       calculatorIdentifier: "AML Risk Calculator",
     },
     {
       name: "FATCA & CRS Compliance Calculator",
       description: "Assess and report obligations under FATCA & CRS regulations based on account holder information.",
       icon: Network,
-      category: "Tax & Compliance",
+      category: "Risk & Legal",
  ctaText: "Open Calculator",
-      component: FATCACRSCalculator, // Use the imported component
+      component: FATCACRSCalculator,
       calculatorIdentifier: "FATCA & CRS Calculator",
     },
     {
       name: "Income Tax (Full Page)",
       description: "Comprehensive personal income tax calculation including PAYE, NIS, and Health Surcharge.",
       icon: DollarSign,
-      category: "Tax",
+      category: "Tax & Compliance",
       href: "/calculators/income-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Income Tax (Full Page)",
@@ -458,7 +458,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Corporation Tax (Full Page)",
       description: "Detailed corporation tax calculation with various income types, deductions, and offsets.",
       icon: Landmark,
-      category: "Tax",
+      category: "Tax & Compliance",
       href: "/calculators/corporation-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Corporation Tax (Full Page)",
@@ -467,7 +467,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "VAT Calculator (Full Page)",
       description: "Calculate VAT, check registration eligibility, and explore VAT guides.",
       icon: ReceiptText,
-      category: "Tax",
+      category: "Tax & Compliance",
       href: "/calculators/vat",
       ctaText: "View Page",
       calculatorIdentifier: "VAT Calculator (Full Page)",
@@ -476,7 +476,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Property Tax Estimator (Full Page)",
       description: "Estimate property taxes based on Annual Rental Value (ARV) and property type.",
       icon: HomeIconLucide,
-      category: "Tax",
+      category: "Real Estate & Property",
       href: "/calculators/property-tax",
       ctaText: "View Page",
       calculatorIdentifier: "Property Tax Estimator (Full Page)",
@@ -485,7 +485,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Business Levy (Full Page)",
       description: "Detailed Business Levy calculation with quarterly tracking. Considers exemptions for new companies (first 3 years).",
       icon: Briefcase,
-      category: "Tax",
+      category: "Tax & Compliance",
       href: "/calculators/business-levy",
       ctaText: "View Page",
       calculatorIdentifier: "Business Levy (Full Page)",
@@ -494,7 +494,7 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       name: "Green Fund Levy (Full Page)",
       description: "Calculate Green Fund Levy with options for annual, quarterly, or monthly income input and quarterly tracking.",
       icon: Leaf,
-      category: "Tax",
+      category: "Tax & Compliance",
       href: "/calculators/green-fund-levy",
       ctaText: "View Page",
       calculatorIdentifier: "Green Fund Levy (Full Page)",
@@ -518,4 +518,3 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
       calculatorIdentifier: "Time Calculator (Full Page)",
     }
 ];
-

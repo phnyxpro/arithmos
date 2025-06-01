@@ -121,7 +121,7 @@ export default function RootLayout({
                 </div>
               </footer>
               <Toaster />
-            </div>}
+            </div>
           </AppProviders>
         </ThemeProvider>
       </body>

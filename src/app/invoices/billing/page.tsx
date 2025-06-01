@@ -149,8 +149,8 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
-      <Card className="border bg-card text-card-foreground w-full max-w-6xl shadow-xl rounded-xl">
+     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
+      <Card className="border bg-card text-card-foreground w-full max-w-6xl shadow-xl rounded-xl mb-8"> {/* Added margin bottom */}
         <CardHeader className="flex flex-col space-y-1.5 p-6">
           <div className="flex items-center space-x-3">
             <FileText className="h-8 w-8 text-primary" />
@@ -160,7 +160,7 @@ export default function BillingPage() {
             Create, send, and track professional invoices. Invoices are currently saved to your browser.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6 pt-0 space-y-8">
+        <CardContent className="p-6 pt-0 space-y-8 max-w-full overflow-x-hidden"> {/* Added max-w-full and overflow-x-hidden to contain content */}
           {/* Search and Create */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="relative w-full sm:max-w-md">

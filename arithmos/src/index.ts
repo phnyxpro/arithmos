@@ -1,25 +1,17 @@
-import { enableFirebaseTelemetry } from '@genkit-ai/firebase';
-import { askArithmos } from './ai/flows/ask-arithmos-flow';
-import { onCall } from 'firebase-functions/v2/https';
-import type { CallableRequest } from 'firebase-functions/v2/https';
+// import the Genkit and Google AI plugin libraries
+import { gemini15Flash, googleAI } from '@genkit-ai/googleai';
+import { genkit } from 'genkit';
 
-enableFirebaseTelemetry();
+// configure a Genkit instance
+const ai = genkit({
+  plugins: [googleAI()],
+  model: gemini15Flash, // set default model
+});
 
-/**
- * Callable Cloud Function to invoke Arithmos AI.
- *
- * @param {CallableRequest<{ question: string }>} request - The callable function request with the user's question.
- * @returns {Promise<string>} The AI's answer.
- */
-export const askArithmosFlow = onCall<{ question: string }, string>(
-  async (request: CallableRequest<{ question: string }>): Promise<string> => {
-    const question = request.data.question;
+const helloFlow = ai.defineFlow('helloFlow', async (name) => {
+  // make a generation request
+  const { text } = await ai.generate(`Hello Gemini, my name is ${name}`);
+  console.log(text);
+});
 
-    if (!question || typeof question !== 'string') {
-      throw new Error('INVALID_ARGUMENT: Missing or invalid question.');
-    }
-
-    const answer = await askArithmos(question);
-    return answer;
-  }
-);
+helloFlow('Chris');

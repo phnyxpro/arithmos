@@ -1,5 +1,4 @@
-import * as genkit from 'genkit';
-import { configureGenkit, defineFlow, definePrompt } from 'genkit';
+import { configureGenkit, defineFlow, definePrompt } from '@genkit-ai/core';
 import { firebasePlugin } from '@genkit-ai/firebase';
 import { googleAIPlugin } from '@genkit-ai/googleai';
 
@@ -33,7 +32,7 @@ const askArithmosFlow = defineFlow(
   },
   async (question: string) => {
     const response = await askArithmosPrompt({ input: question });
-    return response.text() ?? 'I couldn\'t generate a response.';
+    return response.text() ?? "I couldn't generate a response.";
   }
 );
 

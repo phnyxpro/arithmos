@@ -232,9 +232,10 @@ export const detailedCalculatorList: DetailedCalculatorListItem[] = [
     {
  name: "Debt-to-Income Ratio Calculator",
  description: "Calculate your debt-to-income ratio to assess your financial health and borrowing capacity.",
- icon: Percent as Percent,
+ icon: Percent,
  category: "Financial Planning",
  ctaText: "Open Calculator",
+ component: DebtToIncomeRatioCalculator,
  calculatorIdentifier: "Debt-to-Income Ratio Calculator",
     },
     {

@@ -2,21 +2,16 @@
 
 import * as React from "react";
 import { useState } from "react"; // Import useState
-// Removed LazyExoticComponent import
-
 // Next.js core
 import Link from "next/link";
-import Image from "next/image";
 
 // Hooks
-import { useToast } from "@/hooks/use-toast";
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 
 // Utilities
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { handleAskArithmos } from "@/lib/actions"; // Import the server action
-
 
 // UI Components
 import {
@@ -38,15 +33,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  ScrollArea,
-  ScrollBar,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Input
+  // Removed ScrollArea, ScrollBar, Tabs, TabsContent, TabsList, TabsTrigger, Input - not used after removing chatbot
 } from "@/components/ui";
-import { StarReviewDialog } from "@/components/ui/star-review-dialog";
+// Removed StarReviewDialog - not used after removing review functionality
 
 // Icons from Lucide
 import {
@@ -79,11 +68,6 @@ import {
   Stamp,
   Home as HomeIconLucide,
   ShieldAlert,
-  Network,
-  Cigarette,
-  Gift,
-  Plane,
-  PercentCircle,
   Building2,
   Download,
   Mail,
@@ -92,7 +76,6 @@ import {
   Eye,
   Loader2,
   HelpCircle,
-  Settings,
 } from "lucide-react";
 
 // Static Data
@@ -116,12 +99,6 @@ interface ActiveCalculatorInfo {
   description?: string; // Make description optional if not always present
 }
 
-// Define Message type
-interface Message {
-  text: string;
-  sender: 'user' | 'ai';
-}
-
 export default function LandingPage() {
   const { toast } = useToast();
   const {
@@ -135,9 +112,6 @@ export default function LandingPage() {
 
   const HeroIcon = pageHeroData.icon;
 
-  const [isReviewDialogOpen, setIsReviewDialogOpen] = React.useState(false);
-  const [calculatorToReview, setCalculatorToReview] = React.useState<string | null>(null);
-  
   // Filter for calculators that should be in the dialog (have a component)
   const dialogCalculators = React.useMemo(() => {
     return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => !!calc.component);
@@ -147,8 +121,6 @@ export default function LandingPage() {
   const uniqueCategories = React.useMemo(() => {
     return Array.from(new Set(dialogCalculators.map((calc) => calc.category)));
   }, [dialogCalculators]);
-
-  // Removed incorrect calculatorCategories definition
 
   const [activeCalculatorFilter, setActiveCalculatorFilter] = React.useState<string>(uniqueCategories[0] || "All");
   const [activeDeadlineFilter, setActiveDeadlineFilter] = React.useState<string>("All");
@@ -173,59 +145,11 @@ export default function LandingPage() {
     return dialogCalculators.filter(calc => calc.category === activeCalculatorFilter);
   }, [activeCalculatorFilter, dialogCalculators]);
 
-
   const handleCalculatorDialogClose = React.useCallback((isOpen: boolean) => {
     if (!isOpen && activeCalculator) {
-      setCalculatorToReview(activeCalculator.title);
-      setIsReviewDialogOpen(true);
       setActiveCalculator(null);
     }
-  }, [activeCalculator, setIsReviewDialogOpen, setCalculatorToReview, setActiveCalculator]);
-
-  const handleSubmitReview = (calculatorName: string, rating: number) => {
-    console.log(`Review submitted for ${calculatorName}: ${rating} stars`);
-    toast({
-      title: "Review Submitted!",
-      description: `Thanks for rating the ${calculatorName} ${rating} stars.`,
-    });
-    setIsReviewDialogOpen(false);
-    setCalculatorToReview(null);
-  };
-
-  // State for AI Chatbot
-  const [messages, setMessages] = useState<Message[]>([
-    { text: "Hello! Ask me anything about T&T finance, tax, and business.", sender: 'ai' },
-  ]);
-  const [inputMessage, setInputMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Function to handle sending message
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return; // Prevent sending empty or while loading
-
-    const userMessage = inputMessage;
-    setMessages(prevMessages => [...prevMessages, { text: userMessage, sender: 'user' }]);
-    setInputMessage(''); // Clear input field
-    setIsLoading(true);
-
-    try {
-      const aiResponse = await handleAskArithmos(userMessage);
-      setMessages(prevMessages => [...prevMessages, { text: aiResponse, sender: 'ai' }]);
-    } catch (error) {
-      console.error("Error calling Arithmos AI:", error);
-      setMessages(prevMessages => [...prevMessages, { text: "Sorry, I couldn't get a response right now. Please try again later.", sender: 'ai' }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle Enter key press in the input field
-  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
+  }, [activeCalculator, setActiveCalculator]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -341,52 +265,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* AI Chatbot Section */}
-      <section id="ai-chatbot" className="py-16 lg:py-24 bg-muted/50">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-primary mb-6">
-            Ask Arithmos (Powered by Gemini)
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-            Get quick answers to your questions about accounts, finance, business, tax, and legal topics relevant to Trinidad and Tobago. Ask things like, "How to decrease my Total Interest Paid on a loan Amortisation?"
-          </p>
-          {/* Chatbot Interface */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-xl mx-auto h-96 flex flex-col">
-            <ScrollArea className="flex-grow pr-4 overflow-y-auto text-sm text-gray-700 dark:text-gray-300">
-              {messages.map((message, index) => (
-                <div key={index} className={`mb-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
-                  <strong>{message.sender === 'user' ? 'You' : 'Arithmos AI'}:</strong> {message.text}
-                </div>
-              ))}
-               {isLoading && (
-                <div className="mb-2 text-left text-gray-500 dark:text-gray-400 animate-pulse">
-                  <strong>Arithmos AI:</strong> Thinking...
-                </div>
-              )}
-            </ScrollArea>
-            <div className="mt-4 flex items-center">
-              <Input
-                placeholder="Ask a question..."
-                className="flex-grow mr-2"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleInputKeyPress}
-                disabled={isLoading}
-              />
-              <Button onClick={handleSendMessage} disabled={isLoading || !inputMessage.trim()}>
-                 {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  'Send'
-                )}
-              </Button>
-            </div>
-          </div>
-          <p className="text-xs text-muted-foreground mt-4">
-            Disclaimer: This AI provides general information for guidance only. Consult a qualified professional for specific advice.
-          </p>
-        </div>
-      </section>
+      {/* AI Chatbot Section REMOVED */}
 
       {/* Why Choose Arithmos */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
@@ -599,13 +478,6 @@ export default function LandingPage() {
         </React.Suspense>
       )}
 
-      {/* Review Dialog */}
-      <StarReviewDialog
-        isOpen={isReviewDialogOpen}
-        onOpenChange={setIsReviewDialogOpen}
-        calculatorName={calculatorToReview}
-        onSubmitReview={handleSubmitReview}
-      />
     </div>
   );
 }

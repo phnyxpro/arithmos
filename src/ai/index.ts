@@ -1,9 +1,7 @@
 
 import { enableFirebaseTelemetry } from "@genkit-ai/firebase";
-import { askArithmos, type AskArithmosInput, type AskArithmosOutput } from '@/ai/flows/ask-arithmos-flow'; // Correct import
-import { onCall, HttpsError } from "firebase-functions/v1/https"; // Import HttpsError
-import type { CallableRequest } from "firebase-functions/v1/https";
-
+import { onCall, HttpsError } from "firebase-functions/v2/https"; // Import HttpsError
+import type { CallableRequest } from "firebase-functions/v2/https";
 enableFirebaseTelemetry();
 
 /**
@@ -11,7 +9,7 @@ enableFirebaseTelemetry();
  * @param {CallableRequest<{ question: string }>} request - The incoming function request.
  * @return {Promise<string>} The AI's response text.
  */
-export const askArithmosFlow = onCall(
+const askArithmosFlow = onCall(
   async (request: CallableRequest<{ question: string }>): Promise<string> => { // Return type string for simple text response
     const question = request.data.question;
 
@@ -20,8 +18,8 @@ export const askArithmosFlow = onCall(
     }
 
     try {
-      const input: AskArithmosInput = { question };
-      const result: AskArithmosOutput = await askArithmos(input); // Call the Genkit flow
+      const input = { question };
+      const result = await askArithmos(input); // Call the Genkit flow
       return result.answer; // Return only the answer string
     } catch (error) {
       console.error("Error calling askArithmos Genkit flow:", error);

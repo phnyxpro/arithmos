@@ -5,6 +5,7 @@ import { useState } from "react"; // Import useState
 // Next.js core
 import Link from "next/link";
 
+import { useToast } from '@/hooks/use-toast';
 // Hooks
 import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 

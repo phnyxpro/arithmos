@@ -26,9 +26,10 @@
       initializeApp(await firebaseConfig.json());
 
       async function generatePoem() {
-        const poemFlow = httpsCallable(getFunctions(), 'generatePoem');
+        // Corrected function name from 'generatePoem' to 'askArithmosFlow'
+        const poemFlow = httpsCallable(getFunctions(), 'askArithmosFlow');
         const subject = document.querySelector('#subject').value;
-        const response = await poemFlow(subject);
+        const response = await poemFlow({ question: subject }); // Callable function expects data as an object
         document.querySelector('#generatedPoem').innerText = response.data;
       }
 

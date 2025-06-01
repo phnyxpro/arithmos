@@ -16,9 +16,7 @@ export default function FATCACRSCalculator() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            This calculator is under construction.
-          </p>
+          {/* Implement FATCA & CRS Compliance Calculator functionality here */}
         </CardContent>
       </Card>
     </div>

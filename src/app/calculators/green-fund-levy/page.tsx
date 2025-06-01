@@ -319,7 +319,7 @@ export default function GreenFundLevyPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
+          <div>
             {faqItems.map(item => (
               <AccordionItem value={item.value} key={item.value}>
                 <AccordionTrigger>{item.trigger}</AccordionTrigger>
@@ -327,6 +327,7 @@ export default function GreenFundLevyPage() {
               </AccordionItem>
             ))}
           </Accordion>
+          </div>
         </CardContent>
       </Card>
 

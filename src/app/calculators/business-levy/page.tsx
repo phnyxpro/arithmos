@@ -344,14 +344,15 @@ export default function BusinessLevyPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
             {faqItems.map(item => (
+              // The Accordion component should wrap the AccordionItem elements
               <AccordionItem value={item.value} key={item.value}>
                 <AccordionTrigger>{item.trigger}</AccordionTrigger>
                 <AccordionContent>{item.content}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+          </div>
         </CardContent>
       </Card>
 

@@ -422,7 +422,7 @@ export default function LandingPage() {
           <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
             Find answers to common questions about our platform.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="max-w-5xl mx-auto ">
  <Accordion type="single" collapsible className="w-full">
  {faqData.map((item: {question: string; answer: string}, index: number) => (
  <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>

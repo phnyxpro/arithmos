@@ -1,4 +1,4 @@
-import { configureGenkit, defineFlow, definePrompt } from '@genkit-ai/core';
+import { configureGenkit, defineFlow, definePrompt } from 'genkit';
 import { firebasePlugin } from '@genkit-ai/firebase';
 import { googleAIPlugin } from '@genkit-ai/googleai';
 

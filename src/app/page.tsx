@@ -297,6 +297,38 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* AI Chatbot Section */}
+      <section id="ai-chatbot" className="py-16 lg:py-24 bg-muted/50">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-primary mb-6">
+            Ask Arithmos (Powered by Gemini)
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            Get quick answers to your questions about accounts, finance, business, tax, and legal topics relevant to Trinidad and Tobago. Ask things like, "How to decrease my Total Interest Paid on a loan Amortisation?"
+          </p>
+          {/* Placeholder for Chatbot Interface */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-xl mx-auto h-96 flex flex-col">
+            <div className="flex-grow overflow-y-auto text-left text-sm text-gray-700 dark:text-gray-300">
+              {/* Chat messages will appear here */}
+              <p className="mb-2"><strong>Arithmos AI:</strong> Hello! Ask me anything about T&T finance, tax, and business.</p>
+            </div>
+            <div className="mt-4 flex items-center">
+              <Input
+                placeholder="Ask a question..."
+                className="flex-grow mr-2"
+                // Add state and handlers for input and sending messages here
+              />
+              <Button>
+                Send
+              </Button>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">
+            Disclaimer: This AI provides general information for guidance only. Consult a qualified professional for specific advice.
+          </p>
+        </div>
+      </section>
+
       {/* Why Choose Arithmos */}
        <section id="why-tax-tt" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">

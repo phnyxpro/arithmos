@@ -162,15 +162,13 @@ Overall Net Cash Flow: TT$ ${calculationSummary.overallNetCashFlowDisplay}
 Final Closing Balance: TT$ ${calculationSummary.finalClosingBalanceDisplay}
 ---------------------------------
 Projection Details (First 5 Periods):
-Period | Opening Bal. | Inflows | Outflows | Net Flow | Closing Bal.
 `;
     projectionData.slice(0, 5).forEach(entry => {
         textToCopy += `${entry.period} | ${entry.openingBalanceDisplay} | ${entry.inflowsDisplay} | ${entry.outflowsDisplay} | ${entry.netCashFlowDisplay} | ${entry.closingBalanceDisplay}
 `;
     });
     if (projectionData.length > 5) {
-        textToCopy += "... and more periods ...
-";
+        textToCopy += "... and more periods ...";
     }
     textToCopy += `---------------------------------
 Disclaimer: This is an estimate. Actual cash flows may vary.

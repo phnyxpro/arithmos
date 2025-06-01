@@ -184,8 +184,7 @@ Year | Opening BV | Depreciation | Acc. Depreciation | Closing BV
 `;
     });
     if (depreciationSchedule.length > 10) {
-        textToCopy += "... and more entries ...
-";
+        textToCopy += "... and more entries ...";
     }
     textToCopy += `---------------------------------
 Disclaimer: Estimates only. Consult accounting standards and professionals.
@@ -221,7 +220,7 @@ Disclaimer: Estimates only. Consult accounting standards and professionals.
               </Label>
               <Input
                 id="usefulLife" type="number" step="1" placeholder="e.g., 5"
-                value={usefulLife} onChange={(e) => setUsefulLife(e.target.value)}\
+                value={usefulLife} onChange={(e) => setUsefulLife(e.target.value)}
                 className="h-9 text-sm"
               />
             </div>

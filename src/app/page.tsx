@@ -422,16 +422,18 @@ export default function LandingPage() {
           <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
             Find answers to common questions about our platform.
           </p>
-          <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
-            {faqData.map((item: {question: string; answer: string}, index: number) => (
-              <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
-                <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+ <Accordion type="single" collapsible className="w-full">
+ {faqData.map((item: {question: string; answer: string}, index: number) => (
+ <AccordionItem key={`faq-item-${index}`} value={`item-${index + 1}`}>
+ <AccordionTrigger className="text-lg hover:no-underline">{item.question}</AccordionTrigger>
+ <AccordionContent className="text-muted-foreground">
+ {item.answer}
+ </AccordionContent>
+ </AccordionItem>
+ ))}
+ </Accordion>
+ </div>
         </div>
       </section>
 

@@ -54,20 +54,20 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} antialiased`}>
         <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AppProviders>
-            <div className="flex flex-col min-h-screen">
-              <Header />
-              <main className="flex-grow container mx-auto px-4 py-8">
-                {children}
-              </main>
-              <footer className="w-full py-8 text-muted-foreground text-sm bg-gray-100 dark:bg-gray-900">
-                <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-                  <div className="mb-4 md:mb-0 md:w-1/3 text-center md:text-left">
+ attribute="class"
+ defaultTheme="system"
+ enableSystem
+ disableTransitionOnChange
+ >
+ <AppProviders>
+ <div className="flex flex-col min-h-screen">
+ <Header />
+ <main className="flex-grow container mx-auto px-4 py-8">
+ {children}
+ </main>
+              <footer className="w-full py-8 text-muted-foreground text-sm bg-gray-100 dark:bg-gray-900 text-center">
+                <div className="container mx-auto px-4 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+                  <div className="flex flex-col items-center">
                     <p className="text-lg font-semibold text-foreground mb-2">Arithmos</p>
                     <p>
                       Developed by{' '}
@@ -77,7 +77,7 @@ export default function RootLayout({
                         rel="noopener noreferrer"
                         className="underline hover:text-foreground"
                       >
-                       the phnyx.dev team
+                        the phnyx.dev team
                       </a>
                     </p>
                     <p className="mt-1">
@@ -91,16 +91,33 @@ export default function RootLayout({
                         Innovation Activators
                       </a>
                     </p>
+                    <p className="mt-1">
+                      <a href="/privacy" className="underline hover:text-foreground">Privacy Policy</a> |{' '}
+                      <a href="/legal" className="underline hover:text-foreground">Terms of Service</a>                    </p>
                   </div>
 
-                  <div className="mb-4 md:mb-0 md:w-1/3 text-center">
-                    <p className="text-lg font-semibold text-foreground mb-2">Legal</p>
-                    Developed with ❤️ by <a href="https://phnyx.pro" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">phnyx.dev</a>
-                  </p>
-                  <p className="mt-1">
-                    <a href="/privacy" className="underline hover:text-foreground">Privacy Policy</a> |{' '}
-                    <a href="/legal" className="underline hover:text-foreground">Terms of Service</a>
-                  </p>
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-semibold text-foreground mb-2">Contact Us</p>
+                    <p className="flex items-center space-x-2">
+                      <Mail className="h-4 w-4" />
+                      <a href="mailto:dev@phnyx.pro" className="underline hover:text-foreground">
+                        dev@phnyx.pro
+                      </a>
+                    </p>
+                    <p className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4" />
+                      <a href="tel:+18687471191" className="underline hover:text-foreground">
+                        +1 (868) 747-1191
+                      </a>
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-semibold text-foreground mb-2">Disclaimer</p>
+                    <p className="text-xs max-w-sm">
+                      The information and calculations provided on Arithmos are for illustrative purposes only and should not be considered as professional tax or financial advice. Always consult with a qualified professional for advice tailored to your specific situation.
+                    </p>
+                  </div>
                 </div>
               </footer>
               <Toaster />
@@ -110,4 +127,3 @@ export default function RootLayout({
       </body>
     </html>
   );
-}

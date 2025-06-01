@@ -36,8 +36,8 @@ export async function handleSuggestDeductions(input: SuggestDeductionsInput): Pr
 
 export async function handleAskArithmos(question: string): Promise<string> {
   try {
-    // Call the Firebase Function, prefixed with the codebase name
-    const askArithmosFunction = httpsCallable<{ question: string }, string>(functions, 'arithmos-askArithmosFlow');
+    // Call the Firebase Function, TRYING WITHOUT codebase prefix as a diagnostic
+    const askArithmosFunction = httpsCallable<{ question: string }, string>(functions, 'askArithmosFlow');
     const result = await askArithmosFunction({ question });
     return result.data; // The response is in the 'data' property
   } catch (error: any) {

@@ -1,12 +1,12 @@
+
 "use server";
 
 import { suggestDeductions, type SuggestDeductionsInput, type SuggestDeductionsOutput } from "@/ai/flows/suggest-deductions";
-// Removed direct import of askArithmos
 // import { summarizeIncome, type SummarizeIncomeInput, type SummarizeIncomeOutput } from "@/ai/flows/summarize-income";
 
 // Import Firebase client SDK
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app"; // Added getApps, getApp
 
 // Firebase client-side configuration (replace with your actual config)
 const firebaseConfig = {
@@ -19,8 +19,8 @@ const firebaseConfig = {
   //measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase (ensure it's only initialized once)
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const functions = getFunctions(app);
 
 export async function handleSuggestDeductions(input: SuggestDeductionsInput): Promise<SuggestDeductionsOutput> {
@@ -36,11 +36,11 @@ export async function handleSuggestDeductions(input: SuggestDeductionsInput): Pr
 
 export async function handleAskArithmos(question: string): Promise<string> {
   try {
-    // Call the Firebase Function
-    const askArithmosFunction = httpsCallable<{ question: string }, string>(functions, 'askArithmosFlow'); // Use the flow name as the function name
+    // Call the Firebase Function, prefixed with the codebase name
+    const askArithmosFunction = httpsCallable<{ question: string }, string>(functions, 'arithmos-askArithmosFlow');
     const result = await askArithmosFunction({ question });
     return result.data; // The response is in the 'data' property
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in handleAskArithmos server action:", error);
     // Check if the error is a Firebase Functions error
     if (error && typeof error === 'object' && 'code' in error && 'message' in error) {

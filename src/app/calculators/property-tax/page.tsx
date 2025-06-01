@@ -59,7 +59,7 @@ const initialCalculationResults = {
 
 type CalculationResults = typeof initialCalculationResults;
 
-export default function PropertyTaxPage() {
+export function PropertyTaxPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState<CalculationResults>(initialCalculationResults);
 

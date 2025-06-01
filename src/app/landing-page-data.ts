@@ -80,7 +80,7 @@ import TariffCustomsDutyCalculator from "@/components/calculators/TariffCustomsD
 import FreightShippingCalculator from "@/components/calculators/FreightShippingCalculator";
 import {CIFCalculator} from "@/components/calculators/CIFCalculator";
 import StampDutyCalculator from "@/components/calculators/StampDutyCalculator";
-import {PropertyTaxDialogCalculator} from "@/components/calculators/PropertyTaxDialogCalculator";
+import PropertyTaxDialogCalculator from "@/components/calculators/PropertyTaxDialogCalculator";
 import RentalYieldCalculator from "@/components/calculators/RentalYieldCalculator";
 import {AMLRiskCalculator} from "@/components/calculators/AMLRiskCalculator";
 import {FATCACRSCalculator} from "@/components/calculators/FATCACRSCalculator";

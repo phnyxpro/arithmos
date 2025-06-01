@@ -1,12 +1,12 @@
 import { configureGenkit } from '@genkit-ai/core';
-import { firebase } from '@genkit-ai/firebase';
-import { googleCloudVertexAI } from '@genkit-ai/googleai';
+import { firebase } from '@genkit-ai/firebase/plugin';
+import { googleAI } from '@genkit-ai/googleai';
 import { defineFlow, definePrompt } from 'genkit';
 
 configureGenkit({
   plugins: [
     firebase(),
-    googleCloudVertexAI({ projectId: process.env.GENKIT_PROJECT_ID || "YOUR_PROJECT_ID" }),
+    googleAI({ projectId: process.env.GENKIT_PROJECT_ID || "YOUR_PROJECT_ID" }),
   ],
   logLevel: 'debug',
   // tfjsDeps:

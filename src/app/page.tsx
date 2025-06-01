@@ -211,7 +211,7 @@ export default function LandingPage() {
       <section id="popular-calculators" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            Popular Financial Tools &amp; Calculators
+            Quick Tools &amp; Calculators
           </h2>
 
           {/* Filter Buttons */}

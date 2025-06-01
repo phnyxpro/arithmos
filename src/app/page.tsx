@@ -92,6 +92,9 @@ import {
 import { faqData } from "@/constants/faqData";
 
 // Define the type for ActiveCalculatorInfo to directly hold the component
+const DebtToIncomeRatioCalculator = React.lazy(() => import('@/components/calculators/DebtToIncomeRatioCalculator'));
+
+
 interface ActiveCalculatorInfo {
   key: string;
   component?: React.ComponentType<any>; // Now directly holds the component or is undefined
@@ -99,6 +102,10 @@ interface ActiveCalculatorInfo {
   icon: React.ElementType; // Assuming icon is a React component type
   description?: string; // Make description optional if not always present
 }
+
+const LazyComponentMap: Record<string, React.ComponentType<any>> = {
+ 'debt-to-income-ratio': DebtToIncomeRatioCalculator,
+};
 
 export default function LandingPage() {
   const { toast } = useToast();
@@ -113,8 +120,8 @@ export default function LandingPage() {
 
   const HeroIcon = pageHeroData.icon;
 
-  // Filter for calculators that should be in the dialog (have a component)
   const dialogCalculators = React.useMemo(() => {
+ // Filter for calculators that should be in the dialog (have a component)
     return detailedCalculatorList.filter((calc): calc is DetailedCalculatorListItem & { component: React.ComponentType<any> } => !!calc.component);
   }, [detailedCalculatorList]);
 
@@ -232,7 +239,7 @@ export default function LandingPage() {
                         if (calculator.href) {
                           window.location.href = calculator.href; 
                         } else if (calculator.component) { 
-                          setActiveCalculator({
+ setActiveCalculator({
                             key: calculator.calculatorIdentifier,
                             component: calculator.component,
                             title: calculator.name,

@@ -4,6 +4,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Header from '@/components/layout/header';
 import { AppProviders } from '@/components/layout/app-providers';
+import { Mail, Phone } from 'lucide-react';
 import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
@@ -64,14 +65,41 @@ export default function RootLayout({
               <main className="flex-grow container mx-auto px-4 py-8">
                 {children}
               </main>
-              {/* Added Footer */}
-              <footer className="w-full py-6 text-center text-muted-foreground text-sm">
-                <div className="container mx-auto px-4">
-                  <p>
-                    Developed with ❤️ by <a href="https://phnyx.dev" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">phnyx.dev</a>
+              <footer className="w-full py-8 text-muted-foreground text-sm bg-gray-100 dark:bg-gray-900">
+                <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
+                  <div className="mb-4 md:mb-0 md:w-1/3 text-center md:text-left">
+                    <p className="text-lg font-semibold text-foreground mb-2">Arithmos</p>
+                    <p>
+                      Developed by{' '}
+                      <a
+                        href="https://phnyx.dev"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-foreground"
+                      >
+                       the phnyx.dev team
+                      </a>
+                    </p>
+                    <p className="mt-1">
+                      In partnership with{' '}
+                      <a
+                        href="https://ia.tt/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-foreground"
+                      >
+                        Innovation Activators
+                      </a>
+                    </p>
+                  </div>
+
+                  <div className="mb-4 md:mb-0 md:w-1/3 text-center">
+                    <p className="text-lg font-semibold text-foreground mb-2">Legal</p>
+                    Developed with ❤️ by <a href="https://phnyx.pro" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">phnyx.dev</a>
                   </p>
                   <p className="mt-1">
-                    In partnership with Innovation Activators
+                    <a href="/privacy" className="underline hover:text-foreground">Privacy Policy</a> |{' '}
+                    <a href="/legal" className="underline hover:text-foreground">Terms of Service</a>
                   </p>
                 </div>
               </footer>

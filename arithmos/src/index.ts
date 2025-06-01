@@ -1,7 +1,13 @@
-import { askArithmos } from "./ai/flows/ask-arithmos-flow";
-import { onCall } from "firebase-functions/v2/https";
-import type { CallableRequest } from "firebase-functions/v2/https";
+import { askArithmos } from './ai/flows/ask-arithmos-flow';
+import { onCall } from 'firebase-functions/v2/https';
+import type { CallableRequest } from 'firebase-functions/v2/https';
 
+/**
+ * Callable Cloud Function to invoke Arithmos AI.
+ *
+ * @param {CallableRequest<{ question: string }>} request - The callable function request with the user's question.
+ * @returns {Promise<string>} The AI's answer.
+ */
 export const askArithmosFlow = onCall<{ question: string }, string>(
   async (request: CallableRequest<{ question: string }>): Promise<string> => {
     const question = request.data.question;
@@ -10,12 +16,7 @@ export const askArithmosFlow = onCall<{ question: string }, string>(
       throw new Error('INVALID_ARGUMENT: Missing or invalid question.');
     }
 
-    try {
-      const answer = await askArithmos(question);
-      return answer;
-    } catch (error) {
-      console.error("Error in askArithmosFlow:", error);
-      throw new Error('INTERNAL: Something went wrong while processing your request.');
-    }
+    const answer = await askArithmos(question);
+    return answer;
   }
 );

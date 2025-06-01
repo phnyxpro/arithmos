@@ -1,6 +1,7 @@
 "use server";
 
 import { suggestDeductions, type SuggestDeductionsInput, type SuggestDeductionsOutput } from "@/ai/flows/suggest-deductions";
+import { askArithmos } from "@/ai/flows/ask-arithmos-flow";
 // import { summarizeIncome, type SummarizeIncomeInput, type SummarizeIncomeOutput } from "@/ai/flows/summarize-income";
 
 export async function handleSuggestDeductions(input: SuggestDeductionsInput): Promise<SuggestDeductionsOutput> {
@@ -11,6 +12,16 @@ export async function handleSuggestDeductions(input: SuggestDeductionsInput): Pr
     console.error("Error in handleSuggestDeductions server action:", error);
     // Consider more specific error handling or re-throwing a custom error
     throw new Error("Failed to get AI deduction suggestions.");
+  }
+}
+
+export async function handleAskArithmos(question: string): Promise<string> {
+  try {
+    const result = await askArithmos(question);
+    return result;
+  } catch (error) {
+    console.error("Error in handleAskArithmos server action:", error);
+    throw new Error("Failed to get response from Arithmos AI.");
   }
 }
 

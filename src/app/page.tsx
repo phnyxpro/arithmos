@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react"; // Import useState
 // Removed LazyExoticComponent import
 
 // Next.js core
@@ -14,6 +15,7 @@ import { useCalculatorDialogManager } from "@/hooks/useCalculatorDialogManager";
 // Utilities
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
+import { handleAskArithmos } from "@/lib/actions"; // Import the server action
 
 
 // UI Components
@@ -42,6 +44,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Input
 } from "@/components/ui";
 import { StarReviewDialog } from "@/components/ui/star-review-dialog";
 
@@ -113,6 +116,12 @@ interface ActiveCalculatorInfo {
   description?: string; // Make description optional if not always present
 }
 
+// Define Message type
+interface Message {
+  text: string;
+  sender: 'user' | 'ai';
+}
+
 export default function LandingPage() {
   const { toast } = useToast();
   const {
@@ -182,6 +191,41 @@ export default function LandingPage() {
     setIsReviewDialogOpen(false);
     setCalculatorToReview(null);
   };
+
+  // State for AI Chatbot
+  const [messages, setMessages] = useState<Message[]>([
+    { text: "Hello! Ask me anything about T&T finance, tax, and business.", sender: 'ai' },
+  ]);
+  const [inputMessage, setInputMessage] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Function to handle sending message
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isLoading) return; // Prevent sending empty or while loading
+
+    const userMessage = inputMessage;
+    setMessages(prevMessages => [...prevMessages, { text: userMessage, sender: 'user' }]);
+    setInputMessage(''); // Clear input field
+    setIsLoading(true);
+
+    try {
+      const aiResponse = await handleAskArithmos(userMessage);
+      setMessages(prevMessages => [...prevMessages, { text: aiResponse, sender: 'ai' }]);
+    } catch (error) {
+      console.error("Error calling Arithmos AI:", error);
+      setMessages(prevMessages => [...prevMessages, { text: "Sorry, I couldn't get a response right now. Please try again later.", sender: 'ai' }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Enter key press in the input field
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -306,20 +350,35 @@ export default function LandingPage() {
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
             Get quick answers to your questions about accounts, finance, business, tax, and legal topics relevant to Trinidad and Tobago. Ask things like, "How to decrease my Total Interest Paid on a loan Amortisation?"
           </p>
-          {/* Placeholder for Chatbot Interface */}
+          {/* Chatbot Interface */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-xl mx-auto h-96 flex flex-col">
-            <div className="flex-grow overflow-y-auto text-left text-sm text-gray-700 dark:text-gray-300">
-              {/* Chat messages will appear here */}
-              <p className="mb-2"><strong>Arithmos AI:</strong> Hello! Ask me anything about T&T finance, tax, and business.</p>
-            </div>
+            <ScrollArea className="flex-grow pr-4 overflow-y-auto text-sm text-gray-700 dark:text-gray-300">
+              {messages.map((message, index) => (
+                <div key={index} className={`mb-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+                  <strong>{message.sender === 'user' ? 'You' : 'Arithmos AI'}:</strong> {message.text}
+                </div>
+              ))}
+               {isLoading && (
+                <div className="mb-2 text-left text-gray-500 dark:text-gray-400 animate-pulse">
+                  <strong>Arithmos AI:</strong> Thinking...
+                </div>
+              )}
+            </ScrollArea>
             <div className="mt-4 flex items-center">
               <Input
                 placeholder="Ask a question..."
                 className="flex-grow mr-2"
-                // Add state and handlers for input and sending messages here
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleInputKeyPress}
+                disabled={isLoading}
               />
-              <Button>
-                Send
+              <Button onClick={handleSendMessage} disabled={isLoading || !inputMessage.trim()}>
+                 {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  'Send'
+                )}
               </Button>
             </div>
           </div>

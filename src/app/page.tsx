@@ -324,10 +324,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-primary mb-3">
-              Key Compliance Deadlines for T&amp;T SMEs
+              Key Compliance Deadlines 
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Stay informed about crucial tax and statutory deadlines. Dates are illustrative. Always verify with official IRD publications.
+              Stay informed about tax and statutory deadlines. Always verify with official IRD publications.
             </p>
           </div>
           
@@ -410,7 +410,7 @@ export default function LandingPage() {
       <section id="resources-guides" className="py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-primary mb-12">
-            SME Finance &amp; Tax Hub for Trinidad &amp; Tobago
+            Knowledge Hub
           </h2>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {pageResourceGuides.map((item) => (
@@ -449,7 +449,7 @@ export default function LandingPage() {
             Frequently Asked Questions
           </h2>
           <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Find answers to common questions about our platform and Trinidad & Tobago tax & finance.
+            Find answers to common questions about our platform.
           </p>
           <Accordion type="single" collapsible className="w-full max-w-3xl mx-auto">
             {faqData.map((item: {question: string; answer: string}, index: number) => (

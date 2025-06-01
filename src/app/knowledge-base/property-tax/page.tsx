@@ -45,8 +45,39 @@ export default function PropertyTaxKnowledgeBasePage() {
                     Part I: Preliminary & Interpretation
                   </AccordionTrigger>
                   <AccordionContent className="text-sm text-muted-foreground space-y-2 pl-2 border-l-2 border-primary/50 ml-2">
-                    <p><strong>Key Definitions:</strong> Includes terms like "annual rental value (ARV)", "land", "owner", "building". ARV is the rent the property might reasonably fetch annually if let, with the tenant paying outgoings. (Refer to Part I, Section 2, Page X of the Act).</p>
-                    <p><strong>Application:</strong> Outlines the scope and application of the Act to various types of properties within Trinidad and Tobago. (Refer to Part I, Section 3, Page Y of the Act).</p>
+                    <h4 className="font-semibold text-md text-foreground/90 mt-1">PART I: PRELIMINARY</h4>
+                    <p><strong>1.</strong> This Act may be cited as the Property Tax Act.</p>
+                    <p><strong>2.</strong> This Act came into operation on 1st January 2010. <em className="text-xs">(*See Section 2 for date of commencement.)</em></p>
+                    <p><strong>3.</strong> For the purposes of this Act—</p>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li><strong>“agricultural land”</strong> has the meaning assigned to it by the Valuation of Land Act;</li>
+                      <li><strong>“annual rental value”</strong> means the annual rental value of land as determined by the Commissioner of Valuations under the Valuation of Land Act;</li>
+                      <li><strong>“annual taxable value”</strong> means the annual rental value subject only to the deductions and allowances mentioned in section 14;</li>
+                      <li><strong>“appeal”</strong> means an appeal to the Tax Appeal Board from a decision of the Commissioner upon an objection by the owner of land to a valuation or assessment of tax;</li>
+                      <li><strong>“assessment”</strong> includes re-assessment and “assess” shall be construed accordingly;</li>
+                      <li><strong>“Board”</strong> means the Board of Inland Revenue created under the Income Tax Act;</li>
+                      <li><strong>“capital value”</strong> means the capital sum which the fee simple might be expected to realise if offered for sale on such reasonable terms and conditions as a bona fide seller would require;</li>
+                      <li><strong>“commercial land”</strong> has the meaning assigned to it by the Valuation of Land Act;</li>
+                      <li><strong>“Commissioner”</strong> means the Commissioner of Valuations appointed under section 3 of the Valuation of Land Act;</li>
+                      <li><strong>“industrial land”</strong> has the meaning assigned to it by the Valuation of Land Act;</li>
+                      <li><strong>“land”</strong> means—
+                        <ul className="list-decimal list-inside pl-4">
+                          <li>all land, messuages, tenements and hereditaments, corporeal and incorporeal, of every kind and description, or any estate or interest therein, together with all paths, passages, ways, water-courses, liberties and privileges;</li>
+                          <li>land covered with water; and</li>
+                          <li>all buildings, or any part of any building, and all structures, machinery, plant, pipelines, cables and fixtures erected or placed upon, in, over, under or affixed to land;</li>
+                        </ul>
+                      </li>
+                      <li><strong>“Minister”</strong> means the Minister with responsibility for the assessment and collection of taxes;</li>
+                      <li><strong>“owner”</strong> includes the owner or occupier of any land, and the receiver, attorney, agent, manager, guardian or committee of any such owner or occupier and any other person in charge or having the control or possession of any land in the right of the owner, or having the possession in his or her own right or as guardian of any person of any such land;</li>
+                      <li><strong>“parcel of land”</strong> or <strong>“parcel”</strong> means land which is separately held by an owner or a person in possession of land which the Commissioner directs should be valued as a separate parcel of land;</li>
+                      <li><strong>“Regulations”</strong> means regulations made under section 53;</li>
+                      <li><strong>“residential land”</strong> has the meaning assigned to it by the Valuation of Land Act;</li>
+                      <li><strong>“tax”</strong> includes any annual tax assessed under this Act and any tax, rate, charge, assessment or imposition to which the provisions of this Act may be declared by any Act to be applicable; and</li>
+                      <li><strong>“Tax Appeal Board”</strong> means the Appeal Board established under the Tax Appeal Board Act. <em className="text-xs">(Ch. 4:50.)</em></li>
+                    </ul>
+                    <p><strong>4.</strong> This Act binds the State.</p>
+                    <p className="text-xs italic mt-2">UNOFFICIAL VERSION UPDATED TO DECEMBER 31ST 2015 LAWS OF TRINIDAD AND TOBAGO MINISTRY OF THE ATTORNEY GENERAL AND LEGAL AFFAIRS Property Tax www.legalaffairs.gov.tt Chap. 76:04</p>
+                    <p className="text-xs italic">UNOFFICIAL VERSION 7 Ch. 58:03.</p>
                   </AccordionContent>
                 </AccordionItem>
 
@@ -128,5 +159,3 @@ export default function PropertyTaxKnowledgeBasePage() {
     </div>
   );
 }
-
-    

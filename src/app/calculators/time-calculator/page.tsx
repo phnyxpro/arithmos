@@ -36,7 +36,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Clock, Watch, Copy, Trash2, Plus, Minus, User, DollarSign, TrendingDown, Briefcase as BriefcaseIcon } from "lucide-react"; // Added BriefcaseIcon alias
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
-
+import { parse, isValid } from 'date-fns';
 
 export default function TimeCalculatorPage() {
   const { toast } = useToast();
@@ -71,6 +71,117 @@ export default function TimeCalculatorPage() {
 
   const [advancedCalcResults, setAdvancedCalcResults] = React.useState<string | null>(null);
 
+  // State for table data
+  const [calculationTableData, setCalculationTableData] = React.useState<any[]>([]);
+
+
+  // Advanced Pay Calculation Logic
+  const calculateAdvancedPay = React.useCallback(() => {
+    // Ensure essential inputs are available and valid numbers
+    const hourlyRate = parseFloat(hourlyRateAdv) || 0;
+    const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;
+    const overtimeMultiplier = parseFloat(overtimeMultiplierAdv) || 1; // Default multiplier is 1
+    const otherDeductions = parseFloat(otherDeductionsAdv) || 0;
+    const breakDuration = parseFloat(breakDurationAdv) || 0;
+
+    if (!clockInTimeAdv || !clockOutTimeAdv || hourlyRate <= 0) {
+      setAdvancedCalcResults(null); // Clear results if essential inputs are missing or invalid
+      return;
+    }
+
+    // Parse times (assuming HH:mm format)
+    const today = format(new Date(), "yyyy-MM-dd"); // Use a consistent date for time parsing
+    const start = parse(`${today} ${clockInTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+    let end = parse(`${today} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+
+    // Handle overnight shifts (if end time is before start time, assume next day)
+    if (isValid(start) && isValid(end) && end < start) {
+      end = parse(`${format(new Date(today), 'yyyy-MM-dd')} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+      end.setDate(end.getDate() + 1); // Add a day
+    }
+
+    if (!isValid(start) || !isValid(end)) {
+       setAdvancedCalcResults("Invalid time format.");
+       return;
+    }
+
+    // Calculate total duration in minutes
+    const totalDurationMs = end.getTime() - start.getTime();
+    const totalDurationMinutes = totalDurationMs / (1000 * 60);
+
+    // Adjust for break duration
+    let breakMinutes = breakDuration;
+    if (breakUnitAdv === 'hours') {
+        breakMinutes = breakDuration * 60;
+    }
+
+    const payableMinutes = Math.max(0, totalDurationMinutes - breakMinutes);
+    const payableHours = payableMinutes / 60;
+
+    // Calculate regular and overtime hours
+    let regularHours = Math.min(payableHours, overtimeThreshold);
+    let overtimeHours = Math.max(0, payableHours - overtimeThreshold);
+
+    // Calculate pay
+    const regularPay = regularHours * hourlyRate;
+    const overtimePay = overtimeHours * hourlyRate * overtimeMultiplier;
+    const grossPay = regularPay + overtimePay;
+
+    // Calculate deductions
+    const nisDeduction = applyNISAdv ? grossPay * 0.056 : 0; // 5.6% of Gross Pay
+
+    let healthSurchargeDeduction = 0;
+    const estimatedDailyIncome = grossPay; // Using gross pay as the basis for daily income estimate
+    if (applyHealthSurchargeAdv) {
+        if (estimatedDailyIncome > 21.80) { // Estimated daily threshold
+            healthSurchargeDeduction = 1.65; // Estimated daily rate
+        } else {
+            healthSurchargeDeduction = 0.96; // Estimated daily rate
+        }
+    }
+
+    const totalDeductions = nisDeduction + healthSurchargeDeduction + otherDeductions;
+    const netPay = grossPay - totalDeductions;
+
+    // Format results
+    const resultsSummary = `
+Employee: ${employeeNameAdv || 'N/A'}
+Date: ${format(parse(workDateAdv, 'yyyy-MM-dd', new Date()), 'PPP')}
+Worked Hours: ${payableHours.toFixed(2)} (${regularHours.toFixed(2)} regular, ${overtimeHours.toFixed(2)} OT)
+Gross Pay: TT$${grossPay.toFixed(2)}
+NIS Deduction: TT$${nisDeduction.toFixed(2)}
+Health Surcharge Deduction: TT$${healthSurchargeDeduction.toFixed(2)}
+Other Deductions: TT$${otherDeductions.toFixed(2)}
+Total Deductions: TT$${totalDeductions.toFixed(2)}
+Net Pay: TT$${netPay.toFixed(2)}
+    `.trim();
+
+    setAdvancedCalcResults(resultsSummary);
+
+  }, [
+ employeeNameAdv,
+    breakDurationAdv,
+ breakUnitAdv,
+ clockInTimeAdv,
+ clockOutTimeAdv,
+    hourlyRateAdv,
+    workDateAdv,
+    clockInTimeAdv,
+    clockOutTimeAdv,
+    breakDurationAdv,
+    breakUnitAdv,
+    hourlyRateAdv,
+    overtimeThresholdAdv,
+    overtimeMultiplierAdv,
+    applyNISAdv,
+    applyHealthSurchargeAdv,
+    otherDeductionsAdv,
+  ]);
+
+  // Effect hook to trigger calculation on input changes
+  React.useEffect(() => {
+    calculateAdvancedPay();
+  }, [calculateAdvancedPay]); // Dependency array includes the memoized calculation function
 
   const handleBasicCalculateDuration = () => {
     if (!basicStartTime || !basicEndTime) {
@@ -112,17 +223,157 @@ export default function TimeCalculatorPage() {
     toast({ title: "Time Subtracted (Basic - Dummy)", description: "Time subtraction simulated." });
   };
 
-  const handleCalculateAdvancedPay = () => {
-    // Placeholder for advanced calculation logic
-    console.log("Advanced Pay Calculation Triggered with:", {
-        employeeNameAdv, workDateAdv, clockInTimeAdv, clockOutTimeAdv,
-        breakDurationAdv, breakUnitAdv, hourlyRateAdv, overtimeThresholdAdv,
-        overtimeMultiplierAdv, applyNISAdv, applyHealthSurchargeAdv, otherDeductionsAdv
-    });
-    setAdvancedCalcResults("Advanced pay details calculated (Placeholder). See console for inputs.");
-    toast({ title: "Advanced Pay Calculated (Dummy)", description: "Check console for submitted values." });
+  const handleAddToTable = () => {
+    // Ensure there are results to add
+    if (!advancedCalcResults) {
+      toast({ title: "Cannot Add", description: "Please calculate first to add to table.", variant: "default" });
+      return;
+    }
+
+    // Re-calculate values to store in a structured object
+    const hourlyRate = parseFloat(hourlyRateAdv) || 0;
+    const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;
+    const overtimeMultiplier = parseFloat(overtimeMultiplierAdv) || 1;
+    const otherDeductions = parseFloat(otherDeductionsAdv) || 0;
+    const breakDuration = parseFloat(breakDurationAdv) || 0;
+
+    // Recalculate logic (should match the calculateAdvancedPay function's core logic)
+    const today = format(new Date(), "yyyy-MM-dd");
+    const start = parse(`${today} ${clockInTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+    let end = parse(`${today} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+
+    if (isValid(start) && isValid(end) && end < start) {
+      end = parse(`${format(new Date(today), 'yyyy-MM-dd')} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+      end.setDate(end.getDate() + 1);
+    }
+
+    if (!isValid(start) || !isValid(end)) {
+        toast({ title: "Error", description: "Invalid time format, cannot add to table.", variant: "destructive" });
+        return;
+    }
+
+    const totalDurationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+    let breakMinutes = breakDuration;
+    if (breakUnitAdv === 'hours') {
+        breakMinutes = breakDuration * 60;
+    }
+    const payableMinutes = Math.max(0, totalDurationMinutes - breakMinutes);
+    const payableHours = payableMinutes / 60;
+
   };
 
+  const handleCopyAdvancedResults = () => {
+    if (advancedCalcResults) {
+      navigator.clipboard.writeText(advancedCalcResults);
+      toast({ title: "Copied!", description: "Calculation summary copied to clipboard." });
+    } else {
+      toast({ title: "No results", description: "Calculate first to copy results.", variant: "default" });
+    }
+  };
+
+  const calculateValuesForTable = () => {
+      // Ensure essential inputs are available and valid numbers
+      const hourlyRate = parseFloat(hourlyRateAdv) || 0;
+      const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;
+      const overtimeMultiplier = parseFloat(overtimeMultiplierAdv) || 1; // Default multiplier is 1
+      const otherDeductions = parseFloat(otherDeductionsAdv) || 0;
+      const breakDuration = parseFloat(breakDurationAdv) || 0;
+
+      if (!clockInTimeAdv || !clockOutTimeAdv || hourlyRate <= 0) {
+          return null; // Return null if essential inputs are missing or invalid
+      }
+
+      // Parse times (assuming HH:mm format)
+      const today = format(new Date(), "yyyy-MM-dd"); // Use a consistent date for time parsing
+      const start = parse(`${today} ${clockInTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+      let end = parse(`${today} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+
+      // Handle overnight shifts (if end time is before start time, assume next day)
+      if (isValid(start) && isValid(end) && end < start) {
+          end.setDate(end.getDate() + 1); // Add a day
+      }
+
+      if (!isValid(start) || !isValid(end)) {
+          return null;
+      }
+
+      // Calculate total duration in minutes
+      const totalDurationMs = end.getTime() - start.getTime();
+      const totalDurationMinutes = totalDurationMs / (1000 * 60);
+
+      // Adjust for break duration
+      let breakMinutes = breakDuration;
+      if (breakUnitAdv === 'hours') {
+          breakMinutes = breakDuration * 60;
+      }
+
+      const payableMinutes = Math.max(0, totalDurationMinutes - breakMinutes);
+      const payableHours = payableMinutes / 60;
+
+      // Calculate regular and overtime hours
+      let regularHours = Math.min(payableHours, overtimeThreshold);
+      let overtimeHours = Math.max(0, payableHours - overtimeThreshold);
+
+      // Calculate pay
+      const regularPay = regularHours * hourlyRate;
+      const overtimePay = overtimeHours * hourlyRate * overtimeMultiplier;
+      const grossPay = regularPay + overtimePay;
+
+      // Calculate deductions (simplified for re-use)
+      const nisDeduction = applyNISAdv ? grossPay * 0.056 : 0;
+      let healthSurchargeDeduction = 0;
+      const estimatedDailyIncome = grossPay;
+      if (applyHealthSurchargeAdv) {
+          if (estimatedDailyIncome > 21.80) {
+              healthSurchargeDeduction = 1.65;
+          } else {
+              healthSurchargeDeduction = 0.96;
+          }
+      }
+      const totalDeductions = nisDeduction + healthSurchargeDeduction + otherDeductions;
+      const netPay = grossPay - totalDeductions;
+
+      return {
+          employeeNameAdv,
+          workDateAdv,
+          clockInTimeAdv,
+          clockOutTimeAdv,
+          breakDurationAdv: `${breakDuration} ${breakUnitAdv}`,
+          hourlyRateAdv,
+          overtimeThresholdAdv,
+          overtimeMultiplierAdv,
+          applyNISAdv,
+          applyHealthSurchargeAdv,
+          otherDeductionsAdv,
+          payableHours: payableHours.toFixed(2),
+          regularHours: regularHours.toFixed(2),
+          overtimeHours: overtimeHours.toFixed(2),
+          grossPay: grossPay.toFixed(2),
+          nisDeduction: nisDeduction.toFixed(2),
+          healthSurchargeDeduction: healthSurchargeDeduction.toFixed(2),
+          totalDeductions: totalDeductions.toFixed(2),
+          netPay: netPay.toFixed(2),
+      };
+  };
+
+  const handleAddToTable = () => {
+      const calculatedData = calculateValuesForTable();
+      if (calculatedData) {
+          setCalculationTableData([...calculationTableData, calculatedData]);
+          toast({ title: "Added to Table", description: "Calculation added to the table below." });
+          // Optionally clear fields after adding:
+          // setEmployeeNameAdv("");
+          // setWorkDateAdv(format(new Date(), "yyyy-MM-dd"));
+          // setClockInTimeAdv("08:00");
+          // setClockOutTimeAdv("17:00");
+          // setBreakDurationAdv("60");
+          // setBreakUnitAdv("minutes");
+          // setHourlyRateAdv("");
+          // setOtherDeductionsAdv("");
+      } else {
+          toast({ title: "Cannot Add", description: "Please ensure all required fields are filled correctly to calculate and add.", variant: "destructive" });
+      }
+  };
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
@@ -352,14 +603,21 @@ export default function TimeCalculatorPage() {
                     <CardContent>
                         <p className="text-sm text-muted-foreground">{advancedCalcResults}</p>
                     </CardContent>
+                    <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2 justify-end">
+                      {/* Buttons for Add to Table, Copy, Export */}
+                      <Button variant="secondary" className="text-xs h-9 flex-1" onClick={handleAddToTable}>
+                         Add to Table
+                      </Button>
+                      <Button variant="outline" onClick={handleCopyAdvancedResults} className="text-xs h-9 flex-1">
+                        <Copy className="mr-2 h-3 w-3" /> Copy Results
+                      </Button>
+                      <Button variant="outline" disabled className="text-xs h-9 flex-1">
+                         Export (PDF/CSV)
+                      </Button>
+                    </CardContent>
                 </Card>
               )}
 
-              <div className="flex justify-end pt-4">
-                <Button onClick={handleCalculateAdvancedPay} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                  <BriefcaseIcon className="mr-2 h-5 w-5" /> Calculate Daily Pay 
-                </Button>
-              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -394,6 +652,97 @@ export default function TimeCalculatorPage() {
           </Accordion>
         </CardContent>
       </Card>
+
+      {/* Table to display added calculations */}
+      {calculationTableData.length > 0 && (
+        <Card className="w-full max-w-3xl shadow-xl rounded-xl mt-8 mb-8">
+          <CardHeader>
+            <CardTitle className="text-xl text-primary flex items-center">
+              <BriefcaseIcon className="mr-2 h-5 w-5" /> Saved Calculations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Employee Name
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Clock In
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Clock Out
+                    </th>
+ <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Break
+                    </th>
+                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Hourly Rate
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                     Payable Hours
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Gross Pay
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      NIS
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Health Surcharge
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Other Deductions
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Net Pay
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {calculationTableData.map((rowData, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {rowData.employeeNameAdv || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {format(parse(rowData.workDateAdv, 'yyyy-MM-dd', new Date()), 'PPP')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {rowData.clockInTimeAdv}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {rowData.clockOutTimeAdv}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {rowData.breakDurationAdv}
+                      </td>
+                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        TT${parseFloat(rowData.hourlyRateAdv).toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {rowData.payableHours}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        TT${rowData.grossPay}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">TT${rowData.nisDeduction}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">TT${rowData.healthSurchargeDeduction}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">TT${rowData.otherDeductionsAdv}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">TT${rowData.netPay}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

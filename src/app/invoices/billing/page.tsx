@@ -139,7 +139,7 @@ export default function BillingPage() {
     const subtotal = newInvoice.lineItems.reduce((sum, item) => sum + item.amount, 0);
     const vatRate = newInvoice.applyVat ? 0.125 : 0; // Assuming 12.5% VAT
     const vatAmount = subtotal * vatRate;
-
+    
     let discountAmount = 0;
     if(newInvoice.discountType === 'Amount') {
         discountAmount = newInvoice.discountValue || 0;

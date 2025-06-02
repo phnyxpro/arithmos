@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -59,7 +58,7 @@ const initialCalculationResults = {
 
 type CalculationResults = typeof initialCalculationResults;
 
-export function PropertyTaxPage() {
+export default function PropertyTaxPage() {
   const { toast } = useToast();
   const [calculationResults, setCalculationResults] = React.useState<CalculationResults>(initialCalculationResults);
 
@@ -82,9 +81,9 @@ export function PropertyTaxPage() {
       arv = data.rentalValueInput * 12;
     }
 
-    const deductionAmount = arv * 0.10;
+    const deductionAmount = arv * 0.10; // 10% statutory deduction
     const taxableValue = arv - deductionAmount;
-    const taxDue = taxableValue * 0.03;
+    const taxDue = taxableValue * 0.03; // 3% tax rate
 
     setCalculationResults({
       calculatedArv: formatCurrency(arv),
@@ -288,5 +287,3 @@ Disclaimer: This is an estimator based on the Property Tax Act (e.g., 10% deduct
     </div>
   );
 }
-
-    

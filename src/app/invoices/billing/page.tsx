@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogDe
 import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming cn utility is available
 import { format } from 'date-fns'; // Assuming date-fns is available
+import { Textarea } from '@/components/ui/textarea';
 
 interface LineItem {
   id: number;
@@ -50,7 +51,7 @@ export default function BillingPage() {
     notes: '',
     terms: 'Payment due upon receipt.',
   });
-  const [lineItemCounter, setLineItemCounter] = useState(0); // Counter for unique line item IDs
+  const [lineItemCounter, setLineItemCounter] = useState(1); // Counter for unique line item IDs, start from 1
 
   // Placeholder data for selects (replace with actual data fetching if needed)
   const clients = [{ value: 'client1', label: 'Client A' }, { value: 'client2', label: 'Client B' }];
@@ -73,19 +74,21 @@ export default function BillingPage() {
       invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000), // New random invoice number
       invoiceDate: format(new Date(), 'yyyy-MM-dd'),
       dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'),
-      lineItems: [],
+      lineItems: [{ id: 0, description: '', qty: 1, unitPrice: 0, amount: 0 }], // Start with one empty line item
       applyVat: false,
       discountType: 'None',
       discountValue: 0,
       notes: '',
       terms: 'Payment due upon receipt.',
     });
-    setLineItemCounter(0); // Reset counter
+    setLineItemCounter(1); // Reset counter and add initial item
   };
 
-  const handleSaveInvoice = () => {
+  const handleSaveInvoice = (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent default form submission
     console.log('Saving invoice:', newInvoice);
     // Implement save invoice logic (e.g., to local storage, API)
+    // After successful save:
     setIsCreateModalOpen(false);
   };
 
@@ -100,11 +103,11 @@ export default function BillingPage() {
   };
 
   const handleAddLineItem = () => {
-    setLineItemCounter(lineItemCounter + 1);
     setNewInvoice({
       ...newInvoice,
       lineItems: [...newInvoice.lineItems, { id: lineItemCounter, description: '', qty: 1, unitPrice: 0, amount: 0 }],
     });
+    setLineItemCounter(lineItemCounter + 1);
   };
 
   const handleRemoveLineItem = (id: number) => {
@@ -114,13 +117,15 @@ export default function BillingPage() {
     });
   };
 
-  const handleLineItemChange = (id: number, field: string, value: any) => {
+  const handleLineItemChange = (id: number, field: keyof LineItem, value: any) => {
     const updatedLineItems = newInvoice.lineItems.map(item => {
       if (item.id === id) {
         const updatedItem = { ...item, [field]: value };
         // Recalculate amount based on qty and unit price
         if (field === 'qty' || field === 'unitPrice') {
-          updatedItem.amount = updatedItem.qty * updatedItem.unitPrice;
+           const qty = parseFloat(updatedItem.qty as any) || 0; // Ensure parsing
+           const unitPrice = parseFloat(updatedItem.unitPrice as any) || 0; // Ensure parsing
+          updatedItem.amount = qty * unitPrice;
         }
         return updatedItem;
       }
@@ -132,12 +137,23 @@ export default function BillingPage() {
   // Calculate totals dynamically
   const { subtotal, vatAmount, totalAmountDue } = useMemo(() => {
     const subtotal = newInvoice.lineItems.reduce((sum, item) => sum + item.amount, 0);
-    const vatRate = newInvoice.applyVat ? 0.125 : 0;
+    const vatRate = newInvoice.applyVat ? 0.125 : 0; // Assuming 12.5% VAT
     const vatAmount = subtotal * vatRate;
-    const totalAmountDue = subtotal + vatAmount - (newInvoice.discountType === 'Amount' ? newInvoice.discountValue : subtotal * (newInvoice.discountValue / 100)); // Basic discount logic
+    
+    let discountAmount = 0;
+    if(newInvoice.discountType === 'Amount') {
+        discountAmount = newInvoice.discountValue || 0;
+    } else if (newInvoice.discountType === 'Percentage') {
+        discountAmount = subtotal * ((newInvoice.discountValue || 0) / 100);
+    }
+
+    const totalAmountDue = subtotal + vatAmount - discountAmount;
     return { subtotal, vatAmount, totalAmountDue };
   }, [newInvoice.lineItems, newInvoice.applyVat, newInvoice.discountType, newInvoice.discountValue]);
 
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   // Placeholder for invoice list rendering (replace with actual data mapping)
   const renderInvoiceList = () => {
@@ -236,26 +252,13 @@ export default function BillingPage() {
                     <div className="grid grid-cols-2 gap-3">
                          <div className="grid gap-2">
                             <Label htmlFor="startDate" className="text-xs font-medium">Start Date</Label>
-                            <Button variant={"outline"} className={cn(
-                                "w-full justify-start text-left font-normal h-8 text-xs mt-1"
-                                // !date && "text-muted-foreground"
-                                )}>
-                                <Calendar className="mr-2 h-3 w-3" />
-                                {recurringInvoiceSettings.startDate ? format(new Date(recurringInvoiceSettings.startDate), 'MMM dd, yyyy') : "Pick a date"}
-                            </Button>
                             {/* DatePicker Component Needed */}
+                            <Input type="date" id="startDate" value={recurringInvoiceSettings.startDate} onChange={(e) => setRecurringInvoiceSettings({...recurringInvoiceSettings, startDate: e.target.value})} className="h-8 text-xs mt-1" />
                         </div>
                          <div className="grid gap-2">
                             <Label htmlFor="endDate" className="text-xs font-medium">End Date</Label>
-                             <Button variant={"outline"} className={cn(
-                                "w-full justify-start text-left font-normal h-8 text-xs mt-1",
-                                "text-muted-foreground"
-                                )}
-                                disabled={recurringInvoiceSettings.neverEnds} // Disable if never ends
-                                >
-                                <Calendar className="mr-2 h-3 w-3" />
-                                {recurringInvoiceSettings.endDate ? format(new Date(recurringInvoiceSettings.endDate), 'MMM dd, yyyy') : "Pick a date"}
-                             </Button>
+                             {/* DatePicker Component Needed */}
+                            <Input type="date" id="endDate" value={recurringInvoiceSettings.endDate} onChange={(e) => setRecurringInvoiceSettings({...recurringInvoiceSettings, endDate: e.target.value})} className="h-8 text-xs mt-1" disabled={recurringInvoiceSettings.neverEnds} />
                              <div className="flex items-center space-x-2 mt-1.5">
                                 <Checkbox
                                     id="neverEnds"
@@ -347,6 +350,227 @@ export default function BillingPage() {
           </div>
         </CardContent>
       </Card>
+
+       {/* Create New Invoice Modal */}
+      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Invoice</DialogTitle>
+            <DialogDescription>
+              Fill out the details below to create a new invoice.
+            </DialogDescription>
+          </DialogHeader>
+           <form onSubmit={handleSaveInvoice} className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="clientName" className="text-right">
+                Client Name
+              </Label>
+              <Input
+                id="clientName"
+                value={newInvoice.clientName}
+                onChange={(e) => setNewInvoice({...newInvoice, clientName: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="clientEmail" className="text-right">
+                Client Email
+              </Label>
+              <Input
+                id="clientEmail"
+                type="email"
+                value={newInvoice.clientEmail}
+                onChange={(e) => setNewInvoice({...newInvoice, clientEmail: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="clientAddress" className="text-right">
+                Client Address
+              </Label>
+              <Textarea
+                id="clientAddress"
+                value={newInvoice.clientAddress}
+                onChange={(e) => setNewInvoice({...newInvoice, clientAddress: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+             <Separator className="my-4" />
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invoiceNumber" className="text-right">
+                Invoice #
+              </Label>
+              <Input
+                id="invoiceNumber"
+                value={newInvoice.invoiceNumber}
+                readOnly // Invoice number is auto-generated
+                className="col-span-3 font-mono text-muted-foreground"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="invoiceDate" className="text-right">
+                Invoice Date
+              </Label>
+              <Input
+                id="invoiceDate"
+                type="date"
+                value={newInvoice.invoiceDate}
+                onChange={(e) => setNewInvoice({...newInvoice, invoiceDate: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="dueDate" className="text-right">
+                Due Date
+              </Label>
+              <Input
+                id="dueDate"
+                type="date"
+                value={newInvoice.dueDate}
+                onChange={(e) => setNewInvoice({...newInvoice, dueDate: e.target.value})}
+                className="col-span-3"
+              />
+            </div>
+             <Separator className="my-4" />
+
+            {/* Line Items */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-medium">Line Items</h4>
+              {newInvoice.lineItems.map((item, index) => (
+                <div key={item.id} className="grid grid-cols-1 sm:grid-cols-6 gap-2 items-center">
+                   <div className="col-span-full sm:col-span-2">
+                      <Label htmlFor={`description-${item.id}`} className="sr-only">Description</Label>
+                      <Input
+                        id={`description-${item.id}`}
+                        placeholder="Description"
+                        value={item.description}
+                        onChange={(e) => handleLineItemChange(item.id, 'description', e.target.value)}
+                        className="text-sm"
+                      />
+                   </div>
+                   <div className="col-span-2 sm:col-span-1">
+                       <Label htmlFor={`qty-${item.id}`} className="sr-only">Qty</Label>
+                       <Input
+                          id={`qty-${item.id}`}
+                          type="number"
+                          placeholder="Qty"
+                           value={item.qty}
+                           onChange={(e) => handleLineItemChange(item.id, 'qty', parseFloat(e.target.value) || 0)}
+                           className="text-sm"
+                       />
+                   </div>
+                    <div className="col-span-2 sm:col-span-1">
+                       <Label htmlFor={`price-${item.id}`} className="sr-only">Unit Price</Label>
+                       <Input
+                          id={`price-${item.id}`}
+                          type="number"
+                          step="0.01"
+                          placeholder="Price"
+                           value={item.unitPrice}
+                           onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                            className="text-sm"
+                       />
+                   </div>
+                    <div className="col-span-2 sm:col-span-1 text-right">
+                       <Label htmlFor={`amount-${item.id}`} className="sr-only">Amount</Label>
+                       <Input id={`amount-${item.id}`} value={item.amount.toFixed(2)} readOnly className="text-sm text-right" />
+                   </div>
+                   <div className="col-span-full sm:col-span-1 flex justify-end">
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveLineItem(item.id)} disabled={newInvoice.lineItems.length <= 1}>
+                           <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                   </div>
+                </div>
+              ))}
+               <Button variant="outline" onClick={handleAddLineItem} type="button" className="w-full text-sm">
+                 <CirclePlus className="mr-2 h-4 w-4" /> Add Line Item
+              </Button>
+            </div>
+             <Separator className="my-4" />
+
+             {/* Totals and Adjustments */}
+            <div className="grid grid-cols-2 gap-4">
+                 <div className="col-span-2 md:col-span-1 flex items-center space-x-2">
+                    <Checkbox id="applyVat" checked={newInvoice.applyVat} onCheckedChange={(checked) => setNewInvoice({...newInvoice, applyVat: Boolean(checked)})} />
+                    <Label htmlFor="applyVat">Apply VAT (12.5%)</Label>
+                </div>
+                 <div className="col-span-2 md:col-span-1 grid grid-cols-2 gap-2 items-center">
+                    <Label htmlFor="discount" className="text-right">Discount</Label>
+                     <div className="flex items-center gap-2">
+                        <Select value={newInvoice.discountType} onValueChange={(value) => setNewInvoice({...newInvoice, discountType: value as 'None' | 'Percentage' | 'Amount', discountValue: 0})}>
+                            <SelectTrigger id="discountType">
+                                <SelectValue placeholder="Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="None">None</SelectItem>
+                                <SelectItem value="Percentage">%</SelectItem>
+                                <SelectItem value="Amount">Amount</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Input
+                          id="discountValue"
+                          type="number"
+                          step="0.01"
+                          placeholder="Value"
+                          value={newInvoice.discountValue}
+                           onChange={(e) => setNewInvoice({...newInvoice, discountValue: parseFloat(e.target.value) || 0})}
+                          disabled={newInvoice.discountType === 'None'}
+                          className="flex-1"
+                        />
+                     </div>
+                </div>
+            </div>
+            
+             <Separator className="my-4" />
+
+             {/* Summary Totals */}
+             <div className="grid grid-cols-2 gap-4 text-sm font-medium">
+                <div className="col-span-full text-right">Subtotal: <span className="font-normal">TT$ {formatCurrency(subtotal)}</span></div>
+                 {newInvoice.applyVat && (
+                    <div className="col-span-full text-right">VAT (12.5%): <span className="font-normal">TT$ {formatCurrency(vatAmount)}</span></div>
+                 )}
+                 {newInvoice.discountType !== 'None' && (
+                    <div className="col-span-full text-right">Discount: <span className="font-normal">TT$ {formatCurrency(newInvoice.discountType === 'Amount' ? newInvoice.discountValue : subtotal * (newInvoice.discountValue / 100))}</span></div>
+                 )}
+                 <div className="col-span-full text-right text-lg font-bold text-primary">Total Amount Due: <span>TT$ {formatCurrency(totalAmountDue)}</span></div>
+             </div>
+            
+             <Separator className="my-4" />
+
+             {/* Notes and Terms */}
+            <div className="space-y-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="notes" className="text-right">Notes</Label>
+                   <Textarea
+                    id="notes"
+                    value={newInvoice.notes}
+                    onChange={(e) => setNewInvoice({...newInvoice, notes: e.target.value})}
+                    className="col-span-3"
+                   />
+                </div>
+                 <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="terms" className="text-right">Terms</Label>
+                   <Textarea
+                    id="terms"
+                    value={newInvoice.terms}
+                    onChange={(e) => setNewInvoice({...newInvoice, terms: e.target.value})}
+                    className="col-span-3"
+                   />
+                </div>
+            </div>
+
+            {/* Modal Footer Buttons */}
+            <div className="flex justify-end gap-2 mt-6">
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save Invoice</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+
     </div>
-  );  
-}  
+  );
+}

@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import * as React from "react";
 import { useState } from "react";
@@ -22,6 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 // Comprehensive Industry Options
 const industryOptions = [
@@ -136,25 +139,38 @@ function SignupForm() {
   const [billingPlan, setBillingPlan] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const router = useRouter();
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreeTerms) {
       alert("You must agree to the terms and conditions."); // Replace with a more sophisticated UI feedback
       return;
     }
-    // Placeholder for signup logic (calls backend)
-    console.log("Signup attempted with:", {
-      fullName,
-      email,
-      password,
-      companyName,
-      industry,
-      billingPlan,
-      logoFile: logoFile?.name, // Just log the name for now
-    });
-    // Assume successful signup redirects to dashboard
-    // router.push("/dashboard"); // Uncomment and use router if needed here
+
+    try {
+      // 1. Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Create user document in Firestore
+      await setDoc(doc(db, "companies", user.uid), {
+        fullName,
+        email,
+        companyName,
+        industry,
+        billingPlan,
+        // logoFile: logoFile?.name, // Consider storing logo in Firebase Storage and saving the URL here
+        createdAt: new Date(),
+        role: "manager", // Set the role to "manager"
+      });
+
+      // 3. Redirect to dashboard
+      router.push("/dashboard");
+    } catch (error: any) {
+      console.error("Signup failed:", error);
+      alert(error.message); // Display error to user. More robust error handling is needed.
+    }
   };
 
   return (

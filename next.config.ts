@@ -32,10 +32,8 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // allowedDevOrigins is not a valid option in Next.js 13+
+    allowedDevOrigins: ["https://6000-firebase-studio-1747695162263.cluster-hf4yr35cmnbd4vhbxvfvc6cp5q.cloudworkstations.dev"],
   }
 };
 
 export default nextConfig;
-
-    

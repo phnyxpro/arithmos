@@ -9,10 +9,10 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogDescription } from '@/components/ui/dialog'; // Added DialogDescription
-import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle, Users } from 'lucide-react'; // Added Users icon
-import { cn } from '@/lib/utils'; // Assuming cn utility is available
-import { format } from 'date-fns'; // Assuming date-fns is available
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogDescription } from '@/components/ui/dialog';
+import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle, Users } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import { Textarea } from '@/components/ui/textarea';
 
 interface LineItem {
@@ -30,7 +30,7 @@ export default function BillingPage() {
     client: '',
     template: '',
     frequency: '',
-    startDate: format(new Date(), 'yyyy-MM-dd'), // Use date-fns for consistent format
+    startDate: format(new Date(), 'yyyy-MM-dd'),
     endDate: '',
     neverEnds: true,
   });
@@ -41,17 +41,17 @@ export default function BillingPage() {
     clientName: '',
     clientEmail: '',
     clientAddress: '',
-    invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000), // Simple random placeholder
+    invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000),
     invoiceDate: format(new Date(), 'yyyy-MM-dd'),
-    dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'), // Due date 30 days from now
+    dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'),
     lineItems: [] as LineItem[],
     applyVat: false,
-    discountType: 'None', // or 'Percentage', 'Amount'
+    discountType: 'None',
     discountValue: 0,
     notes: '',
     terms: 'Payment due upon receipt.',
   });
-  const [lineItemCounter, setLineItemCounter] = useState(1); // Counter for unique line item IDs, start from 1
+  const [lineItemCounter, setLineItemCounter] = useState(1);
 
   // Placeholder data for selects (replace with actual data fetching if needed)
   const clients = [{ value: 'client1', label: 'Client A' }, { value: 'client2', label: 'Client B' }];
@@ -66,40 +66,35 @@ export default function BillingPage() {
 
   const handleCreateInvoiceClick = () => {
     setIsCreateModalOpen(true);
-    // Reset new invoice state with default values when opening modal
     setNewInvoice({
       clientName: '',
       clientEmail: '',
       clientAddress: '',
-      invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000), // New random invoice number
+      invoiceNumber: 'INV-' + Math.floor(Math.random() * 10000),
       invoiceDate: format(new Date(), 'yyyy-MM-dd'),
       dueDate: format(new Date().setDate(new Date().getDate() + 30), 'yyyy-MM-dd'),
-      lineItems: [{ id: 0, description: '', qty: 1, unitPrice: 0, amount: 0 }], // Start with one empty line item
+      lineItems: [{ id: 0, description: '', qty: 1, unitPrice: 0, amount: 0 }],
       applyVat: false,
       discountType: 'None',
       discountValue: 0,
       notes: '',
       terms: 'Payment due upon receipt.',
     });
-    setLineItemCounter(1); // Reset counter and add initial item
+    setLineItemCounter(1);
   };
 
   const handleSaveInvoice = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     console.log('Saving invoice:', newInvoice);
-    // Implement save invoice logic (e.g., to local storage, API)
-    // After successful save:
     setIsCreateModalOpen(false);
   };
 
   const handleCreateRecurringInvoice = () => {
     console.log('Creating recurring invoice with settings:', recurringInvoiceSettings);
-    // Implement recurring invoice creation logic
   };
 
   const handleSaveReminderSettings = () => {
     console.log('Saving reminder settings:', enableReminders);
-    // Implement save reminder settings logic
   };
 
   const handleAddLineItem = () => {
@@ -121,10 +116,9 @@ export default function BillingPage() {
     const updatedLineItems = newInvoice.lineItems.map(item => {
       if (item.id === id) {
         const updatedItem = { ...item, [field]: value };
-        // Recalculate amount based on qty and unit price
         if (field === 'qty' || field === 'unitPrice') {
-           const qty = parseFloat(updatedItem.qty as any) || 0; // Ensure parsing
-           const unitPrice = parseFloat(updatedItem.unitPrice as any) || 0; // Ensure parsing
+           const qty = parseFloat(updatedItem.qty as any) || 0;
+           const unitPrice = parseFloat(updatedItem.unitPrice as any) || 0;
           updatedItem.amount = qty * unitPrice;
         }
         return updatedItem;
@@ -134,12 +128,11 @@ export default function BillingPage() {
     setNewInvoice({ ...newInvoice, lineItems: updatedLineItems });
   };
 
-  // Calculate totals dynamically
   const { subtotal, vatAmount, totalAmountDue } = useMemo(() => {
     const subtotal = newInvoice.lineItems.reduce((sum, item) => sum + item.amount, 0);
-    const vatRate = newInvoice.applyVat ? 0.125 : 0; // Assuming 12.5% VAT
+    const vatRate = newInvoice.applyVat ? 0.125 : 0;
     const vatAmount = subtotal * vatRate;
-    
+
     let discountAmount = 0;
     if(newInvoice.discountType === 'Amount') {
         discountAmount = newInvoice.discountValue || 0;
@@ -155,7 +148,6 @@ export default function BillingPage() {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  // Placeholder for invoice list rendering (replace with actual data mapping)
   const renderInvoiceList = () => {
     return (
       <div className="border rounded-lg p-6 min-h-[200px] flex items-center justify-center bg-muted/30">
@@ -164,7 +156,6 @@ export default function BillingPage() {
     );
   };
 
-   // Placeholder for client list rendering (replace with actual data mapping)
   const renderClientList = () => {
     return (
       <div className="border rounded-lg p-6 min-h-[100px] flex items-center justify-center bg-muted/30">
@@ -173,7 +164,6 @@ export default function BillingPage() {
     );
   };
 
-  // Placeholder handler for Add Client button
   const handleAddClientClick = () => {
     console.log('Add Client button clicked');
     // Implement logic to add a new client (e.g., open a modal, navigate to a new page)
@@ -181,7 +171,7 @@ export default function BillingPage() {
 
   return (
      <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
-      <Card className="border bg-card text-card-foreground w-full max-w-6xl shadow-xl rounded-xl mb-8"> {/* Added margin bottom */}
+      <Card className="border bg-card text-card-foreground w-full max-w-6xl shadow-xl rounded-xl mb-8">
         <CardHeader className="flex flex-col space-y-1.5 p-6">
           <div className="flex items-center space-x-3">
             <FileText className="h-8 w-8 text-primary" />
@@ -191,7 +181,7 @@ export default function BillingPage() {
             Create, send, and track professional invoices. Invoices are currently saved to your browser.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6 pt-0 space-y-8 max-w-full overflow-x-hidden"> {/* Added max-w-full and overflow-x-hidden to contain content */}
+        <CardContent className="p-6 pt-0 space-y-8 max-w-full overflow-x-hidden">
           {/* Search and Create */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="relative w-full sm:max-w-md">
@@ -214,6 +204,28 @@ export default function BillingPage() {
 
           {/* Additional Sections */}
           <div className="grid md:grid-cols-2 gap-6 mt-8">
+
+            {/* Clients Section */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-3">
+                 <div className="font-semibold tracking-tight text-lg flex items-center">
+                   <Users className="mr-2 h-5 w-5 text-primary" /> Clients
+                 </div>
+                 <Button className="text-xs h-8 bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleAddClientClick}>
+                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
+                 </Button>
+              </CardHeader>
+              <CardContent className="p-6 pt-0 space-y-4">
+                {/* Client List */}
+                 {renderClientList()}
+
+                 {/* Add Client Button below list */}
+                 <Button variant="outline" className="w-full text-sm" onClick={handleAddClientClick}>
+                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
+                 </Button>
+              </CardContent>
+            </Card>
+
             {/* Recurring Billing & Reminders */}
             <Card>
               <CardHeader className="flex flex-col space-y-1.5 p-6">
@@ -318,27 +330,6 @@ export default function BillingPage() {
               </CardContent>
             </Card>
 
-            {/* Clients Section */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-3">
-                 <div className="font-semibold tracking-tight text-lg flex items-center">
-                   <Users className="mr-2 h-5 w-5 text-primary" /> Clients
-                 </div>
-                 <Button className="text-xs h-8 bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleAddClientClick}>
-                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
-                 </Button>
-              </CardHeader>
-              <CardContent className="p-6 pt-0 space-y-4">
-                {/* Client List */}
-                 {renderClientList()}
-
-                 {/* Add Client Button below list */}
-                 <Button variant="outline" className="w-full text-sm" onClick={handleAddClientClick}>
-                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
-                 </Button>
-              </CardContent>
-            </Card>
-
             {/* Online Payments */}
             <Card>
               <CardHeader className="flex flex-col space-y-1.5 p-6">
@@ -440,7 +431,7 @@ export default function BillingPage() {
               <Input
                 id="invoiceNumber"
                 value={newInvoice.invoiceNumber}
-                readOnly // Invoice number is auto-generated
+                readOnly
                 className="col-span-3 font-mono text-muted-foreground"
               />
             </div>

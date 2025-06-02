@@ -223,13 +223,6 @@ Net Pay: TT$${netPay.toFixed(2)}
     toast({ title: "Time Subtracted (Basic - Dummy)", description: "Time subtraction simulated." });
   };
 
-  const handleAddToTable = () => {
-    // Ensure there are results to add
-    if (!advancedCalcResults) {
-      toast({ title: "Cannot Add", description: "Please calculate first to add to table.", variant: "default" });
-      return;
-    }
-
     // Re-calculate values to store in a structured object
     const hourlyRate = parseFloat(hourlyRateAdv) || 0;
     const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;

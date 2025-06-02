@@ -4,27 +4,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const corporationTaxSections = [
   {
-    title: "PRELIMINARY",
-    description: "Initial provisions of the Corporation Tax Act.",
-    icon: "BookOpen", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
-    title: "Short Title",
-    description: "Official name of the Act.",
-    icon: "FileText", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
-    title: "Interpretation",
-    description: "Definitions of terms used in the Act.",
-    icon: "FileText", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
     title: "PART I — TAXATION OF COMPANIES",
     description: (
- <Accordion type="single" collapsible className="w-full">
+ <>
  <AccordionItem value="item-1">
  <AccordionTrigger>Preliminary</AccordionTrigger>
  <AccordionContent>
@@ -138,14 +120,72 @@ const corporationTaxSections = [
  </AccordionContent>
  </AccordionItem>
  </Accordion>
-    ),
-    // description: "Provisions related to the taxation of companies.",
+ </>),
  icon: "Briefcase", // Example icon, replace with appropriate one
     href: "#"
   },
   {
     title: "IMPOSITION OF CORPORATION TAX",
-    description: "Rules for levying corporation tax.",
+    description: (
+      <div>
+        <h3 className="text-lg font-semibold mb-2">IMPOSITION OF CORPORATION TAX</h3>
+        <p className="mb-4">
+          Subject to this Part, corporation tax shall be charged for each year of income on the chargeable profits of a company at the rate or rates specified in the First Schedule.
+        </p>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>3A. Business Levy</AccordionTrigger>
+            <AccordionContent>
+              (1) Notwithstanding anything to the contrary in this Act or in the Income Tax Act, but subject to this section, there shall be assessed and paid in and for the year of income 2012 and every year thereafter, a levy (hereinafter referred to as the "business levy") on the gross revenue of a company or individual carrying on a business, other than a company or individual to whom subsection (2) or (3) applies.
+              <br /><br />
+              (2) This section does not apply to a company or individual whose gross revenue is less than three hundred and sixty thousand dollars per annum.
+              <br /><br />
+              (3) This section does not apply to—
+              <br />
+              (a) a company or individual carrying on the business of petroleum operations;
+              <br />
+              (b) a company subject to tax under section 65A or 65C of the Income Tax Act;
+              <br />
+              (c) a company for any year of income during the first three years of its existence.
+              <br /><br />
+              (4) The business levy shall be—
+              <br />
+              (a) at the rate of 0.6 per cent of the gross revenue of a company or an individual; and
+              <br />
+              (b) an allowable deduction in arriving at the chargeable income or total income of a company or an individual.
+              <br /><br />
+              (5) The business levy shall be paid annually, in the same manner and at the same time as provided for the payment of corporation tax or income tax.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+        <p className="mb-4">
+          3B. [Repealed]
+        </p>
+        <h3 className="text-lg font-semibold mb-2">General Scheme of Corporation Tax</h3>
+        <p className="mb-4">
+          (1) Subject to the provisions of this Act, in arriving at the chargeable profits of a company for any year of income, there shall be deducted from the total profits of the company for that year any charges on income paid by the company in that year and any expenses of management incurred by the company in that year.
+          <br /><br />
+          (2) Subject to the provisions of this Act, in arriving at the total profits of a company for any year of income—
+          <br />
+          (a) any income from a source within the charge to corporation tax shall be computed in accordance with the provisions of the Income Tax Act applicable to the computation of income of that description for the purposes of that Act; and
+
+          <br />
+          (b) all distributions received by the company from resident companies shall be excluded; and
+          <br />
+          (c) all income from the leasing of assets shall be included; and
+          <br />
+
+          (d) income from the holding of or dealing in land or immovable property situate in Trinidad and Tobago shall be included.
+        </p>
+        <h3 className="text-lg font-semibold mb-2">BASIS OF ASSESSMENT AND EXEMPTIONS</h3>
+        <h4 className="text-md font-semibold mb-1">Basis of Assessment</h4>
+        <p className="mb-4">
+          (1) Corporation tax shall be charged on the chargeable profits of a company for each year of income.
+          <br /><br />
+          (2) The year of income for a company shall be its accounting period.
+        </p>
+      </div>
+    ),
     icon: "CreditCard", // Example icon, replace with appropriate one
     href: "#"
   },
@@ -153,24 +193,6 @@ const corporationTaxSections = [
     title: "Charge of Corporation Tax",
     description: "Details on how corporation tax is charged.",
     icon: "CreditCard", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
-    title: "3A. Business Levy",
-    description: "Provisions for the business levy.",
-    icon: "CreditCard", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
-    title: "3B. [Repealed]",
-    description: "Repealed section of the Act.",
-    icon: "FileText", // Example icon, replace with appropriate one
-    href: "#"
-  },
-  {
-    title: "General Scheme of Corporation Tax",
-    description: "Overall framework of corporation tax.",
-    icon: "FileText", // Example icon, replace with appropriate one
     href: "#"
   },
   {
@@ -199,7 +221,46 @@ const corporationTaxSections = [
   },
   {
     title: "COMPUTATION OF PROFITS",
-    description: "Rules for calculating taxable profits.",
+    description: (
+      <div>
+        <h3 className="text-lg font-semibold mb-2">COMPUTATION OF PROFITS</h3>
+        <h4 className="text-md font-semibold mb-1">General Rules</h4>
+        <p className="mb-4">
+          7. (1) Except as otherwise provided by this Part, the chargeable profits of a company shall be computed in accordance with the income tax principles relating to the provisions of the Income Tax Act applied by section 19 and all questions as to the amounts which are or are not to be taken into account as profits, or in computing profits, or charged to tax as a person’s profits or as to the time when any such amount is to be treated as arising, being determined in accordance with income tax law as applied by section 19 and practice.
+          <br /><br />
+          (2) For the purpose of this section “income tax law” means, in relation to any year of income, the law applying, for the year of income, to the charge on individuals of income tax.
+          <br /><br />
+          (3) Subject to any written law applied by this Part which expressly authorises such an allowance, no allowance shall, subject to subsection (4) and section 10O, be made in ascertaining the chargeable profits—
+          <br />
+          (a) in respect of distributions; or
+          <br />
+          (b) in respect of any annuity or other annual payment.
+          <br /><br />
+          (4) Subsection (3)(a) shall not apply when the company makes a distribution that is a preference dividend, paid on or after 1st January 1966, but so however that—
+          <br />
+          (a) the deduction that is allowed in ascertaining the chargeable profits shall not exceed the amount of the preference dividend;
+          <br />
+          (b) the deduction shall be allowed only in the year of income in which the preference dividend has actually been paid.
+          <br /><br />
+          (5) (Deleted by Act No. 21 of 2005).
+          <br /><br />
+          (6) Without prejudice to the generality of subsection (1), any provision of the Income Tax Act which confers an exemption from income tax, or which provides for a person to be charged to income tax on any amount (whether expressed to be income or not, and whether an actual amount or not), shall have the like effect for purposes of corporation tax so far as is consistent with this Part.
+          <br /><br />
+          (7) Where a change in the shareholding of a company has taken place in a year of income, no loss incurred in any year preceding the year of income shall be carried forward and set off, as provided by section 16 of the Income Tax Act, against the profits of the year of income unless—
+          <br />
+          (a) on the last day of the year of income the shares of the company carrying not less than 51 per cent of the voting power were beneficially held by persons who beneficially held shares of the company carrying not less than 51 per cent of the voting power on the last day of the year or years in which the loss was incurred; or
+          <br />
+          (b) the Board is satisfied that the change in the shareholding was not effected with a view to avoiding or reducing any liability to tax.
+          <br /><br />
+          (8) Subject to section (9), where in a year of income a company claims a deduction for wear and tear under section 11(1)(b) of the Income Tax Act, the deduction shall not be allowed unless the company satisfies the Board that the taxes payable in that year of income under the Lands and Buildings Taxes Act and the Municipal Corporations Act have been paid for the year of income to which the claim relates.
+          <br /><br />
+          (9) to } (Deleted by Act No. 35 of 1998).
+        </p>
+        <p className="mb-4">
+          8–9. (Repealed by Act No. 2 of 2002).
+        </p>
+      </div>
+    ),
     icon: "Briefcase", // Example icon, replace with appropriate one
     href: "#"
   },

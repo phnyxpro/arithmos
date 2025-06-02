@@ -166,13 +166,13 @@ export default function LandingPage() {
       <section id="hero" className="relative w-full py-20 md:py-28 text-center">
         <div className="container relative z-10 mx-auto flex flex-col items-center text-center px-4">
           <HeroIcon className="mb-6 h-16 w-16 text-primary-foreground" aria-hidden="true" />
-           <h1 className="text-4xl md:text-5xl font-bold text-accent dark:text-primary-foreground/80 mb-4">
+           <h1 className="text-4xl md:text-5xl font-bold text-accent dark:text-foreground/80 mb-4">
             {pageHeroData.headline}
           </h1>
-          <p className="text-xl md:text-2xl font-semibold text-foreground dark:text-primary-foreground/80 mb-6">
+          <p className="text-xl md:text-2xl font-semibold text-foreground dark:text-secondary-foreground/80 mb-6">
             {pageHeroData.primarySubheadline}
           </p>
-          <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 dark:text-primary-foreground/80 mb-10">
+          <p className="max-w-2xl mx-auto text-base md:text-lg text-primary/80 dark:text-foreground/80 mb-10">
             {pageHeroData.secondarySubheadline}
           </p>
           <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -228,7 +228,7 @@ export default function LandingPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <CardDescription className="text-sm text-muted-foreground">
+                    <CardDescription className="text-sm text-foreground">
                       {calculator.description}
                     </CardDescription>
                   </CardContent>

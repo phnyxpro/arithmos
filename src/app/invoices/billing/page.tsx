@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogDescription } from '@/components/ui/dialog'; // Added DialogDescription
-import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle } from 'lucide-react';
+import { FileText, Search, CirclePlus, Repeat, Settings, CreditCard, Bell, TriangleAlert, Calendar, Trash2, MinusCircle, Users } from 'lucide-react'; // Added Users icon
 import { cn } from '@/lib/utils'; // Assuming cn utility is available
 import { format } from 'date-fns'; // Assuming date-fns is available
 import { Textarea } from '@/components/ui/textarea';
@@ -139,7 +139,7 @@ export default function BillingPage() {
     const subtotal = newInvoice.lineItems.reduce((sum, item) => sum + item.amount, 0);
     const vatRate = newInvoice.applyVat ? 0.125 : 0; // Assuming 12.5% VAT
     const vatAmount = subtotal * vatRate;
-    
+
     let discountAmount = 0;
     if(newInvoice.discountType === 'Amount') {
         discountAmount = newInvoice.discountValue || 0;
@@ -162,6 +162,21 @@ export default function BillingPage() {
         <p className="text-muted-foreground text-center">No invoices created yet. Click 'Create New Invoice' to start.</p>
       </div>
     );
+  };
+
+   // Placeholder for client list rendering (replace with actual data mapping)
+  const renderClientList = () => {
+    return (
+      <div className="border rounded-lg p-6 min-h-[100px] flex items-center justify-center bg-muted/30">
+        <p className="text-muted-foreground text-center">No clients added yet. Click 'Add Client' to start.</p>
+      </div>
+    );
+  };
+
+  // Placeholder handler for Add Client button
+  const handleAddClientClick = () => {
+    console.log('Add Client button clicked');
+    // Implement logic to add a new client (e.g., open a modal, navigate to a new page)
   };
 
   return (
@@ -300,6 +315,27 @@ export default function BillingPage() {
                   </div>
                 </div>
 
+              </CardContent>
+            </Card>
+
+            {/* Clients Section */}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-3">
+                 <div className="font-semibold tracking-tight text-lg flex items-center">
+                   <Users className="mr-2 h-5 w-5 text-primary" /> Clients
+                 </div>
+                 <Button className="text-xs h-8 bg-accent hover:bg-accent/90 text-accent-foreground" onClick={handleAddClientClick}>
+                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
+                 </Button>
+              </CardHeader>
+              <CardContent className="p-6 pt-0 space-y-4">
+                {/* Client List */}
+                 {renderClientList()}
+
+                 {/* Add Client Button below list */}
+                 <Button variant="outline" className="w-full text-sm" onClick={handleAddClientClick}>
+                    <CirclePlus className="mr-2 h-4 w-4" /> Add Client
+                 </Button>
               </CardContent>
             </Card>
 
@@ -521,7 +557,7 @@ export default function BillingPage() {
                      </div>
                 </div>
             </div>
-            
+
              <Separator className="my-4" />
 
              {/* Summary Totals */}
@@ -535,7 +571,7 @@ export default function BillingPage() {
                  )}
                  <div className="col-span-full text-right text-lg font-bold text-primary">Total Amount Due: <span>TT$ {formatCurrency(totalAmountDue)}</span></div>
              </div>
-            
+
              <Separator className="my-4" />
 
              {/* Notes and Terms */}

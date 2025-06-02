@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -33,10 +32,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Clock, Watch, Copy, Trash2, Plus, Minus, User, DollarSign, TrendingDown, Briefcase as BriefcaseIcon } from "lucide-react"; // Added BriefcaseIcon alias
+import { Clock, Watch, Copy, Trash2, Plus, Minus, User, DollarSign, TrendingDown, Briefcase as BriefcaseIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from 'date-fns';
-import { parse, isValid } from 'date-fns';
+import { format, parse, isValid, addMinutes, subMinutes } from 'date-fns';
+
+// Define TypeScript type for table data
+type CalculationRow = {
+  employeeNameAdv: string;
+  workDateAdv: string;
+  clockInTimeAdv: string;
+  clockOutTimeAdv: string;
+  breakDurationAdv: string;
+  hourlyRateAdv: string;
+  overtimeThresholdAdv: string;
+  overtimeMultiplierAdv: string;
+  applyNISAdv: boolean;
+  applyHealthSurchargeAdv: boolean;
+  otherDeductionsAdv: string;
+  payableHours: string;
+  regularHours: string;
+  overtimeHours: string;
+  grossPay: string;
+  nisDeduction: string;
+  healthSurchargeDeduction: string;
+  totalDeductions: string;
+  netPay: string;
+};
+
 
 export default function TimeCalculatorPage() {
   const { toast } = useToast();
@@ -72,7 +94,7 @@ export default function TimeCalculatorPage() {
   const [advancedCalcResults, setAdvancedCalcResults] = React.useState<string | null>(null);
 
   // State for table data
-  const [calculationTableData, setCalculationTableData] = React.useState<any[]>([]);
+  const [calculationTableData, setCalculationTableData] = React.useState<CalculationRow[]>([]);
 
 
   // Advanced Pay Calculation Logic
@@ -96,7 +118,7 @@ export default function TimeCalculatorPage() {
 
     // Handle overnight shifts (if end time is before start time, assume next day)
     if (isValid(start) && isValid(end) && end < start) {
-      end = parse(`${format(new Date(today), 'yyyy-MM-dd')} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
+      end = new Date(end.getTime()); // Clone the date before modifying
       end.setDate(end.getDate() + 1); // Add a day
     }
 
@@ -159,18 +181,13 @@ Net Pay: TT$${netPay.toFixed(2)}
     setAdvancedCalcResults(resultsSummary);
 
   }, [
- employeeNameAdv,
-    breakDurationAdv,
- breakUnitAdv,
- clockInTimeAdv,
- clockOutTimeAdv,
-    hourlyRateAdv,
-    workDateAdv,
-    clockInTimeAdv,
-    clockOutTimeAdv,
+    employeeNameAdv,
     breakDurationAdv,
     breakUnitAdv,
+    clockInTimeAdv,
+    clockOutTimeAdv,
     hourlyRateAdv,
+    workDateAdv,
     overtimeThresholdAdv,
     overtimeMultiplierAdv,
     applyNISAdv,
@@ -188,12 +205,26 @@ Net Pay: TT$${netPay.toFixed(2)}
       toast({ title: "Error", description: "Please enter Start and End times.", variant: "destructive" });
       return;
     }
-    // Dummy calculation logic
     const rate = parseFloat(basicHourlyRate) || 0;
-    const durationHours = 8; // Placeholder
+    const [startHour, startMinute] = basicStartTime.split(':').map(Number);
+    const [endHour, endMinute] = basicEndTime.split(':').map(Number);
+
+    const startDate = new Date();
+    startDate.setHours(startHour, startMinute, 0, 0);
+    const endDate = new Date();
+    endDate.setHours(endHour, endMinute, 0, 0);
+
+    // Handle overnight
+    if (endDate < startDate) {
+      endDate.setDate(endDate.getDate() + 1);
+    }
+
+    const durationMs = endDate.getTime() - startDate.getTime();
+    const durationHours = durationMs / (1000 * 60 * 60);
+
     const pay = durationHours * rate;
-    setBasicDurationResult(`Duration: ${durationHours} hours. Estimated Pay: TT$${pay.toFixed(2)}`);
-    toast({ title: "Calculation Complete (Basic)", description: `Duration: ${durationHours} hrs. Pay: TT$${pay.toFixed(2)}` });
+    setBasicDurationResult(`Duration: ${durationHours.toFixed(2)} hours. Estimated Pay: TT$${pay.toFixed(2)}`);
+    toast({ title: "Calculation Complete (Basic)", description: `Duration: ${durationHours.toFixed(2)} hrs. Pay: TT$${pay.toFixed(2)}` });
   };
 
   const handleBasicCopyResults = () => {
@@ -212,59 +243,51 @@ Net Pay: TT$${netPay.toFixed(2)}
     setBasicDurationResult(null);
     toast({ title: "Fields Cleared", description: "Basic duration calculator fields have been reset." });
   };
-  
+
   const handleBasicAddTime = () => {
-    setAddSubtractResult(`Result of adding time: (New Time)`);
-    toast({ title: "Time Added (Basic - Dummy)", description: "Time addition simulated." });
+    const [baseHour, baseMinute] = baseTime.split(":").map(Number);
+    const base = new Date();
+    base.setHours(baseHour, baseMinute, 0, 0);
+
+    const hours = parseInt(hoursToModify) || 0;
+    const minutes = parseInt(minutesToModify) || 0;
+    const minutesToAdd = hours * 60 + minutes;
+
+    if (isNaN(minutesToAdd)) {
+         toast({ title: "Invalid Input", description: "Please enter valid numbers for hours and minutes.", variant: "destructive" });
+         setAddSubtractResult(null);
+         return;
+    }
+
+    const newTime = addMinutes(base, minutesToAdd);
+    const formattedNewTime = format(newTime, 'HH:mm');
+    setAddSubtractResult(`Result of adding time: ${formattedNewTime}`);
+    toast({ title: "Time Added", description: `Added ${hours || 0} hrs and ${minutes || 0} mins to ${baseTime}.` });
   };
 
   const handleBasicSubtractTime = () => {
-    setAddSubtractResult(`Result of subtracting time: (New Time)`);
-    toast({ title: "Time Subtracted (Basic - Dummy)", description: "Time subtraction simulated." });
+    const [baseHour, baseMinute] = baseTime.split(":").map(Number);
+    const base = new Date();
+    base.setHours(baseHour, baseMinute, 0, 0);
+
+    const hours = parseInt(hoursToModify) || 0;
+    const minutes = parseInt(minutesToModify) || 0;
+    const minutesToSubtract = hours * 60 + minutes;
+
+
+     if (isNaN(minutesToSubtract)) {
+         toast({ title: "Invalid Input", description: "Please enter valid numbers for hours and minutes.", variant: "destructive" });
+         setAddSubtractResult(null);
+         return;
+    }
+
+    const newTime = subMinutes(base, minutesToSubtract);
+    const formattedNewTime = format(newTime, 'HH:mm');
+    setAddSubtractResult(`Result of subtracting time: ${formattedNewTime}`);
+     toast({ title: "Time Subtracted", description: `Subtracted ${hours || 0} hrs and ${minutes || 0} mins from ${baseTime}.` });
   };
 
-    // Re-calculate values to store in a structured object
-    const hourlyRate = parseFloat(hourlyRateAdv) || 0;
-    const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;
-    const overtimeMultiplier = parseFloat(overtimeMultiplierAdv) || 1;
-    const otherDeductions = parseFloat(otherDeductionsAdv) || 0;
-    const breakDuration = parseFloat(breakDurationAdv) || 0;
-
-    // Recalculate logic (should match the calculateAdvancedPay function's core logic)
-    const today = format(new Date(), "yyyy-MM-dd");
-    const start = parse(`${today} ${clockInTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
-    let end = parse(`${today} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
-
-    if (isValid(start) && isValid(end) && end < start) {
-      end = parse(`${format(new Date(today), 'yyyy-MM-dd')} ${clockOutTimeAdv}`, 'yyyy-MM-dd HH:mm', new Date());
-      end.setDate(end.getDate() + 1);
-    }
-
-    if (!isValid(start) || !isValid(end)) {
-        toast({ title: "Error", description: "Invalid time format, cannot add to table.", variant: "destructive" });
-        return;
-    }
-
-    const totalDurationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-    let breakMinutes = breakDuration;
-    if (breakUnitAdv === 'hours') {
-        breakMinutes = breakDuration * 60;
-    }
-    const payableMinutes = Math.max(0, totalDurationMinutes - breakMinutes);
-    const payableHours = payableMinutes / 60;
-
-  };
-
-  const handleCopyAdvancedResults = () => {
-    if (advancedCalcResults) {
-      navigator.clipboard.writeText(advancedCalcResults);
-      toast({ title: "Copied!", description: "Calculation summary copied to clipboard." });
-    } else {
-      toast({ title: "No results", description: "Calculate first to copy results.", variant: "default" });
-    }
-  };
-
-  const calculateValuesForTable = () => {
+  const calculateValuesForTable = (): CalculationRow | null => {
       // Ensure essential inputs are available and valid numbers
       const hourlyRate = parseFloat(hourlyRateAdv) || 0;
       const overtimeThreshold = parseFloat(overtimeThresholdAdv) || 0;
@@ -283,6 +306,7 @@ Net Pay: TT$${netPay.toFixed(2)}
 
       // Handle overnight shifts (if end time is before start time, assume next day)
       if (isValid(start) && isValid(end) && end < start) {
+          end = new Date(end.getTime()); // Clone the date before modifying
           end.setDate(end.getDate() + 1); // Add a day
       }
 
@@ -337,7 +361,7 @@ Net Pay: TT$${netPay.toFixed(2)}
           overtimeMultiplierAdv,
           applyNISAdv,
           applyHealthSurchargeAdv,
-          otherDeductionsAdv,
+          otherDeductionsAdv: otherDeductions.toFixed(2), // Ensure this is also formatted
           payableHours: payableHours.toFixed(2),
           regularHours: regularHours.toFixed(2),
           overtimeHours: overtimeHours.toFixed(2),
@@ -367,6 +391,17 @@ Net Pay: TT$${netPay.toFixed(2)}
           toast({ title: "Cannot Add", description: "Please ensure all required fields are filled correctly to calculate and add.", variant: "destructive" });
       }
   };
+
+
+  const handleCopyAdvancedResults = () => {
+    if (advancedCalcResults) {
+      navigator.clipboard.writeText(advancedCalcResults);
+      toast({ title: "Copied!", description: "Calculation summary copied to clipboard." });
+    } else {
+      toast({ title: "No results", description: "Calculate first to copy results.", variant: "default" });
+    }
+  };
+
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 min-h-[calc(100vh-4rem)] flex flex-col items-center pt-10">
@@ -587,14 +622,14 @@ Net Pay: TT$${netPay.toFixed(2)}
                   </div>
                 </CardContent>
               </Card>
-              
+
               {advancedCalcResults && (
                 <Card className="mt-4 bg-primary/5">
                     <CardHeader>
                         <CardTitle className="text-lg text-primary">Calculation Summary</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">{advancedCalcResults}</p>
+                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">{advancedCalcResults}</pre>
                     </CardContent>
                     <CardFooter className="p-4 pt-0 flex flex-col sm:flex-row gap-2 justify-end">
                       {/* Buttons for Add to Table, Copy, Export */}
@@ -607,7 +642,7 @@ Net Pay: TT$${netPay.toFixed(2)}
                       <Button variant="outline" disabled className="text-xs h-9 flex-1">
                          Export (PDF/CSV)
                       </Button>
-                    </CardContent>
+                    </CardFooter>
                 </Card>
               )}
 

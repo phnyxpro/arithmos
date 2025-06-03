@@ -418,8 +418,8 @@ Net Pay: TT$${netPay.toFixed(2)}
         <CardContent className="space-y-6">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="basic">Basic Time Tools</TabsTrigger>
-              <TabsTrigger value="advanced">Advanced Pay Calculator</TabsTrigger>
+              <TabsTrigger value="basic">Basic</TabsTrigger>
+              <TabsTrigger value="advanced">Advanced</TabsTrigger>
             </TabsList>
             <TabsContent value="basic" className="mt-6 space-y-6">
               <div className="space-y-6">

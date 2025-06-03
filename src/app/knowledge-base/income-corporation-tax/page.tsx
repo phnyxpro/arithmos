@@ -108,24 +108,17 @@ export default function CorporationTaxActPage() {
                     means income and includes short-term capital gains;
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-15">
-                  <AccordionTrigger>resident company</AccordionTrigger>
-                  <AccordionContent>
-                    means a company that is controlled in Trinidad and Tobago, whether or not the company is—
-                    (a) incorporated in Trinidad and Tobago; or
-                    (b) engaged in trade or business or in the pursuit of professional or vocational activities in Trinidad and Tobago;
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-16">
-                  <AccordionTrigger>royalties</AccordionTrigger>
-                  <AccordionContent>
-                    means— (a) amounts paid as consideration for the use of, or the right to use— (i) copyrights, artistic or scientific works, patents, designs, plans, secret processes or formulae, trade marks, motion picture films, films or tapes for radio or television broadcasting, or other like properties or rights; or (ii) information concerning industrial, commercial or scientific knowledge, experience or skill; (b) royalties, rentals, or other amounts paid in respect of the operation of mines, quarries or other natural resources;
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-17">
-                  <AccordionTrigger>short-term capital gains</AccordionTrigger>
-                  <AccordionContent>
-                    means chargeable gains accruing on a disposal of an asset within twelve months of its acquisition;
+        </Accordion>
+      </div>
+
+           <div>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="expense">
+            <AccordionTrigger>Section 10B - Promotional expenses</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground space-y-2">
+              <p><span className="font-semibold">company:</span> For the purposes of this section, means a company incorporated and resident in Trinidad and Tobago.</p>
+              <p><span className="font-semibold">promotional expenses:</span> For the purposes of this section, means expenses incurred in respect of services or goods/agricultural produce manufactured or produced in Trinidad and Tobago for advertising in foreign markets, providing promotional literature overseas, participating in trade fairs/missions, overseas travel for promotion, providing free samples/technical information, inviting buyers to Trinidad and Tobago, recruitment of specialist sales personnel operating in foreign markets (max 2 years), and conducting foreign market surveys.</p>
+              <p><span className="font-semibold">petroleum operations:</span> For the purposes of subsection (6), means operations related to the various phases of the petroleum industry and includes exploring for, producing, refining, transporting and marketing petroleum or petroleum products or both and manufacturing and marketing of petroleum-based products and petro-chemicals.</p>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

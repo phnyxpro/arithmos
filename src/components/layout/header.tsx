@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area"; // Added ScrollArea import
 import {
   Clock,
   Users as UsersIconLucide, // Renamed to avoid conflict with User icon
@@ -263,64 +264,66 @@ export default function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[340px] bg-sidebar text-sidebar-foreground">
-              <SheetHeader className="mb-4">
+            <SheetContent side="left" className="w-[300px] sm:w-[340px] bg-sidebar text-sidebar-foreground flex flex-col"> {/* Added flex flex-col */}
+              <SheetHeader className="mb-4 flex-shrink-0"> {/* Added flex-shrink-0 */}
                 <SheetTitle className="text-sidebar-primary flex items-center">
                   <AppLogo className="h-7 w-7 mr-2" />
                   Arithmos Menu
                 </SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col space-y-2 text-sm">
-                {mainNavItems.map((item) => (
-                  <Link
-                    key={`mobile-${item.label}`}
-                    href={item.href}
-                    className="block px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-                <Separator className="my-2 bg-sidebar-border" />
-                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Calculators</div>
-                {calculatorNavItems.map((item) => (
-                  <Link
-                    key={`mobile-calc-${item.label}`}
-                    href={item.href}
-                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    {item.label}
-                  </Link>
-                ))}
-                <Separator className="my-2 bg-sidebar-border" />
-                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Accounting</div>
-                {accountingNavItems.map((item) => (
-                  <Link
-                    key={`mobile-acc-${item.label}`}
-                    href={item.href}
-                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    {item.label}
-                  </Link>
-                ))}
-                <Separator className="my-2 bg-sidebar-border" />
-                <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Knowledge Base</div>
-                {knowledgeBaseNavItems.map((item) => (
-                  <Link
-                    key={`mobile-kb-${item.label}`}
-                    href={item.href}
-                    className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
+              <ScrollArea className="flex-grow"> {/* Wrapped nav with ScrollArea and gave it flex-grow */}
+                <nav className="flex flex-col space-y-2 text-sm">
+                  {mainNavItems.map((item) => (
+                    <Link
+                      key={`mobile-${item.label}`}
+                      href={item.href}
+                      className="block px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      onClick={() => setIsMobileNavOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <Separator className="my-2 bg-sidebar-border" />
+                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Calculators</div>
+                  {calculatorNavItems.map((item) => (
+                    <Link
+                      key={`mobile-calc-${item.label}`}
+                      href={item.href}
+                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      onClick={() => setIsMobileNavOpen(false)}
+                    >
+                      <item.Icon className="mr-2 h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  ))}
+                  <Separator className="my-2 bg-sidebar-border" />
+                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Accounting</div>
+                  {accountingNavItems.map((item) => (
+                    <Link
+                      key={`mobile-acc-${item.label}`}
+                      href={item.href}
+                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      onClick={() => setIsMobileNavOpen(false)}
+                    >
+                      <item.Icon className="mr-2 h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  ))}
+                  <Separator className="my-2 bg-sidebar-border" />
+                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Knowledge Base</div>
+                  {knowledgeBaseNavItems.map((item) => (
+                    <Link
+                      key={`mobile-kb-${item.label}`}
+                      href={item.href}
+                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      onClick={() => setIsMobileNavOpen(false)}
+                    >
+                      <item.Icon className="mr-2 h-4 w-4" />
+                      {item.label}
+                    </Link>
+                  ))}
+                </nav>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
           {/* User Menu still needs to be accessible on mobile, placing it after the sheet trigger */}

@@ -143,6 +143,7 @@ const initialCalculationResults = {
     totalMonthlyDeductions: "0.00",
     netTakeHomePay: "0.00",
     employerNISMonthly: "0.00",
+ totalPayrollTaxDisplay: "0.00",
     monthName: "",
     yearDisplay: "",
 };
@@ -241,6 +242,7 @@ export default function PayrollPage() {
 
     const totalMonthlyDeductions = payeMonthly + nisMonthlyEmployee + healthSurchargeMonthly;
     const netTakeHomePay = gmi - totalMonthlyDeductions;
+    const totalPayrollTax = totalMonthlyDeductions + employerNISMonthly;
 
     setCalculationResults({
       employeeNameDisplay: data.employeeName || "N/A",
@@ -256,6 +258,7 @@ export default function PayrollPage() {
       totalMonthlyDeductions: totalMonthlyDeductions.toFixed(2),
       netTakeHomePay: netTakeHomePay.toFixed(2),
       employerNISMonthly: employerNISMonthly.toFixed(2),
+      totalPayrollTaxDisplay: totalPayrollTax.toFixed(2),
       monthName: monthLabel,
       yearDisplay: year.toString(),
     });
@@ -281,6 +284,8 @@ NIS (Employee): TT$ ${calculationResults.nisMonthlyEmployee}
 Health Surcharge: TT$ ${calculationResults.healthSurchargeMonthly}
 Total Monthly Deductions: TT$ ${calculationResults.totalMonthlyDeductions}
 Net Take-Home Pay: TT$ ${calculationResults.netTakeHomePay}
+    ---------------------------------
+ Total Payroll Tax (Employee Deductions + Employer NIS): TT$ ${calculationResults.totalPayrollTaxDisplay}
 ---------------------------------
 Employer's NIS Contribution (Monthly): TT$ ${calculationResults.employerNISMonthly}
 ---------------------------------
@@ -338,7 +343,8 @@ Note: These are estimates. Consult official guidelines.
       "Gross Monthly Income (TT$)", "Est. Annual Income (TT$)", "Mondays in Month",
       "NIS Class", "Est. Weekly NIS Employee (TT$)", "Est. Weekly NIS Employer (TT$)",
       "PAYE Monthly (TT$)", "NIS Monthly Employee (TT$)", "Health Surcharge Monthly (TT$)",
-      "Total Monthly Deductions (TT$)", "Net Take-Home Pay (TT$)", "Employer NIS Monthly (TT$)"
+      "Total Monthly Deductions (Employee) (TT$)", "Net Take-Home Pay (TT$)",
+      "Employer NIS Monthly (TT$)", "Total Payroll Tax (TT$)"
     ];
     const rows = savedCalculations.map(calc => [
       `"${calc.id}"`,
@@ -357,6 +363,7 @@ Note: These are estimates. Consult official guidelines.
       `"${calc.totalMonthlyDeductions}"`,
       `"${calc.netTakeHomePay}"`,
       `"${calc.employerNISMonthly}"`,
+      `"${calc.totalPayrollTaxDisplay}"`,
     ].join(","));
 
     const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows].join("\n");
@@ -669,15 +676,19 @@ Note: These are estimates. Consult official guidelines.
                 
                 <Separator className="my-2" />
                 <div className="flex justify-between font-semibold">
-                  <span>Total Monthly Deductions:</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
+                  <span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
                 </div>
                 <div className="flex justify-between text-lg font-bold text-primary mt-1">
                   <span>Net Take-Home Pay:</span><span>TT$ {calculationResults.netTakeHomePay}</span>
                 </div>
 
                 <Separator className="my-2" />
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground flex items-center">
+ <div className="flex justify-between text-lg font-bold text-primary mt-1">
+ <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span><span>TT$ {calculationResults.totalPayrollTaxDisplay}</span>
+ </div>
+
+ <div className="flex justify-between items-center mt-2"> {/* Adjusted spacing */}
+ <span className="text-muted-foreground flex items-center">
                     <Briefcase className="mr-2 h-4 w-4" />
                     Employer's NIS Contribution (Monthly):
                   </span>
@@ -798,11 +809,15 @@ Note: These are estimates. Consult official guidelines.
                 <div className="flex justify-between"><span>Health Surcharge:</span> <span className="text-foreground">TT$ {viewModalData.healthSurchargeMonthly}</span></div>
               </div>
               <Separator className="my-2" />
-              <div className="flex justify-between font-semibold"><span>Total Monthly Deductions:</span><strong className="text-destructive">TT$ {viewModalData.totalMonthlyDeductions}</strong></div>
+              <div className="flex justify-between font-semibold"><span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {viewModalData.totalMonthlyDeductions}</strong></div>
               <div className="flex justify-between text-lg font-bold text-primary mt-1"><span>Net Take-Home Pay:</span><span>TT$ {viewModalData.netTakeHomePay}</span></div>
               <Separator className="my-2" />
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground flex items-center"><Briefcase className="mr-2 h-4 w-4" />Employer's NIS Contribution (Monthly):</span>
+ <div className="flex justify-between text-lg font-bold text-primary mt-1">
+ <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span><span>TT$ {viewModalData.totalPayrollTaxDisplay}</span>
+ </div>
+
+ <div className="flex justify-between items-center mt-2"> {/* Adjusted spacing */}
+ <span className="text-muted-foreground flex items-center"><Briefcase className="mr-2 h-4 w-4" />Employer's NIS Contribution (Monthly):</span>
                 <strong className="text-muted-foreground">TT$ {viewModalData.employerNISMonthly}</strong>
               </div>
             </div>

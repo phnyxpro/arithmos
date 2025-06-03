@@ -135,7 +135,7 @@ export default function SimplifiedPayrollCalculator() {
     const annualGrossIncome = gmi * 12;
     const personalAllowance = 90000;
     const annualNisEmployee = nisMonthlyEmployee * 12; 
-    const chargeableIncome = Math.max(0, annualGrossIncome - personalAllowance - annualNisEmployee);
+    const chargeableIncome = Math.max(0, annualGrossIncome - (personalAllowance + (.7*annualNisEmployee)));
     
     let annualPAYE = 0;
     if (chargeableIncome <= 75000) {

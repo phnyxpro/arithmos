@@ -68,7 +68,8 @@ const knowledgeBaseNavItems = [
     { href: "/knowledge-base", label: "All Articles", Icon: Library },
     { href: "/knowledge-base/property-tax", label: "Property Tax Act", Icon: House },
     { href: "/knowledge-base/vat", label: "VAT Act", Icon: ReceiptText },
-    { href: "/knowledge-base/income-corporation-tax", label: "Income & Corp. Tax Act", Icon: Building },
+    { href: "/knowledge-base/income-tax", label: "Income Tax Act", Icon: Building },
+    { href: "/knowledge-base/corporation-tax", label: "Corporation Tax Act", Icon: Banknote}g,
     { href: "/knowledge-base/aid-to-industry", label: "Aid to Industry Act", Icon: Factory },
 ];
 

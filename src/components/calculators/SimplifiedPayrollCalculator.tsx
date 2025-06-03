@@ -57,7 +57,7 @@ const nisClassesData: NisClass[] = [
 ];
 
 const PERSONAL_ALLOWANCE = 90000;
-const PAYE_BRACKET_1_LIMIT = 72000;
+const PAYE_BRACKET_1_LIMIT = 75000;
 const PAYE_RATE_1 = 0.25;
 const PAYE_RATE_2 = 0.30;
 
@@ -138,10 +138,10 @@ export default function SimplifiedPayrollCalculator() {
     const chargeableIncome = Math.max(0, annualGrossIncome - personalAllowance - annualNisEmployee);
     
     let annualPAYE = 0;
-    if (chargeableIncome <= 72000) {
+    if (chargeableIncome <= 75000) {
       annualPAYE = chargeableIncome * 0.25;
     } else {
-      annualPAYE = (72000 * 0.25) + ((chargeableIncome - 72000) * 0.30);
+      annualPAYE = (75000 * 0.25) + ((chargeableIncome - 75000) * 0.30);
     }
     const payeMonthly = annualPAYE / 12;
 
@@ -371,7 +371,7 @@ export default function SimplifiedPayrollCalculator() {
         
         <CardFooter className="p-0 pt-2">
             <p className="text-xs text-muted-foreground text-center mt-2">
-            Note: Calculations are estimates. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on official NIBTT earnings classes (approx. monthly contribution shown). Health Surcharge based on weekly income thresholds and approx. weeks per month. Employer's NIS is an additional cost to the employer. Always consult official IRD & NIBTT guidelines.
+            Note: Calculations are estimates. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$75,000 chargeable, 30% thereafter). NIS based on official NIBTT earnings classes (approx. monthly contribution shown). Health Surcharge based on weekly income thresholds and approx. weeks per month. Employer's NIS is an additional cost to the employer. Always consult official IRD & NIBTT guidelines.
             </p>
         </CardFooter>
       </div>

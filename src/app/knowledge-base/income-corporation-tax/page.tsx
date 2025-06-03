@@ -20,6 +20,60 @@ export default function CorporationTaxActPage() {
         </a>
       </h2>
 
+      <div className="mb-8">
+        <h3 className="text-2xl font-semibold mb-4 text-left">Quick questions</h3>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="q1">
+            <AccordionTrigger>1. What is the purpose of the Corporation Tax Act?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground text-left">
+              The Corporation Tax Act in Trinidad and Tobago provides for the taxation of short-term capital gains and establishes a framework for taxing company profits. It also addresses matters incidental to or consequential upon these taxation provisions. The Act aims to ensure that companies operating within or deriving income from Trinidad and Tobago contribute to the national revenue through corporation tax.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="q2">
+            <AccordionTrigger>2. Which types of income and gains are considered "profits" and are therefore subject to corporation tax?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              Under the Corporation Tax Act, "profits" encompass a broad range of income sources and gains. These include, but are not limited to, income from trade or business (including petroleum marketing business and other specified activities), professions or vocations, management charges, charges for personal services and technical/managerial skills, short-term capital gains, interest, discounts, annuities, rents, royalties, premiums, commissions, fees, licence charges, and dividends. Essentially, any annual profits not specifically exempted or falling under other categories are also considered profits subject to taxation.
+            </AccordionContent>
+          </AccordionItem>
+ <AccordionItem value="q3">
+            <AccordionTrigger>3. What is a "resident company" for the purposes of this Act?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              A "resident company" is defined as a company that is controlled in Trinidad and Tobago. This is the case regardless of whether the company is incorporated in Trinidad and Tobago or is engaged in trade, business, or professional/vocational activities within the country. The location where a company is considered to be controlled is where the "mind or management" of the company is ordinarily situated.
+            </AccordionContent>
+          </AccordionItem>
+ <AccordionItem value="q4">
+            <AccordionTrigger>4. How does the Act define "short-term capital gains"?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              "Short-term capital gains" are defined as chargeable gains that accrue on the disposal of an asset within twelve months of its acquisition. This specific timeframe is crucial for determining whether a capital gain falls under the "short-term" classification and is therefore subject to the corporation tax provisions related to such gains.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="q5">
+            <AccordionTrigger>5. Are there any exemptions from corporation tax for certain types of companies or income?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              Yes, the Act provides for several exemptions from corporation tax. These include certain approved small companies, companies operating in regional development areas, approved activity companies (for a specified period), profits of co-operative societies, sporting bodies, profits of the Post Office Savings Bank and other thrift institutions, profits from certain approved funds or schemes, profits of statutory or registered building/friendly societies, interest on specific public revenue loans, profits from investments of certain National Insurance Act funds, market development grants (under specific conditions), profits of certain development and financial institutions, interest on certain bonds and loans related to housing and education, profits of venture capital companies (including short-term capital gains), profits of certain trusts and unit trust businesses, profits of BWIA International Airways Limited for a specific period, and certain dividends and distributions received by resident companies. The President also has the power to amend the list of exemptions.
+            </AccordionContent>
+          </AccordionItem>
+ <AccordionItem value="q6">
+            <AccordionTrigger>6. What is the "business levy" and how does it relate to corporation tax?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              The business levy is a separate tax imposed on the gross sales or receipts of a company at a rate of 0.2 per cent. Companies can claim a tax credit against their business levy liability for corporation tax paid, up to the business levy liability. It's payable quarterly and not deductible for corporation tax. Exemptions include new companies in the first 12 months, corporation tax-exempt companies, and those with gross sales/receipts below a threshold in the preceding year.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="q7">
+            <AccordionTrigger>7. What are some of the specific deductions and allowances available to companies under the Act?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              The Act outlines various deductions and allowances that companies can claim to reduce their chargeable profits. These include deductions for certain promotional expenses aimed at creating or expanding foreign markets for Trinidad and Tobago goods and services (equivalent to 150% of actual expenditure under specific conditions), expenses incurred in respect of training, deductions for contributions to catastrophe reserve funds, allowances for art and culture expenditures (up to a maximum amount), scholarship allowances for non-employee nationals, deductions for promoting or sponsoring sporting activities/events or sportsmen (up to a maximum amount), deductions for sponsoring audio, visual, or video productions for local purposes (150% of actual expenditure up to a maximum amount), deductions for production companies creating their own audio, visual, or video productions (150% of actual expenditure up to a maximum amount), allowances for engaging certified energy service companies for energy-saving systems (150% of expenditure), and deductions for promoting the fashion industry (150% of expenditure up to a maximum amount). There are limitations on the aggregate amount of certain allowances that can be claimed, and double deductions under different sections are prohibited.
+            </AccordionContent>
+          </AccordionItem>
+ <AccordionItem value="q8">
+            <AccordionTrigger>8. How are "close companies" treated under the Corporation Tax Act?</AccordionTrigger>
+            <AccordionContent className="text-sm text-muted-foreground">
+              The Act includes specific provisions for "close companies," defined primarily as companies controlled by five or fewer participators or by participators who are also directors, with certain exceptions. The Board of Inland Revenue has the power to direct a close company to distribute as dividends profits that could be distributed without negatively impacting the company's business, with consideration given to current needs and future development requirements. The Act also limits the deduction that can be made for the remuneration of directors in close companies, depending on their role and whether they are whole-time service directors. Supplementary provisions provide detailed definitions of "close company," "associated company," "control," "participator," "associate," and "director" for the purposes of these regulations.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+
       <div className="grid md:grid-cols-2 gap-8">
         <Card className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl md:col-span-2">
           <CardHeader>

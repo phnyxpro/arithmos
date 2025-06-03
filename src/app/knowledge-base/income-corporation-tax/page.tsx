@@ -234,9 +234,7 @@ export default function CorporationTaxActPage() {
         </CardContent>
       </Card>
     </div>
-  );
-
-  <CorporationTaxGlossary />
-    </div>
+  
+  </div>
   );
 }

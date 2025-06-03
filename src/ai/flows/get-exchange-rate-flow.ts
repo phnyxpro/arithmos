@@ -10,8 +10,9 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { GetExchangeRateInputSchema, GetExchangeRateOutputSchema } from '@/ai/schemas/currency-schemas'; // Import from new schemas file
-export type { GetExchangeRateInput, GetExchangeRateOutput } from '@/ai/schemas/currency-schemas'; // Re-export types
+import { GetExchangeRateInputSchema, GetExchangeRateOutputSchema, type GetExchangeRateInput, type GetExchangeRateOutput } from '@/ai/schemas/currency-schemas'; // Combined import
+// Re-export types for easier consumption by client components (if needed, already done by schema file)
+export type { GetExchangeRateInput, GetExchangeRateOutput };
 
 const getExchangeRatePrompt = ai.definePrompt({
   name: 'getExchangeRatePrompt',
@@ -36,22 +37,39 @@ const getExchangeRateFlow = ai.defineFlow(
     inputSchema: GetExchangeRateInputSchema,
     outputSchema: GetExchangeRateOutputSchema,
   },
-  async (input) => {
-    const { output } = await getExchangeRatePrompt(input);
-    if (!output) {
-      // This case should ideally be handled by Gemini returning an error structure,
-      // but as a fallback:
+  async (input): Promise<GetExchangeRateOutput> => {
+    try {
+      const { output } = await getExchangeRatePrompt(input);
+      
+      if (!output || typeof output.convertedAmount !== 'number' || typeof output.exchangeRate !== 'number') {
+        console.error("getExchangeRateFlow: AI output was null, malformed, or did not match schema.", output);
+        return {
+          convertedAmount: 0,
+          exchangeRate: 0,
+          aiDisclaimer: 'Error: AI response was incomplete or not in the expected format. Please try again.',
+        };
+      }
+
+      if (!output.aiDisclaimer) {
+        output.aiDisclaimer = "Rate is indicative and subject to change. Verify with financial institutions.";
+      }
+      return output;
+    } catch (flowError: any) {
+      console.error("Error within getExchangeRateFlow when calling the prompt:", flowError);
+      // Construct a schema-compliant error response
+      let userFriendlyMessage = 'Error: Could not retrieve exchange rate. Please try again.';
+      if (flowError.message && flowError.message.toLowerCase().includes('unsupported currency')) {
+        userFriendlyMessage = 'Error: One or both selected currencies are not supported for conversion by the AI.';
+      } else if (flowError.message) {
+        userFriendlyMessage = `Error: ${flowError.message}`;
+      }
+      
       return {
         convertedAmount: 0,
         exchangeRate: 0,
-        aiDisclaimer: 'Failed to retrieve exchange rate information from the AI.',
+        aiDisclaimer: userFriendlyMessage,
       };
     }
-     // Ensure a default disclaimer if AI fails to provide one, especially on error or no rate
-    if (!output.aiDisclaimer) {
-      output.aiDisclaimer = "Rate is indicative and subject to change. Verify with financial institutions.";
-    }
-    return output;
   }
 );
 

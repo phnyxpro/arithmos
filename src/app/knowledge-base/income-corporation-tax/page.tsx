@@ -4,16 +4,21 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import { FaFilePdf } from 'react-icons/fa';
 import CorporationTaxGlossary from "@/components/CorporationTaxGlossary";
 
-const CorporationTaxActPage = () => {
+export default function CorporationTaxActPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-2">Corporation Tax Act - CHAPTER 75:02</h1>
       <h2 className="text-xl text-gray-600 mb-8">
-      (As updated to June 30th, 2013)
-       <a href="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/Legal%20Documents%2FCorporation-Tax-Act-75.02.pdf?alt=media&token=ef6998b1-039a-42d9-975e-9b21990192e1" target="_blank" rel="noopener noreferrer" className="ml-2">
-       <FaFilePdf className="inline-block align-middle" />
-          </a>
-        </h2>
+        (As updated to June 30th, 2013)
+        <a
+          href="https://firebasestorage.googleapis.com/v0/b/taxtt-h5fyu.firebasestorage.app/o/Legal%20Documents%2FCorporation-Tax-Act-75.02.pdf?alt=media&token=ef6998b1-039a-42d9-975e-9b21990192e1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="ml-2"
+        >
+          <FaFilePdf className="inline-block align-middle" />
+        </a>
+      </h2>
 
       <div className="grid md:grid-cols-2 gap-8">
         <Card className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl md:col-span-2">
@@ -154,16 +159,21 @@ const CorporationTaxActPage = () => {
                   <AccordionItem value="first">
                     <AccordionTrigger>First Schedule - Rate of Corporation Tax</AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground space-y-2">
-                    <p><span className="font-semibold">Rate of Corporation Tax:</span>
-                    <ul>
-                        <li>The <b>standard rate</b> is <b>twenty-five per cent</b> for every dollar of the chargeable profits of a company.</li>
-                         <li>An exception exists for the <b>long-term insurance business</b> of an assurance company, where the rate is <b>fifteen per cent</b>.</li>
-                       <li>A higher rate of <b>thirty-five per cent</b> per annum is applied to companies engaged in specific activities:</li>
-                        <li>Liquefaction of natural gas.</li>
-                        <li>Manufacture of petro-chemicals.</li>
-                    Interpreting the provided source to provide an overview of Section 26 of the Corporation Tax Act, it states that there are certain cases which have the ability to influence the exemption of distribution or payment of interest from company members even if these organizations are excused from taxation. However, these specific accounts are conditioned to comply with the Inland Revenue Board.</li>
-                         </ul>
-                    </p>
+                      <p><span className="font-semibold">Rate of Corporation Tax:</span></p>
+                      <ul className="list-disc pl-4">
+                        <li><b>Standard rate:</b> 25% on every dollar of the chargeable profits of a company.</li>
+                        <li><b>Long-term insurance business:</b> 15% for an assurance company.</li>
+                        <li><b>Higher rate of 35%</b> applies to companies engaged in:
+                          <ul className="list-disc pl-6">
+                            <li>Liquefaction of natural gas</li>
+                            <li>Manufacture of petro-chemicals</li>
+                          </ul>
+                        </li>
+                      </ul>
+                      <p>
+                        Section 26 also provides authority to exempt distributions or interest payments even for tax-exempt organisations,
+                        conditional upon compliance with the Inland Revenue Board.
+                      </p>
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
@@ -212,91 +222,21 @@ const CorporationTaxActPage = () => {
               </div>
 
             </div>
+
           </CardContent>
         </Card>
+        <Card className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl md:col-span-2">
+        <CardHeader>
+          <CardTitle className="text-xl text-primary">Glossary</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-grow">
+          <CorporationTaxGlossary />
+        </CardContent>
+      </Card>
+    </div>
+  );
 
-export default function Page() {
-  return <CorporationTaxGlossary />;
-}
- <Card className="flex flex-col shadow-lg hover:shadow-xl transition-shadow rounded-xl md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-xl text-primary">Glossary</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow">
-           <div className="md:grid md:grid-cols-2 gap-4">
-           <div>
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="preliminary">
-                    <AccordionTrigger>Section 2 - PRELIMINARY</AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
-                      <p><span className="font-semibold">branch or agency:</span> Means any factorship, agency, receivership, branch or management.</p>
-                      <p><span className="font-semibold">chargeable profits:</span> Means the aggregate amount of the profits of any company specified in section 3 remaining after allowing the appropriate deductions and exemptions under Part I of the Act.</p>
-                      <p><span className="font-semibold">company:</span> Means any body corporate or unincorporated association, but does not include a partnership.</p>
-                      <p><span className="font-semibold">corporation tax or tax:</span> Means the tax charged by section 3.</p>
-                      <p><span className="font-semibold">distribution:</span> Has the meaning assigned to it by section 49 of the Income Tax Act.</p>
-                      <p><span className="font-semibold">investment company:</span> Has the meaning assigned to that expression in section 6(3) of the Act.</p>
-                      <p><span className="font-semibold">marketing licensee:</span> Means a person carrying on marketing business to whom a marketing licence, within the meaning of regulation 3(1)(h) of the Petroleum Regulations, is issued or to be issued under or in accordance with the Petroleum Act.</p>
-                      <p><span className="font-semibold">new consideration:</span> Has in other provisions the same meaning as in section 49(11) of the Income Tax Act.</p>
-                      <p><span className="font-semibold">petroleum operations:</span> Has the meaning assigned to it by section 2(1) of the Petroleum Taxes Act.</p>
-                      <p><span className="font-semibold">preference dividend:</span> Means a dividend payable on a preferred share or preferred stock at a fixed gross rate per cent issued by a resident company before 31st January 1966, or, where a dividend is payable on such a preferred share or preferred stock partly at a fixed gross rate per cent and partly at a variable rate, such part of that dividend as is payable at a fixed gross rate per cent.</p>
-                      <p><span className="font-semibold">profits:</span> Means income and includes short-term capital gains.</p>
-                      <p><span className="font-semibold">resident company:</span> Means a company that is controlled in Trinidad and Tobago, whether or not the company is (a) incorporated in Trinidad and Tobago; or (b) engaged in trade or business or in the pursuit of professional or vocational activities in Trinidad and Tobago. The place where such a company is regarded as controlled is the place where the mind or management of the company is ordinarily situated.</p>
-                      <p><span className="font-semibold">royalties:</span> Means amounts paid as consideration for the use of, or the right to use copyrights, artistic or scientific works, patents, designs, plans, secret processes or formulae, trade marks, motion picture films, films or tapes for radio or television broadcasting, or other like properties or rights, or information concerning industrial, commercial or scientific knowledge, experience or skill. It also includes royalties, rentals, or other amounts paid in respect of the operation of mines, quarries or other natural resources.</p>
-                      <p><span className="font-semibold">short-term capital gains:</span> Means chargeable gains accruing on a disposal of an asset within twelve months of its acquisition.</p>
-                      <p><span className="font-semibold">subsidiary company:</span> Has the meaning provided for the purposes of section 49(1)(d)(iv) of the Income Tax Act by section 49(4) of that Act.</p>
-                      <p><span className="font-semibold">withholding tax:</span> Has the same meaning as in section 2 of the Income Tax Act.</p>
-                      <p><span className="font-semibold">a source of income:</span> Is "within the charge to" corporation tax or income tax if that tax is chargeable on the income arising from it or would be so chargeable if there were any such income, and references to a person, or to income being within the charge to tax, shall be similarly construed.</p>
-                      <p><span className="font-semibold">Corporation Tax Acts:</span> Means Part I of the Act (including provisions relating to income tax), together with the provisions of the Income Tax Act as far as it applies for the purposes of corporation tax and any written law relating to corporation tax, except so far as the context otherwise requires.</p>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-
-           <div>
-                <Accordion type="single" collapsible>
-                  <AccordionItem value="imposition">
-                    <AccordionTrigger>Section 3 - IMPOSITION OF CORPORATION TAX</AccordionTrigger>
-                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
-                      <p><span className="font-semibold">SME listed company:</span> Means a Small and Medium Enterprise company listed on the Trinidad and Tobago Stock Exchange, namely a company whose minimum capital base is five million dollars, maximum capital base is fifty million dollars, and minimum number of shareholders is twenty-five members. The capital base comprises issued share capital, retained earnings, and amounts transferred from such to a reserve account.</p>
-                      </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </div>
-          <div>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="exemption">
-            <AccordionTrigger>Section 6 - Exemptions</AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground space-y-2">
-              <p><span className="font-semibold">sporting body of persons:</span> For the purposes of subsection (1)(e), means a body of persons established for the purpose of promoting or advancing sporting events, to a share in the profits of which no member or person other than another sporting body of persons is entitled, and whose profits are applied wholly to the promotion or advancement of sporting events or to the provision of facilities or amenities for competitors in, or for members of the public who attend, sporting events. It does not cease to be a sporting body of persons solely because a portion of its profits is donated to a charitable or educational institution of a public character.</p>
-              <p><span className="font-semibold">sporting events:</span> For the purposes of subsection (1)(e), means athletics, badminton, basketball, billiards, amateur boxing, martial arts, wrestling, cricket, cycling, model aeroplane flying, football, rugby, golf, hockey, netball, baseball, polo, swimming, tennis, weightlifting, yachting, automobile sports, surfing, archery, scrabble, table tennis, body building, taekwondo, billiards/snookers, bridge/other card games, tagby, chess, squash, darts, draughts/checkers, volleyball, equestrian, windsurfing, game fishing, gymnastics, judo, karate, karting, kickboxing, life saving, softball, target archery, pigeon racing, recreational diving, special olympics, powerboat racing, para olympics, rifle shooting, sailing, model car racing, cricket (windball), triathlon, powerlifting and such other activities or events as may be prescribed.</p>
-              <p><span className="font-semibold">local authority:</span> For the purposes of this section, means the Port-of-Spain Corporation, the San Fernando Corporation and the Arima Corporation, continued under section 3 of the Municipal Corporations Act.</p>
-              <p><span className="font-semibold">investment company:</span> For the purposes of this section, satisfies certain conditions including having 90% or more of its income derived from investments, at least 90% of its gross income derived from sources outside Trinidad and Tobago, not more than 10% of its property consisting of shares, bonds, marketable securities of any one company or debtor (other than Government), having at least fifty shareholders none of whom held more than 25% of shares/capital stock, and distributing 90% or more of its profits (excluding certain investment income) to shareholders within six months of the accounting period end.</p>
-              <p><span className="font-semibold">approved agricultural holding:</span> For the purposes of subsection (1)(s) and (t), has the same meaning assigned to it as under section 14(6) of the Income Tax Act. (Note: Subsection (1)(s) and (t) were repealed but continue to have effect under certain conditions).</p>
-              <p><span className="font-semibold">financial institution:</span> For the purposes of subsection (1)(s) and (t), means a company which carries on all or any aspects of banking business or business of a financial nature. (Note: Subsection (1)(s) and (t) were repealed but continue to have effect under certain conditions).</p>
-              <p><span className="font-semibold">Minister:</span> For the purposes of subsection (1)(s) and (t), means the Minister to whom responsibility for agriculture is assigned. (Note: Subsection (1)(s) and (t) were repealed but continue to have effect under certain conditions).</p>
-               </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-
-           <div>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="expense">
-            <AccordionTrigger>Section 10B - Promotional expenses</AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground space-y-2">
-              <p><span className="font-semibold">company:</span> For the purposes of this section, means a company incorporated and resident in Trinidad and Tobago.</p>
-              <p><span className="font-semibold">promotional expenses:</span> For the purposes of this section, means expenses incurred in respect of services or goods/agricultural produce manufactured or produced in Trinidad and Tobago for advertising in foreign markets, providing promotional literature overseas, participating in trade fairs/missions, overseas travel for promotion, providing free samples/technical information, inviting buyers to Trinidad and Tobago, recruitment of specialist sales personnel operating in foreign markets (max 2 years), and conducting foreign market surveys.</p>
-              <p><span className="font-semibold">petroleum operations:</span> For the purposes of subsection (6), means operations related to the various phases of the petroleum industry and includes exploring for, producing, refining, transporting and marketing petroleum or petroleum products or both and manufacturing and marketing of petroleum-based products and petro-chemicals.</p>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-          </CardContent>
-        </Card>
-
-
-
-      </div>
+  <CorporationTaxGlossary />
     </div>
   );
 }

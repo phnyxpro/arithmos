@@ -683,7 +683,8 @@ Note: These are estimates. Consult official guidelines.
                 </div>
 
                 <Separator className="my-2" />
- <div className="flex justify-between text-lg font-bold text-primary mt-1">
+ <div className="flex justify-between text-m font-bold text-primd
+ ary mt-1">
  <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span><span>TT$ {calculationResults.totalPayrollTaxDisplay}</span>
  </div>
 

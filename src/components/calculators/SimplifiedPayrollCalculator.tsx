@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -128,53 +127,6 @@ export default function SimplifiedPayrollCalculator() {
     return Math.max(0, 52 - Math.floor(diffWeeks)); // Weeks remaining in the year
   };
 
-  const handleCalculate = useCallback(() => {
-    const gmi = parseFloat(grossMonthlyIncome) || 0;
-    const yearNum = parseInt(selectedYear, 10);
-    const monthNum = parseInt(selectedMonth, 10);
-
-    const monthLabel = months.find(m => m.value === selectedMonth)?.label || "";
-    const mondaysInMonth = countMondays(yearNum, monthNum);
-
-    let foundNisClass: NisClass | undefined = undefined;
-    for (const nisClass of nisClassesData) {
-      if (gmi >= nisClass.monthlyEarnings.min && (nisClass.monthlyEarnings.max === null || gmi <= nisClass.monthlyEarnings.max)) {
-        foundNisClass = nisClass;
-        break;
-      }
-    }
-
-    let nisMonthlyEmployee = 0;
-    let employerNISMonthly = 0;
-    let nisClassDisplay = "N/A";
-    let estWeeklyNISEmployee = 0;
-    let estWeeklyNISEmployer = 0;
-
-    if (foundNisClass) {
-      nisClassDisplay = foundNisClass.class;
-      estWeeklyNISEmployee = foundNisClass.employeeWeekly;
-      estWeeklyNISEmployer = foundNisClass.employerWeekly;
-      nisMonthlyEmployee = foundNisClass.employeeWeekly * mondaysInMonth;
-      employerNISMonthly = foundNisClass.employerWeekly * mondaysInMonth;
-    }
-
-    const annualGrossIncome = gmi * 12;
-    const personalAllowance = 90000;
-
-    // Calculate number of weeks for annual NIS based on hire date if applicable
-    const numberOfWeeksForAnnualNIS = isHiredThisYear && startDate ? getWeeksWorkedThisYear(startDate) : 52;
-    const annualNisEmployee = estWeeklyNISEmployee * numberOfWeeksForAnnualNIS;
-    const chargeableIncome = Math.max(0, annualGrossIncome - (personalAllowance + (.7*annualNisEmployee)));
-
-    let annualPAYE = 0;
-    if (chargeableIncome <= 75000) {
-      annualPAYE = chargeableIncome * 0.25;
-    } else {
-      annualPAYE = (75000 * 0.25) + ((chargeableIncome - 75000) * 0.30);
-    }
-    const payeMonthly = annualPAYE / 12;
-
-
   const formatCurrency = (num: number) => num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const handleCalculate = useCallback(() => {
@@ -255,55 +207,11 @@ export default function SimplifiedPayrollCalculator() {
       yearDisplay: selectedYear,
     });
   }, [grossMonthlyIncome, selectedMonth, selectedYear, isHiredThisYear, startDate]);
+
   useEffect(() => {
-    const annualGrossIncome = gmi * 12;
-    const personalAllowance = 90000;
+    handleCalculate();
+  }, [grossMonthlyIncome, selectedMonth, selectedYear, isHiredThisYear, startDate, handleCalculate]);
 
-    // Calculate number of weeks for annual NIS based on hire date if applicable
-    const numberOfWeeksForAnnualNIS = isHiredThisYear && startDate ? getWeeksWorkedThisYear(startDate) : 52;
-    const annualNisEmployee = estWeeklyNISEmployee * numberOfWeeksForAnnualNIS;
-    const chargeableIncome = Math.max(0, annualGrossIncome - (personalAllowance + (.7*annualNisEmployee)));
-    
-    let annualPAYE = 0;
-    if (chargeableIncome <= 75000) {
-      annualPAYE = chargeableIncome * 0.25;
-    } else {
-      annualPAYE = (75000 * 0.25) + ((chargeableIncome - 75000) * 0.30);
-    }
-    const payeMonthly = annualPAYE / 12;
-
-    const weeklyGrossIncome = gmi / WEEKS_IN_MONTH_APPROX; 
-    let weeklyHS = 0;
-    if (weeklyGrossIncome <= 110) {
-      weeklyHS = 4.13;
-    } else {
-      weeklyHS = 8.25;
-    }
-    const healthSurchargeMonthly = weeklyHS * mondaysInMonth;
-
-    const totalMonthlyDeductions = payeMonthly + nisMonthlyEmployee + healthSurchargeMonthly;
-    const netTakeHomePay = gmi - totalMonthlyDeductions;
-    
-    const totalPayrollTax = totalMonthlyDeductions + employerNISMonthly; // Calculate Total Payroll Tax
-
-    setCalculationResults({
-      grossMonthlyIncomeDisplay: formatCurrency(gmi),
-      estAnnualIncome: formatCurrency(annualGrossIncome),
-      mondaysInMonth: mondaysInMonth.toString(),
-      nisClass: nisClassDisplay,
-      estWeeklyNISEmployee: formatCurrency(estWeeklyNISEmployee),
-      estWeeklyNISEmployer: formatCurrency(estWeeklyNISEmployer),
-      payeMonthly: formatCurrency(payeMonthly),
-      nisMonthlyEmployee: formatCurrency(nisMonthlyEmployee),
-      healthSurchargeMonthly: formatCurrency(healthSurchargeMonthly),
-      totalMonthlyDeductions: formatCurrency(totalMonthlyDeductions),
-      netTakeHomePay: formatCurrency(netTakeHomePay),
-      employerNISMonthly: formatCurrency(employerNISMonthly),
-      totalPayrollTaxDisplay: formatCurrency(totalPayrollTax), // Added to results
-      monthName: monthLabel,
-      yearDisplay: selectedYear,
-    });
-  }, [grossMonthlyIncome, selectedMonth, selectedYear, isHiredThisYear, startDate]);
   const handleCopyResults = () => {
     const textToCopy = `
     PAYROLL CALCULATION SUMMARY

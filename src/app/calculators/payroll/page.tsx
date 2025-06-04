@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,7 +26,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -65,7 +67,8 @@ import {
   Eye,
   ChevronDown
 } from "lucide-react";
-
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 10 }, (_, i) => (currentYear + 5 - i).toString()).reverse();
@@ -162,6 +165,8 @@ export default function PayrollPage() {
   const [savedCalculations, setSavedCalculations] = React.useState<SavedPayrollEntry[]>([]);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
   const [viewModalData, setViewModalData] = React.useState<SavedPayrollEntry | null>(null);
+  const [isHiredThisYear, setIsHiredThisYear] = useState(false);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
 
   const form = useForm<PayrollFormData>({
     resolver: zodResolver(payrollFormSchema),
@@ -186,6 +191,22 @@ export default function PayrollPage() {
       date.setDate(date.getDate() + 1);
     }
     return mondays;
+  };
+
+  const getWeeksWorkedInYear = (start: Date): number => {
+    const today = new Date();
+    const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const effectiveStartDate = start.getFullYear() === today.getFullYear() ? start : startOfYear;
+    const diffInMilliseconds = today.getTime() - effectiveStartDate.getTime();
+    const weeks = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 7));
+    return weeks + 1; // Add 1 to include the current partial week
+  };
+
+  useEffect(() => {
+    // Reset startDate if the checkbox is unchecked
+    if (!isHiredThisYear) {
+      setStartDate(undefined);
+    }
   };
 
   const onSubmit: SubmitHandler<PayrollFormData> = (data) => {
@@ -220,7 +241,8 @@ export default function PayrollPage() {
 
     const annualGrossIncome = gmi * 12;
     const personalAllowance = 90000;
-    const annualNisEmployee = nisMonthlyEmployee * 12; 
+    const weeksInYear = isHiredThisYear && startDate ? getWeeksWorkedInYear(startDate) : 52;
+    const annualNisEmployee = estWeeklyNISEmployee * weeksInYear;
     const chargeableIncome = Math.max(0, annualGrossIncome - personalAllowance - annualNisEmployee);
     
     let annualPAYE = 0;
@@ -616,6 +638,37 @@ Note: These are estimates. Consult official guidelines.
                       </FormItem>
                     )}
                   />
+
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="hiredThisYear"
+                      checked={isHiredThisYear}
+                      onCheckedChange={(checked) => setIsHiredThisYear(!!checked)}
+                    />
+                    <label
+                      htmlFor="hiredThisYear"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
+                      Employee was hired in the current year
+                    </label>
+                </div>
+
+                {isHiredThisYear && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormItem className="md:col-span-1">
+                          <FormLabel className="flex items-center">
+                              <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                              Start Date (Current Year)
+                          </FormLabel>
+                          <FormControl>
+                            {/* Placeholder for DatePicker component */}
+                            <Input type="date" value={startDate ? format(startDate, 'yyyy-MM-dd') : ''} onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : undefined)} />
+                          </FormControl>
+                          <FormMessage />
+                      </FormItem>
+                  </div>
+                )}
 
                   <Button
                     type="submit"

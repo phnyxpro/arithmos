@@ -207,6 +207,7 @@ export default function PayrollPage() {
     if (!isHiredThisYear) {
       setStartDate(undefined);
     }
+
   };
 
   const onSubmit: SubmitHandler<PayrollFormData> = (data) => {

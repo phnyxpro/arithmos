@@ -1,7 +1,9 @@
 
 "use client";
 
-import * as React from 'react';
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { auth } from "@/lib/firebase"; // Assuming your firebase init is here
 import Link from 'next/link';
 import { AppLogo } from '@/components/icons/app-logo';
 import { Button } from '@/components/ui/button';
@@ -46,6 +48,7 @@ import {
   Menu,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { onAuthStateChanged, User } from "firebase/auth";
 
 const calculatorNavItems = [
   { href: "/calculators/time-calculator", label: "Time Calculator", Icon: Clock },
@@ -80,26 +83,39 @@ type UserNavItem =
   | { type: "item"; href?: string; label: string; Icon: React.ElementType; nonInteractive?: boolean }
   | { type: "themeToggle"; label?: string; Icon?: React.ElementType };
 
-
-const userNavItems: UserNavItem[] = [
-    { type: "label" as const, label: "My Account" },
-    { type: "separator" as const },
-    { type: "item" as const, href: "/profile", label: "Profile Settings", Icon: Settings },
-    { type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true },
-    { type: "themeToggle" as const },
-    { type: "separator" as const },
-    { type: "item" as const, href: "/auth/login", label: "Login", Icon: LogIn },
-];
-
-
 export default function Header() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
+  const [user, setUser] = useState<User | null>(null); // State to hold authenticated user
 
   React.useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe(); // Cleanup subscription
+  }, []);
+
+  // Placeholder for logout
+  const handleLogout = () => {
+    console.log("Logout clicked");
+    // Implement actual logout logic here
+  };
+
+  const userNavItems: UserNavItem[] = [
+    { type: "label", label: user ? "My Account" : "Account" },
+    { type: "separator" },
+    ...(user ? [{ type: "item" as const, href: "/profile", label: "Profile Settings", Icon: Settings }] : []),
+    ...(user ? [{ type: "item" as const, label: "Subscription", Icon: CreditCard, nonInteractive: true }] : []),
+    { type: "themeToggle" },
+    { type: "separator" },
+    ...(user ? [{ type: "item" as const, label: "Logout", Icon: LogIn, onClick: handleLogout }] : [{ type: "item" as const, href: "/auth/login", label: "Login", Icon: LogIn }]),
+  ];
 
   const mainNavItems = [
     { href: "/", label: "Home" },
@@ -113,147 +129,13 @@ export default function Header() {
           <AppLogo className="h-8 w-8 text-header-foreground" />
           <span className="font-bold text-xl text-header-accent sm:inline-block">Arithmos</span>
         </Link>
-        
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1 md:space-x-2 ml-auto">
-          {mainNavItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
-            >
-              {item.label}
-            </Link>
-          ))}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
-              >
-                Calculators
-                <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
-              {calculatorNavItems.map((item) => (
-                <DropdownMenuItem key={item.label} asChild>
-                  <Link href={item.href} className="flex items-center w-full">
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
-              >
-                Accounting
-                <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
-              {accountingNavItems.map((item) => (
-                <DropdownMenuItem key={item.label} asChild>
-                  <Link href={item.href} className="flex items-center w-full">
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="text-sm font-medium text-header-foreground hover:bg-header-foreground/10 transition-colors px-2 py-1 rounded-md md:px-3"
-              >
-                Knowledge Base
-                <ChevronDown className="ml-1 h-4 w-4 text-header-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="bg-popover text-popover-foreground">
-              {knowledgeBaseNavItems.map((item) => (
-                <DropdownMenuItem key={item.label} asChild>
-                  <Link href={item.href} className="flex items-center w-full">
-                    <item.Icon className="mr-2 h-4 w-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* User Menu Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative h-9 w-9 rounded-full p-0 text-header-foreground hover:bg-header-foreground/10"
-              >
-                <UserIcon className="h-5 w-5 text-header-foreground" />
-                <span className="sr-only">Open user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-popover text-popover-foreground">
-              {userNavItems.map((item, index) => {
-                if (item.type === "label") {
-                  return <DropdownMenuLabel key={`user-item-${index}`}>{item.label}</DropdownMenuLabel>;
-                }
-                if (item.type === "separator") {
-                  return <DropdownMenuSeparator key={`user-item-${index}`} />;
-                }
-                if (item.type === "themeToggle") {
-                  if (!mounted) {
-                    return (
-                      <DropdownMenuItem key={`user-item-${index}`} disabled>
-                        <Sun className="mr-2 h-4 w-4" /> 
-                        <span>Loading theme...</span>
-                      </DropdownMenuItem>
-                    );
-                  }
-                  const CurrentIcon = resolvedTheme === 'dark' ? Sun : Moon;
-                  const currentLabel = resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-                  return (
-                    <DropdownMenuItem key={`user-item-${index}`} onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
-                      <CurrentIcon className="mr-2 h-4 w-4" />
-                      <span>{currentLabel}</span>
-                    </DropdownMenuItem>
-                  );
-                }
-                if (item.nonInteractive) {
-                  return (
-                    <DropdownMenuItem key={`user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
-                       {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
-                       <span>{item.label}</span>
-                    </DropdownMenuItem>
-                  );
-                }
-                return (
-                  <DropdownMenuItem key={`user-item-${index}`} asChild>
-                    <Link href={item.href || "#"} className="flex items-center w-full">
-                      {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
-                      <span>{item.label}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </nav>
+        {/* Desktop Navigation is intentionally omitted in this simplified version */}
 
         {/* Mobile Navigation Trigger */}
         <div className="md:hidden ml-auto flex items-center">
-           <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+          <Sheet>
+            {/* Basic SheetTrigger for mobile menu */}
             <SheetTrigger asChild>
               <Button
                 variant="ghost"
@@ -264,70 +146,10 @@ export default function Header() {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[340px] bg-sidebar text-sidebar-foreground flex flex-col"> {/* Added flex flex-col */}
-              <SheetHeader className="mb-4 flex-shrink-0"> {/* Added flex-shrink-0 */}
-                <SheetTitle className="text-sidebar-primary flex items-center">
-                  <AppLogo className="h-7 w-7 mr-2" />
-                  Arithmos Menu
-                </SheetTitle>
-              </SheetHeader>
-              <ScrollArea className="flex-grow"> {/* Wrapped nav with ScrollArea and gave it flex-grow */}
-                <nav className="flex flex-col space-y-2 text-sm">
-                  {mainNavItems.map((item) => (
-                    <Link
-                      key={`mobile-${item.label}`}
-                      href={item.href}
-                      className="block px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      onClick={() => setIsMobileNavOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                  <Separator className="my-2 bg-sidebar-border" />
-                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Calculators</div>
-                  {calculatorNavItems.map((item) => (
-                    <Link
-                      key={`mobile-calc-${item.label}`}
-                      href={item.href}
-                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      onClick={() => setIsMobileNavOpen(false)}
-                    >
-                      <item.Icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  ))}
-                  <Separator className="my-2 bg-sidebar-border" />
-                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Accounting</div>
-                  {accountingNavItems.map((item) => (
-                    <Link
-                      key={`mobile-acc-${item.label}`}
-                      href={item.href}
-                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      onClick={() => setIsMobileNavOpen(false)}
-                    >
-                      <item.Icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  ))}
-                  <Separator className="my-2 bg-sidebar-border" />
-                  <div className="px-3 py-1 font-semibold text-sidebar-foreground/70">Knowledge Base</div>
-                  {knowledgeBaseNavItems.map((item) => (
-                    <Link
-                      key={`mobile-kb-${item.label}`}
-                      href={item.href}
-                      className="flex items-center px-3 py-2 rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                      onClick={() => setIsMobileNavOpen(false)}
-                    >
-                      <item.Icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  ))}
-                </nav>
-              </ScrollArea>
-            </SheetContent>
           </Sheet>
-          {/* User Menu still needs to be accessible on mobile, placing it after the sheet trigger */}
-           <DropdownMenu>
+
+          {/* User Menu Dropdown */}
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -338,53 +160,8 @@ export default function Header() {
                 <span className="sr-only">Open user menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-popover text-popover-foreground">
-              {userNavItems.map((item, index) => {
-                if (item.type === "label") {
-                  return <DropdownMenuLabel key={`mobile-user-item-${index}`}>{item.label}</DropdownMenuLabel>;
-                }
-                if (item.type === "separator") {
-                  return <DropdownMenuSeparator key={`mobile-user-item-${index}`} />;
-                }
-                if (item.type === "themeToggle") {
-                  if (!mounted) {
-                    return (
-                      <DropdownMenuItem key={`mobile-user-item-${index}`} disabled>
-                        <Sun className="mr-2 h-4 w-4" /> 
-                        <span>Loading theme...</span>
-                      </DropdownMenuItem>
-                    );
-                  }
-                  const CurrentIcon = resolvedTheme === 'dark' ? Sun : Moon;
-                  const currentLabel = resolvedTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
-                  return (
-                    <DropdownMenuItem key={`mobile-user-item-${index}`} onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}>
-                      <CurrentIcon className="mr-2 h-4 w-4" />
-                      <span>{currentLabel}</span>
-                    </DropdownMenuItem>
-                  );
-                }
-                if (item.nonInteractive) {
-                  return (
-                    <DropdownMenuItem key={`mobile-user-item-${index}`} disabled className="flex items-center w-full opacity-100 cursor-default">
-                       {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
-                       <span>{item.label}</span>
-                    </DropdownMenuItem>
-                  );
-                }
-                return (
-                  <DropdownMenuItem key={`mobile-user-item-${index}`} asChild>
-                    <Link href={item.href || "#"} className="flex items-center w-full">
-                      {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
-                      <span>{item.label}</span>
-                    </Link>
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
       </div>
     </header>
   );

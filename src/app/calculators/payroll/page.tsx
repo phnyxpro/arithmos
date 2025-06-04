@@ -1,6 +1,6 @@
-
 "use client";
 
+import { toast } from 'some-toast-library'; // Placeholder: Adjust the import path as needed
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -21,7 +21,7 @@ import {
   Form,
   FormControl,
   FormDescription,
-  FormField,
+FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -161,12 +161,25 @@ interface SavedPayrollEntry extends CalculationResults {
 
 export default function PayrollPage() {
   const { toast } = useToast();
-  const [calculationResults, setCalculationResults] = React.useState<CalculationResults>(initialCalculationResults);
-  const [savedCalculations, setSavedCalculations] = React.useState<SavedPayrollEntry[]>([]);
-  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
-  const [viewModalData, setViewModalData] = React.useState<SavedPayrollEntry | null>(null);
-  const [isHiredThisYear, setIsHiredThisYear] = useState(false);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined); // State for the start date
+  const [calculationResults, setCalculationResults] = useState<CalculationResults>(initialCalculationResults); // State for calculation results
+  const [savedCalculations, setSavedCalculations] = useState<SavedPayrollEntry[]>([]); // State for saved calculations
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false); // State for view modal open/close
+  const [viewModalData, setViewModalData] = useState<SavedPayrollEntry | null>(null); // State for data displayed in view modal
+
+  // Placeholder functions (will be implemented later)
+  const countMondays = (year: number, month: number): number => {
+ return 0; // Placeholder return
+  };
+
+  const isHiredThisYear = (start: Date | undefined, year: number): boolean => {
+ return false; // Placeholder return
+  };
+
+  const getWeeksWorkedInYear = (start: Date): number => {
+ return 0; // Placeholder return
+  };
+
 
   const form = useForm<PayrollFormData>({
     resolver: zodResolver(payrollFormSchema),
@@ -181,34 +194,13 @@ export default function PayrollPage() {
     },
   });
 
-  const countMondays = (year: number, month: number): number => {
-    let mondays = 0;
-    const date = new Date(year, month - 1, 1);
-    while (date.getMonth() === month - 1) {
-      if (date.getDay() === 1) { // 0 is Sunday, 1 is Monday
-        mondays++;
-      }
-      date.setDate(date.getDate() + 1);
-    }
-    return mondays;
-  };
-
-  const getWeeksWorkedInYear = (start: Date): number => {
-    const today = new Date();
-    const startOfYear = new Date(today.getFullYear(), 0, 1);
-    const effectiveStartDate = start.getFullYear() === today.getFullYear() ? start : startOfYear;
-    const diffInMilliseconds = today.getTime() - effectiveStartDate.getTime();
-    const weeks = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 7));
-    return weeks + 1; // Add 1 to include the current partial week
-  };
-
   useEffect(() => {
     // Reset startDate if the checkbox is unchecked
     if (!isHiredThisYear) {
       setStartDate(undefined);
     }
+  }, []); // Add dependency array to run only on mount and unmount
 
-  };
 
   const onSubmit: SubmitHandler<PayrollFormData> = (data) => {
     const gmi = data.grossMonthlyIncome;
@@ -242,7 +234,7 @@ export default function PayrollPage() {
 
     const annualGrossIncome = gmi * 12;
     const personalAllowance = 90000;
-    const weeksInYear = isHiredThisYear && startDate ? getWeeksWorkedInYear(startDate) : 52;
+    const weeksInYear = isHiredThisYear(startDate, year) && startDate ? getWeeksWorkedInYear(startDate) : 52;
     const annualNisEmployee = estWeeklyNISEmployee * weeksInYear;
     const chargeableIncome = Math.max(0, annualGrossIncome - personalAllowance - annualNisEmployee);
     
@@ -643,7 +635,7 @@ Note: These are estimates. Consult official guidelines.
                 <div className="flex items-center space-x-2">
                     <Checkbox
                       id="hiredThisYear"
-                      checked={isHiredThisYear}
+                      checked={isHiredThisYear(startDate, form.getValues("selectedYear"))}
                       onCheckedChange={(checked) => setIsHiredThisYear(!!checked)}
                     />
                     <label
@@ -655,234 +647,8 @@ Note: These are estimates. Consult official guidelines.
                     </label>
                 </div>
 
-                {isHiredThisYear && (
+                {isHiredThisYear(startDate, form.getValues("selectedYear")) && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormItem className="md:col-span-1">
                           <FormLabel className="flex items-center">
-                              <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-                              Start Date (Current Year)
-                          </FormLabel>
-                          <FormControl>
-                            {/* Placeholder for DatePicker component */}
-                            <Input type="date" value={startDate ? format(startDate, 'yyyy-MM-dd') : ''} onChange={(e) => setStartDate(e.target.value ? new Date(e.target.value) : undefined)} />
-                          </FormControl>
-                          <FormMessage />
-                      </FormItem>
-                  </div>
-                )}
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    Calculate Payroll
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-
-          {calculationResults.monthName && (
-            <Card className="w-full shadow-lg rounded-xl mt-8">
-              <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-primary flex items-center">
-                  <CircleCheckBig className="mr-2 h-6 w-6" /> Estimated Deductions for {calculationResults.employeeNameDisplay} ({calculationResults.monthName} {calculationResults.yearDisplay})
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>Gross Monthly Income:</span> <strong className="text-foreground">TT$ {calculationResults.grossMonthlyIncomeDisplay}</strong>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Est. Annual Income:</span> <span>TT$ {calculationResults.estAnnualIncome}</span>
-                </div>
-                 <div className="flex justify-between text-muted-foreground">
-                  <span>Mondays in selected month:</span> <span>{calculationResults.mondaysInMonth}</span>
-                </div>
-                
-                <Separator className="my-2" />
-                <p className="font-medium text-foreground">NIS Details:</p>
-                <div className="pl-4 space-y-1">
-                    <div className="flex justify-between">
-                        <span>NIS Class:</span> <span className="text-foreground">{calculationResults.nisClass}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span>Est. Weekly NIS (Employee):</span> <span className="text-foreground">TT$ {calculationResults.estWeeklyNISEmployee}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span>Est. Weekly NIS (Employer):</span> <span className="text-foreground">TT$ {calculationResults.estWeeklyNISEmployer}</span>
-                    </div>
-                </div>
-
-                <Separator className="my-2" />
-                <p className="font-medium text-foreground">Employee Deductions (Monthly):</p>
-                <div className="pl-4 space-y-1">
-                    <div className="flex justify-between">
-                    <span>PAYE:</span> <span className="text-foreground">TT$ {calculationResults.payeMonthly}</span>
-                    </div>
-                    <div className="flex justify-between">
-                    <span>NIS (Employee):</span> <span className="text-foreground">TT$ {calculationResults.nisMonthlyEmployee}</span>
-                    </div>
-                    <div className="flex justify-between">
-                    <span>Health Surcharge:</span> <span className="text-foreground">TT$ {calculationResults.healthSurchargeMonthly}</span>
-                    </div>
-                </div>
-                
-                <Separator className="my-2" />
-                <div className="flex justify-between font-semibold">
-                  <span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {calculationResults.totalMonthlyDeductions}</strong>
-                </div>
-                <div className="flex justify-between text-lg font-bold text-primary mt-1">
-                  <span>Net Take-Home Pay:</span><span>TT$ {calculationResults.netTakeHomePay}</span>
-                </div>
-
-                <Separator className="my-2" />
- <div className="flex justify-between text-m font-bold text-primd
- ary mt-1">
- <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span><span>TT$ {calculationResults.totalPayrollTaxDisplay}</span>
- </div>
-
- <div className="flex justify-between items-center mt-2"> {/* Adjusted spacing */}
- <span className="text-muted-foreground flex items-center">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Employer's NIS Contribution (Monthly):
-                  </span>
-                  <strong className="text-muted-foreground">TT$ {calculationResults.employerNISMonthly}</strong>
-                </div>
-              </CardContent>
-               <CardFooter className="flex flex-col sm:flex-row gap-2 pt-4">
-                <Button variant="outline" onClick={handleCopyResults} className="w-full text-sm h-9 flex-1">
-                    <Copy className="mr-2 h-4 w-4" /> Copy Results
-                </Button>
-                <Button variant="outline" onClick={handleClearFields} className="w-full text-sm h-9 flex-1">
-                    <Trash2 className="mr-2 h-4 w-4" /> Clear Fields
-                </Button>
-                 <Button variant="outline" onClick={handleSaveCalculation} className="w-full text-sm h-9 flex-1">
-                    <Save className="mr-2 h-4 w-4" /> Save Calculation
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
-        </CardContent>
-      </Card>
-        
-      <p className="text-xs text-muted-foreground text-center w-full max-w-3xl mx-auto my-6">
-        This calculator provides estimates based on current general tax
-        rules for Trinidad &amp; Tobago. Always consult with a qualified
-        tax professional for definitive advice. PAYE is based on annual income (TT$90,000 personal allowance, 25% on first TT$72,000 chargeable, 30% thereafter). NIS based on NIBTT Earnings Classes. Health Surcharge based on weekly income (TT$4.13/wk up to TT$110/wk, TT$8.25/wk above) &amp; Mondays in month.
-      </p>
-
-      {savedCalculations.length > 0 && (
-        <Card className="w-full max-w-3xl shadow-lg rounded-xl mt-8">
-          <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-primary flex items-center">
-              <ListChecks className="mr-2 h-6 w-6" /> Saved Payroll Summaries
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {savedCalculations.map((calc) => (
-                <Card key={calc.id} className="w-full">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-base flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold">{calc.employeeNameDisplay}</p>
-                        <p className="text-xs text-muted-foreground">{calc.monthName} {calc.yearDisplay}</p>
-                      </div>
-                      <div className="flex items-center">
-                        <Button variant="ghost" size="icon" onClick={() => handleViewCalculation(calc)} className="h-7 w-7 mr-1">
-                          <Eye className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleRemoveCalculation(calc.id)} className="h-7 w-7">
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </CardTitle>
-                    <CardDescription className="text-xs pt-1">
-                      Saved: {calc.timestamp}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs space-y-1 pt-0">
-                    <div className="flex justify-between"><span>Gross Income:</span> <span className="font-medium">TT$ {calc.grossMonthlyIncomeDisplay}</span></div>
-                    <div className="flex justify-between"><span>Total Deductions:</span> <span className="font-medium">TT$ {calc.totalMonthlyDeductions}</span></div>
-                    <div className="flex justify-between"><span>Net Pay:</span> <strong className="text-primary">TT$ {calc.netTakeHomePay}</strong></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row gap-2 pt-6 border-t mt-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full text-sm h-9 flex-1">
-                  <Download className="mr-2 h-4 w-4" /> Export Data <ChevronDown className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={handleExportCSV}>Export as CSV</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportXLSX}>Export as XLSX (Coming Soon)</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportPDF}>Export as PDF (Coming Soon)</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="outline" onClick={handleShareViaEmail} className="w-full text-sm h-9 flex-1">
-              <Mail className="mr-2 h-4 w-4" /> Share via Email
-            </Button>
-            <Button variant="destructive" onClick={handleClearAllCalculations} className="w-full text-sm h-9 flex-1">
-              <Trash2 className="mr-2 h-4 w-4" /> Clear All Saved
-            </Button>
-          </CardFooter>
-        </Card>
-      )}
-
-      {viewModalData && (
-        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle className="text-primary flex items-center">
-                <CircleCheckBig className="mr-2 h-6 w-6" /> Payroll Details for {viewModalData.employeeNameDisplay}
-              </DialogTitle>
-              <DialogDescription>
-                Calculation from {viewModalData.monthName} {viewModalData.yearDisplay} (Saved: {viewModalData.timestamp})
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-2 text-sm py-4 max-h-[60vh] overflow-y-auto">
-              <div className="flex justify-between"><span>Gross Monthly Income:</span> <strong className="text-foreground">TT$ {viewModalData.grossMonthlyIncomeDisplay}</strong></div>
-              <div className="flex justify-between text-muted-foreground"><span>Est. Annual Income:</span> <span>TT$ {viewModalData.estAnnualIncome}</span></div>
-              <div className="flex justify-between text-muted-foreground"><span>Mondays in selected month:</span> <span>{viewModalData.mondaysInMonth}</span></div>
-              <Separator className="my-2" />
-              <p className="font-medium text-foreground">NIS Details:</p>
-              <div className="pl-4 space-y-1">
-                <div className="flex justify-between"><span>NIS Class:</span> <span className="text-foreground">{viewModalData.nisClass}</span></div>
-                <div className="flex justify-between"><span>Est. Weekly NIS (Employee):</span> <span className="text-foreground">TT$ {viewModalData.estWeeklyNISEmployee}</span></div>
-                <div className="flex justify-between"><span>Est. Weekly NIS (Employer):</span> <span className="text-foreground">TT$ {viewModalData.estWeeklyNISEmployer}</span></div>
-              </div>
-              <Separator className="my-2" />
-              <p className="font-medium text-foreground">Employee Deductions (Monthly):</p>
-              <div className="pl-4 space-y-1">
-                <div className="flex justify-between"><span>PAYE:</span> <span className="text-foreground">TT$ {viewModalData.payeMonthly}</span></div>
-                <div className="flex justify-between"><span>NIS (Employee):</span> <span className="text-foreground">TT$ {viewModalData.nisMonthlyEmployee}</span></div>
-                <div className="flex justify-between"><span>Health Surcharge:</span> <span className="text-foreground">TT$ {viewModalData.healthSurchargeMonthly}</span></div>
-              </div>
-              <Separator className="my-2" />
-              <div className="flex justify-between font-semibold"><span>Total Monthly Deductions (Employee):</span><strong className="text-destructive">TT$ {viewModalData.totalMonthlyDeductions}</strong></div>
-              <div className="flex justify-between text-lg font-bold text-primary mt-1"><span>Net Take-Home Pay:</span><span>TT$ {viewModalData.netTakeHomePay}</span></div>
-              <Separator className="my-2" />
- <div className="flex justify-between text-lg font-bold text-primary mt-1">
- <span>Total Payroll Tax (Employee Deductions + Employer NIS):</span><span>TT$ {viewModalData.totalPayrollTaxDisplay}</span>
- </div>
-
- <div className="flex justify-between items-center mt-2"> {/* Adjusted spacing */}
- <span className="text-muted-foreground flex items-center"><Briefcase className="mr-2 h-4 w-4" />Employer's NIS Contribution (Monthly):</span>
-                <strong className="text-muted-foreground">TT$ {viewModalData.employerNISMonthly}</strong>
-              </div>
-            </div>
-            <DialogClose asChild>
-              <Button type="button" variant="outline" className="mt-4 w-full">Close</Button>
-            </DialogClose>
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
-  );
-}
-
+                              <CalendarIcon className="mr-2 h-4 w-4

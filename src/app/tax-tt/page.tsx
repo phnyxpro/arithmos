@@ -23,8 +23,11 @@ export default function TaxTtPage() {
               Tax Trinidad and Tobago
             </CardTitle>
           </div>
+          <CardDescription className="pt-2 text-lg text-muted-foreground">
+            Knowledge to help navigate and calculate!
+          </CardDescription>
           <CardDescription className="pt-2">
-            Access common tax and payroll calculators for Trinidad & Tobago.
+            TAX.TT is here to help you navigate Trinidad & Tobago's tax landscape with simple to use calculators and simplified explanations of current tax legislation.  Save time and gain knowledge to navigate and calculate!
           </CardDescription>
         </CardHeader>
         <CardContent>

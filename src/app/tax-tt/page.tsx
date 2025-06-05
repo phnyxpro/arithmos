@@ -62,10 +62,13 @@ export default function TaxTtPage() {
                   <CardDescription>
                     <p>Estimate Business Levy and Green Fund Levy.</p>
                     <p className="pt-2">
-                      The Business Levy is a tax administered by the Government of Trinidad and Tobago. It is a source of revenue for the country’s economy. It is used to fund public services, pay government obligations, and provide goods for citizens.
+                     The Business Levy is a tax on businesses in Trinidad and Tobago that helps fund public services and support the national economy.
                     </p>
                     <p className="pt-2">
-                      The purpose of the Green Fund is to financially assist organizations and community groups that are engaged in activities related to the remediation, reforestation, environmental education and public awareness of environmental issues and conservation of the environment. 77.01
+                    The Green Fund Levy supports environmental projects like clean-ups, reforestation, and education, ensuring businesses contribute to environmental protection.
+                    </p>
+                    <p className="pt-2">
+                    Together, these levies promote both economic stability and environmental responsibility.
                     </p>
                   </CardDescription>
                 </CardHeader>
@@ -197,7 +200,7 @@ export default function TaxTtPage() {
                           <AccordionContent>
                           {item === "Purpose" && (
                               <>
-                                 The purpose of the Green Fund is to financially assist organisations and community groups that are engaged in activities related to the remediation, reforestation, environmental education and public awareness of environmental issues and conservation of the environment. An activity is defined in the Green Fund Regulations as any activity, programme or project which is primarily engaged in remediation, reforestation and conservation of the environment. The Minister shall only consider applications in respect of an activity that is related to the remediation, reforestation and conservation of the environment. The Fund is established for the purposes of Part XIV of the Miscellaneous Taxes Act. The Minister shall disburse monies from the Fund to finance activities certified by the Minister with responsibility for the environment as being for the purposes referred to in section 64.
+                                 The purpose of the Green Fund is to provide financial support to organizations and community groups engaged in activities related to the remediation, reforestation, and conservation of the environment. This includes raising public awareness and environmental education, but funding is strictly limited to activities that fall within these core environmental goals, as defined in the Green Fund Regulations and authorized under the Miscellaneous Taxes Act.
                                  </>
                             )}
                             {item === "Must be paid at a rate of 0.3% on gross sales" && (

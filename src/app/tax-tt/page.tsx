@@ -95,12 +95,8 @@ export default function TaxTtPage() {
                           <AccordionContent>
                             {item === "Purpose" && (
                               <>
-                                <p> A tax known as a business levy shall be levied and paid to the Board of Inland Revenue. This tax is levied on the gross sales or receipts of a company and a person for each year of income. </p> 
-                                
-                                <p> For a person, this excludes emolument income under section 100 of the Income Tax Act. </p> 
-                                
-                                <p>The term "business levy" is defined within the Environmental Levy Part of the Miscellaneous Taxes Act as the tax levied and paid by a company to the Board of Inland Revenue under section 3A of the Corporation Tax Act [51, Miscellaneous Taxes Act, pg 158].</p>
-                              </>
+                                The Business Levy is a tax paid to the Board of Inland Revenue on the gross sales or receipts of a company or individual for each year of income. It excludes income from employment (emoluments) for individuals. Legally, it is defined under the Miscellaneous Taxes Act as the tax imposed under section 3A of the Corporation Tax Act.
+                                </>
                             )}
                             {item === "Must be paid at a rate of 0.6% on gross sales" && (
                               <>

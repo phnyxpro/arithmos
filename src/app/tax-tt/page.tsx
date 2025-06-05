@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ export default function TaxTtPage() {
   ];
   
   const greenFundAccordionItems = [ 
-    "Purpose", "Must be paid at a rate of 0.3% on gross sales", "By Persons & Companies", 
+    "Purpose", "Must be paid at a rate of 0.3% on gross sales", "By Companies", 
     "Quarterly", "But may be exempt", "If underpaid", "If overpaid", 
     "If not paid", "Fun details", "Related forms", "How to pay?"
   ];
@@ -99,18 +99,27 @@ export default function TaxTtPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-primary mb-3">The Green Fund Levy</h3>
                     <Accordion type="single" collapsible className="w-full">
-                      {greenFundAccordionItems.map((item, index) => (
+                      {greenFundAccordionItems.map((item, index) => {
+                        let content = `Placeholder content for ${item.toLowerCase()} regarding Green Fund Levy. Official information should be sourced from IRD and relevant legislation (Miscellaneous Taxes Act, Ch 77:01).`;
+                        if (item === "Must be paid at a rate of 0.3% on gross sales") {
+                          content = "A tax of 0.3% on gross sales or receipts that is paid to the Board of the Inland Revenue (BIR). You can use our calculator to help calculate the amount.";
+                        } else if (item === "By Companies") {
+                          content = "This levy is to be paid by registered companies*. Please note that companies in this instance includes partnerships, non-profit companies, charitable organizations & sports groups. Excludes sole traders.";
+                        } else if (item === "Quarterly") {
+                          content = "Green Fund Levy must be paid by the end of each quarter on 31st March, 30th June, 30th September and 31st December in each year of sales. If you are paying before the deadline date, you may not know the accurate sales figure for the entire period, you can estimate the amount of sales that you have to pay tax on for the remaining days for the period.";
+                        }
+                        return (
                          <AccordionItem value={`gfl-item-${index}`} key={`gfl-item-${index}`}>
                           <AccordionTrigger>{item.startsWith("Must be paid at a rate of") ? "Must be paid at a rate of 0.3% on gross sales" : item}</AccordionTrigger>
                           <AccordionContent>
-                            Placeholder content for {item.toLowerCase()} regarding Green Fund Levy. Official information should be sourced from IRD and relevant legislation (Miscellaneous Taxes Act, Ch 77:01).
+                            {content}
                           </AccordionContent>
                         </AccordionItem>
-                      ))}
+                       );
+                      })}
                     </Accordion>
                   </div>
                 </CardContent>
-                {/* CardFooter with the button has been removed */}
               </Card>
             </TabsContent>
 

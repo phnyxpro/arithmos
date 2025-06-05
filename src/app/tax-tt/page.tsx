@@ -20,7 +20,7 @@ export default function TaxTtPage() {
     "If not paid", "Fun details", "Related forms", "How to pay?"
   ];
   
-  const greenFundAccordionItems = [ // Same items for Green Fund Levy
+  const greenFundAccordionItems = [ 
     "Purpose", "Must be paid at a rate of 0.3% on gross sales", "By Persons & Companies", 
     "Quarterly", "But may be exempt", "If underpaid", "If overpaid", 
     "If not paid", "Fun details", "Related forms", "How to pay?"
@@ -110,11 +110,7 @@ export default function TaxTtPage() {
                     </Accordion>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant="outline" asChild>
-                    <Link href="/calculators/business-levy">Go to Full Business Levy Page</Link>
-                  </Button>
-                </CardFooter>
+                {/* CardFooter with the button has been removed */}
               </Card>
             </TabsContent>
 

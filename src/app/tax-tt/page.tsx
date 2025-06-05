@@ -7,12 +7,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FileText, Landmark, Users, DollarSign, ArrowRight, Info } from 'lucide-react';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 // Import simplified calculators
 import SimplifiedLevyCalculator from '@/components/calculators/SimplifiedLevyCalculator';
 import SimplifiedPayrollCalculator from '@/components/calculators/SimplifiedPayrollCalculator';
 
 export default function TaxTtPage() {
+  const levyAccordionItems = [
+    "Purpose", "Must be paid at a rate of 0.6% on gross sales", "By Persons & Companies", 
+    "Quarterly", "But may be exempt", "If underpaid", "If overpaid", 
+    "If not paid", "Fun details", "Related forms", "How to pay?"
+  ];
+  
+  const greenFundAccordionItems = [ // Same items for Green Fund Levy
+    "Purpose", "Must be paid at a rate of 0.3% on gross sales", "By Persons & Companies", 
+    "Quarterly", "But may be exempt", "If underpaid", "If overpaid", 
+    "If not paid", "Fun details", "Related forms", "How to pay?"
+  ];
+
+
   return (
     <div className="container mx-auto py-8 px-4">
       <Card className="w-full shadow-xl rounded-xl">
@@ -27,7 +41,7 @@ export default function TaxTtPage() {
             Knowledge to help navigate and calculate!
           </CardDescription>
           <CardDescription className="pt-2">
-           <p> TAX.TT is here to help you navigate Trinidad & Tobago's tax landscape with simple to use calculators and simplified explanations of current tax legislation. </p> <p className="pt-2">Save time and gain knowledge to navigate and calculate!</p>
+           <p>TAX.TT is here to help you navigate Trinidad & Tobago's tax landscape with simple to use calculators and simplified explanations of current tax legislation.</p> <p className="pt-2">Save time and gain knowledge to navigate and calculate!</p>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -68,30 +82,33 @@ export default function TaxTtPage() {
                     Find helpful links and information regarding Business Levy and Green Fund Levy.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    The Business Levy and Green Fund Levy are important considerations for businesses in Trinidad & Tobago.
-                  </p>
-                  <ul className="list-disc list-inside text-sm space-y-1">
-                    <li>
-                      <Link href="/knowledge-base/business-levy" className="text-accent hover:underline">
-                        Learn more about Business Levy
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/knowledge-base/green-fund-levy" className="text-accent hover:underline">
-                        Learn more about Green Fund Levy
-                      </Link>
-                    </li>
-                    <li>
-                      <a href="https://www.ird.gov.tt/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
-                        Visit the Board of Inland Revenue (IRD) website
-                      </a>
-                    </li>
-                  </ul>
-                   <p className="text-xs text-muted-foreground mt-4">
-                    (Note: Links to knowledge base articles are placeholders and will need corresponding pages to be created.)
-                  </p>
+                <CardContent className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-primary mb-3">Business Levy</h3>
+                    <Accordion type="single" collapsible className="w-full">
+                      {levyAccordionItems.map((item, index) => (
+                        <AccordionItem value={`bl-item-${index}`} key={`bl-item-${index}`}>
+                          <AccordionTrigger>{item}</AccordionTrigger>
+                          <AccordionContent>
+                            Placeholder content for {item.toLowerCase()} regarding Business Levy. Official information should be sourced from IRD.
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-primary mb-3">The Green Fund Levy</h3>
+                    <Accordion type="single" collapsible className="w-full">
+                      {greenFundAccordionItems.map((item, index) => (
+                         <AccordionItem value={`gfl-item-${index}`} key={`gfl-item-${index}`}>
+                          <AccordionTrigger>{item.startsWith("Must be paid at a rate of") ? "Must be paid at a rate of 0.3% on gross sales" : item}</AccordionTrigger>
+                          <AccordionContent>
+                            Placeholder content for {item.toLowerCase()} regarding Green Fund Levy. Official information should be sourced from IRD and relevant legislation (Miscellaneous Taxes Act, Ch 77:01).
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </div>
                 </CardContent>
                 <CardFooter>
                   <Button variant="outline" asChild>

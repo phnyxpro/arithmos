@@ -200,12 +200,12 @@ export default function TaxTtPage() {
                                  The purpose of the Green Fund is to financially assist organisations and community groups that are engaged in activities related to the remediation, reforestation, environmental education and public awareness of environmental issues and conservation of the environment. An activity is defined in the Green Fund Regulations as any activity, programme or project which is primarily engaged in remediation, reforestation and conservation of the environment. The Minister shall only consider applications in respect of an activity that is related to the remediation, reforestation and conservation of the environment. The Fund is established for the purposes of Part XIV of the Miscellaneous Taxes Act. The Minister shall disburse monies from the Fund to finance activities certified by the Minister with responsibility for the environment as being for the purposes referred to in section 64.
                                  </>
                             )}
-                            {item === "Must be paid at a rate of 0.6% on gross sales" && (
+                            {item === "Must be paid at a rate of 0.3% on gross sales" && (
                               <>
                                   There shall be levied and paid to the Board a tax at the rate of 0.3 per cent. This tax is known as a Green Fund Levy. The levy is imposed on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. "Gross sales or receipts" means the gross revenue, sales or receipts of a company. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
                              </>
                             )}
-                            {item === "By Persons & Companies" && (
+                            {item === "By Companies" && (
                               <>
                                 The Green Fund Levy is levied and paid on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. For the purpose of Part XIV (Green Fund Levy), "company" means a body corporate or an unincorporated association and includes a partnership. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30; Section 61, Page 30.
                               </>

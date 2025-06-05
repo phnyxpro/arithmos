@@ -20,7 +20,7 @@ export default function TaxTtPage() {
           <div className="flex items-center space-x-3">
             <FileText className="h-8 w-8 text-primary" />
             <CardTitle className="text-3xl text-primary">
-              Quick Tax Tools
+              Tax Trinidad and Tobago
             </CardTitle>
           </div>
           <CardDescription className="pt-2">

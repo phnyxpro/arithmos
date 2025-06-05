@@ -32,8 +32,9 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    allowedDevOrigins: ["https://6000-firebase-studio-1747695162263.cluster-hf4yr35cmnbd4vhbxvfvc6cp5q.cloudworkstations.dev"],
-  }
+    // allowedDevOrigins was moved to top-level
+  },
+  allowedDevOrigins: ["https://6000-firebase-studio-1747695162263.cluster-hf4yr35cmnbd4vhbxvfvc6cp5q.cloudworkstations.dev"],
 };
 
 export default nextConfig;

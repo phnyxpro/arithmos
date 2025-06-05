@@ -2,11 +2,11 @@
 "use client";
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { FileText, Landmark, Users, DollarSign, ArrowRight } from 'lucide-react';
+import { FileText, Landmark, Users, DollarSign, ArrowRight, Info } from 'lucide-react';
 
 // Import simplified calculators
 import SimplifiedLevyCalculator from '@/components/calculators/SimplifiedLevyCalculator';
@@ -27,7 +27,7 @@ export default function TaxTtPage() {
             Knowledge to help navigate and calculate!
           </CardDescription>
           <CardDescription className="pt-2">
-            TAX.TT is here to help you navigate Trinidad & Tobago's tax landscape with simple to use calculators and simplified explanations of current tax legislation.  Save time and gain knowledge to navigate and calculate!
+           <p> TAX.TT is here to help you navigate Trinidad & Tobago's tax landscape with simple to use calculators and simplified explanations of current tax legislation. </p> <p className="pt-2">Save time and gain knowledge to navigate and calculate!</p>
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,6 +58,46 @@ export default function TaxTtPage() {
                 <CardContent>
                   <SimplifiedLevyCalculator />
                 </CardContent>
+              </Card>
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-xl text-primary flex items-center">
+                    <Info className="mr-2 h-5 w-5" /> Levy Information & Resources
+                  </CardTitle>
+                  <CardDescription>
+                    Find helpful links and information regarding Business Levy and Green Fund Levy.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    The Business Levy and Green Fund Levy are important considerations for businesses in Trinidad & Tobago.
+                  </p>
+                  <ul className="list-disc list-inside text-sm space-y-1">
+                    <li>
+                      <Link href="/knowledge-base/business-levy" className="text-accent hover:underline">
+                        Learn more about Business Levy
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/knowledge-base/green-fund-levy" className="text-accent hover:underline">
+                        Learn more about Green Fund Levy
+                      </Link>
+                    </li>
+                    <li>
+                      <a href="https://www.ird.gov.tt/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">
+                        Visit the Board of Inland Revenue (IRD) website
+                      </a>
+                    </li>
+                  </ul>
+                   <p className="text-xs text-muted-foreground mt-4">
+                    (Note: Links to knowledge base articles are placeholders and will need corresponding pages to be created.)
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button variant="outline" asChild>
+                    <Link href="/calculators/business-levy">Go to Full Business Levy Page</Link>
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
 

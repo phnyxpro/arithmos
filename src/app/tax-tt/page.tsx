@@ -201,7 +201,7 @@ export default function TaxTtPage() {
                             )}
                             {item === "Must be paid at a rate of 0.3% on gross sales" && (
                               <>
-                                  There shall be levied and paid to the Board a tax at the rate of 0.3 per cent. This tax is known as a Green Fund Levy. The levy is imposed on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. "Gross sales or receipts" means the gross revenue, sales or receipts of a company. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
+                                  There shall be levied and paid to the Board a tax at the rate of <strong>0.3 per cent</strong>. This tax is known as a Green Fund Levy. The levy is imposed on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. "Gross sales or receipts" means the gross revenue, sales or receipts of a company. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
                              </>
                             )}
                             {item === "By Companies" && (

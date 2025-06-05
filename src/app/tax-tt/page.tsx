@@ -46,7 +46,7 @@ export default function TaxTtPage() {
                     <Landmark className="mr-2 h-5 w-5" /> Levy Calculator
                   </CardTitle>
                   <CardDescription>
-                    Estimate Business Levy and Green Fund Levy.
+                    Estimate Business Levy and Green Fund Levy. The Business Levy is a tax administered by the Government of Trinidad and Tobago. It is a source of revenue for the country’s economy. It is used to fund public services, pay government obligations, and provide goods for citizens.  The purpose of the Green Fund is to financially assist organizations and community groups that are engaged in activities related to the remediation, reforestation, environmental education and public awareness of environmental issues and conservation of the environment. 77.01
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

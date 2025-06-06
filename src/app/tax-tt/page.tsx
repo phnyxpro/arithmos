@@ -12,6 +12,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 // Import simplified calculators
 import SimplifiedLevyCalculator from '@/components/calculators/SimplifiedLevyCalculator';
 import SimplifiedPayrollCalculator from '@/components/calculators/SimplifiedPayrollCalculator';
+import CorporationTaxPage from '../calculators/corporation-tax/page';
 
 export default function TaxTtPage() {
   const levyAccordionItems = [
@@ -195,58 +196,58 @@ export default function TaxTtPage() {
                           <AccordionTrigger>{item.startsWith("Must be paid at a rate of") ? "Must be paid at a rate of 0.3% on gross sales" : item}</AccordionTrigger>
                           <AccordionContent>
                           {item === "Purpose" && (
-                              <>
-                                 The purpose of the Green Fund is to provide financial support to organizations and community groups engaged in activities related to the remediation, reforestation, and conservation of the environment. This includes raising public awareness and environmental education, but funding is strictly limited to activities that fall within these core environmental goals, as defined in the Green Fund Regulations and authorized under the Miscellaneous Taxes Act.
-                                 </>
-                            )}
-                            {item === "Must be paid at a rate of 0.3% on gross sales" && (
-                              <>
-                                  There shall be levied and paid to the Board a tax at the rate of <strong>0.3 per cent</strong>. This tax is known as a Green Fund Levy. The levy is imposed on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. "Gross sales or receipts" means the gross revenue, sales or receipts of a company. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
-                             </>
-                            )}
-                            {item === "By Companies" && (
-                              <>
-                                The Green Fund Levy is levied and paid on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. For the purpose of Part XIV (Green Fund Levy), "company" means a body corporate or an unincorporated association and includes a partnership. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30; Section 61, Page 30.
+ <>
+ The purpose of the Green Fund is to financially assist organisations and community groups that are engaged in activities related to the remediation, reforestation, environmental education and public awareness of environmental issues and conservation of the environment. An activity is defined in the Green Fund Regulations as any activity, programme or project which is primarily engaged in remediation, reforestation and conservation of the environment. The Minister shall only consider applications in respect of an activity that is related to the remediation, reforestation and conservation of the environment. The Fund is established for the purposes of Part XIV of the Miscellaneous Taxes Act. The Minister shall disburse monies from the Fund to finance activities certified by the Minister with responsibility for the environment as being for the purposes referred to in section 64.
+ </>
+ )}
+ {item === "Must be paid at a rate of 0.3% on gross sales" && (
+ <>
+ There shall be levied and paid to the Board a tax at the rate of <strong>0.3 per cent</strong>. This tax is known as a Green Fund Levy. The levy is imposed on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. "Gross sales or receipts" means the gross revenue, sales or receipts of a company. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
+ </>
+ )}
+ {item === "By Companies" && (
+ <>
+ The Green Fund Levy is levied and paid on the gross sales or receipts of a company carrying on business in Trinidad and Tobago. For the purpose of Part XIV (Green Fund Levy), "company" means a body corporate or an unincorporated association and includes a partnership. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30; Section 61, Page 30.
                               </>
                             )}
                             {item === "Quarterly" && (
                               <>
-                                 The levy shall be payable by a company in each quarter. The quarters end on 31st March, 30th June, 30th September and 31st December in each year of income. The provisions of section 79 of the Income Tax Act apply mutatis mutandis to this requirement. Miscellaneous Taxes Act, Chap. 77:01, Section 62(2), Page 30.
+ The levy shall be payable by a company in each quarter. The quarters end on 31st March, 30th June, 30th September and 31st December in each year of income. The provisions of section 79 of the Income Tax Act apply mutatis mutandis to this requirement. Miscellaneous Taxes Act, Chap. 77:01, Section 62(2), Page 30.
                               </>
                             )}
                             {item === "But may be exempt" && (
                               <>
-                                The Green Fund Levy is levied and paid by a company carrying on business in Trinidad and Tobago, whether or not such company is exempt from the business levy. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
+ The Green Fund Levy is levied and paid by a company carrying on business in Trinidad and Tobago, whether or not such company is exempt from the business levy. The provided excerpts for Part XIV of the Miscellaneous Taxes Act and the Green Fund Regulations do not explicitly list exemptions from the requirement to pay the Green Fund levy based on other criteria. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30.
                               </>
                             )}
                             {item === "If underpaid" && (
                               <>
-                                The provisions of section 3A(6), (7), (8), (9) and (10) of the Corporation Tax Act apply mutatis mutandis (with the necessary modifications) in relation to the Green Fund levy. Section 62A of the Miscellaneous Taxes Act states that Section 103A of the Income Tax Act shall apply as if references therein to taxes and interest under that Act included references to taxes and interest under the Miscellaneous Taxes Act. While the full text of the cross-referenced sections (Corporation Tax Act s. 3A(6)-(10) and Income Tax Act s. 103A) is not provided, the application of these sections and the general powers of the Board suggest that underpayments may be subject to interest. For context within the Miscellaneous Taxes Act itself, section 40(5) provides an example (for a different tax) where paying less than ninety per cent of the liability for a quarter results in the difference being subject to interest. The Board of Inland Revenue has all the powers it has in relation to income tax under the Income Tax Act for the collection and recovery of the levy. Miscellaneous Taxes Act, Chap. 77:01, Section 62(3), Page 30; Section 62A, Page 30; Section 62(4), Page 30. (Also see Section 40(5), Page 18 for context within the Act, noting it applies to a different tax).
+ The provisions of section 3A(6), (7), (8), (9) and (10) of the Corporation Tax Act apply mutatis mutandis (with the necessary modifications) in relation to the Green Fund levy. Section 62A of the Miscellaneous Taxes Act states that Section 103A of the Income Tax Act shall apply as if references therein to taxes and interest under that Act included references to taxes and interest under the Miscellaneous Taxes Act. While the full text of the cross-referenced sections (Corporation Tax Act s. 3A(6)-(10) and Income Tax Act s. 103A) is not provided, the application of these sections and the general powers of the Board suggest that underpayments may be subject to interest. For context within the Miscellaneous Taxes Act itself, section 40(5) provides an example (for a different tax) where paying less than ninety per cent of the liability for a quarter results in the difference being subject to interest. The Board of Inland Revenue has all the powers it has in relation to income tax under the Income Tax Act for the collection and recovery of the levy. Miscellaneous Taxes Act, Chap. 77:01, Section 62(3), Page 30; Section 62A, Page 30; Section 62(4), Page 30. (Also see Section 40(5), Page 18 for context within the Act, noting it applies to a different tax).
                               </>
                             )}
                             {item === "If overpaid" && (
                               <>
-                                Where it is proved to the satisfaction of the Board that a company has, in any quarter, paid levy in excess of the amount properly chargeable, that company shall be entitled to have the levy so paid in excess, refunded to it. Every claim for such a refund must be made within one year from the end of the quarter to which the claim relates. Instead of making a refund, the Board may apply the amount to be refunded against another liability the company has under the Miscellaneous Taxes Act or any other written law administered by the Board. The Board shall notify the company accordingly in such cases.  Miscellaneous Taxes Act, Chap. 77:01, Section 63(1), Page 30; Section 63(2), Page 30; Section 63(3), Page 31.
+ Where it is proved to the satisfaction of the Board that a company has, in any quarter, paid levy in excess of the amount properly chargeable, that company shall be entitled to have the levy so paid in excess, refunded to it. Every claim for such a refund must be made within one year from the end of the quarter to which the claim relates. Instead of making a refund, the Board may apply the amount to be refunded against another liability the company has under the Miscellaneous Taxes Act or any other written law administered by the Board. The Board shall notify the company accordingly in such cases. Miscellaneous Taxes Act, Chap. 77:01, Section 63(1), Page 30; Section 63(2), Page 30; Section 63(3), Page 31.
                               </>
                             )}
                             {item === "If not paid" && (
                               <>
-                               For the collection and recovery of the Green Fund levy, the Board of Inland Revenue shall have all the powers as it has in relation to income tax under the Income Tax Act. Section 62A applies Income Tax Act section 103A relating to taxes and interest to the levy. Additionally, an offence under the Miscellaneous Taxes Act or a penalty imposed by it, in relation to a tax administered by the Board, may be prosecuted, sued for or recovered summarily. Sums payable may be recovered and enforced in the manner prescribed by the Summary Courts Act. A person authorised by the Board may prosecute and conduct proceedings under the Act. General penalties under the Act include liability on summary conviction to a fine of three thousand dollars and to imprisonment for two years for certain offences. Failure to collect the tax or make remittance (in the case of a financial institution for a different tax under the Act) results in an additional amount of twenty-five per cent of the tax plus interest at fifteen per cent per annum. While this specific penalty applies to a different tax, it illustrates the types of consequences for non-payment within the Miscellaneous Taxes Act, powers which the Board has for the Green Fund Levy. The Minister with responsibility for finance may recover amounts disbursed from the Fund as a debt due and owing to the State in cases of misapplication or misuse. Failure to comply with conditions of a disbursement can result in immediate cessation of funding, debt recovery proceedings, and exclusion from future funding consideration. Miscellaneous Taxes Act, Chap. 77:01, Section 62(4), Page 30; Section 62A, Page 30; Section 30A(1), (2), Page 30. (Also see Section 30A(4), Page 30 and Section 40(2), Page 18 for general powers/penalties under the Act).
+ For the collection and recovery of the Green Fund levy, the Board of Inland Revenue shall have all the powers as it has in relation to income tax under the Income Tax Act. Section 62A applies Income Tax Act section 103A relating to taxes and interest to the levy. Additionally, an offence under the Miscellaneous Taxes Act or a penalty imposed by it, in relation to a tax administered by the Board, may be prosecuted, sued for or recovered summarily. Sums payable may be recovered and enforced in the manner prescribed by the Summary Courts Act. A person authorised by the Board may prosecute and conduct proceedings under the Act. General penalties under the Act include liability on summary conviction to a fine of three thousand dollars and to imprisonment for two years for certain offences. Failure to collect the tax or make remittance (in the case of a financial institution for a different tax under the Act) results in an additional amount of twenty-five per cent of the tax plus interest at fifteen per cent per annum. While this specific penalty applies to a different tax, it illustrates the types of consequences for non-payment within the Miscellaneous Taxes Act, powers which the Board has for the Green Fund Levy. The Minister with responsibility for finance may recover amounts disbursed from the Fund as a debt due and owing to the State in cases of misapplication or misuse. Failure to comply with conditions of a disbursement can result in immediate cessation of funding, debt recovery proceedings, and exclusion from future funding consideration. Miscellaneous Taxes Act, Chap. 77:01, Section 62(4), Page 30; Section 62A, Page 30; Section 30A(1), (2), Page 30. (Also see Section 30A(4), Page 30 and Section 40(2), Page 18 for general powers/penalties under the Act).
                               </>
                             )}
                              {item === "Fun details" && (
                               <>
-                                Coming Soon.
+ The provided sources are legal documents (an Act and Regulations) detailing the structure, purpose, and administration of the Green Fund Levy and the Green Fund. They focus on legal and administrative procedures for taxation and fund management and do not contain information typically described as "fun details".
                               </>
                             )}
                              {item === "Related forms" && (
                               <>
-                                Coming Soon.
+ The Minister may make Regulations for, among other things, the accounts, books and forms, to be used in the management of the Green Fund. The application for certification of an activity for the purposes of receiving funds from the Green Fund shall be in the form determined by the Minister and must be accompanied by specific documentation such as proof of incorporation or registration. These forms relate to the process of applying for and managing funds from the Green Fund, not explicitly the forms required by the Board of Inland Revenue for paying the levy to the Fund. Since the Board administers the levy using its income tax powers, standard tax forms or processes may be involved for payment, but the sources do not specify which forms are used for paying the Green Fund Levy itself. Miscellaneous Taxes Act, Chap. 77:01, Section 69(b), Page 33; Green Fund Regulations, Regulation 4(1), Page 48.
                               </>
                             )}
                             {item === "How to pay?" && (
                               <>
-                                For the collection and recovery of the Green Fund levy, the Board of Inland Revenue shall have all the powers as it has in relation to income tax under the Income Tax Act. Section 62A applies Income Tax Act section 103A relating to taxes and interest to the levy. Additionally, an offence under the Miscellaneous Taxes Act or a penalty imposed by it, in relation to a tax administered by the Board, may be prosecuted, sued for or recovered summarily. Sums payable may be recovered and enforced in the manner prescribed by the Summary Courts Act. A person authorised by the Board may prosecute and conduct proceedings under the Act. General penalties under the Act include liability on summary conviction to a fine of three thousand dollars and to imprisonment for two years for certain offences. Failure to collect the tax or make remittance (in the case of a financial institution for a different tax under the Act) results in an additional amount of twenty-five per cent of the tax plus interest at fifteen per cent per annum. While this specific penalty applies to a different tax, it illustrates the types of consequences for non-payment within the Miscellaneous Taxes Act, powers which the Board has for the Green Fund Levy. The Minister with responsibility for finance may recover amounts disbursed from the Fund as a debt due and owing to the State in cases of misapplication or misuse. Failure to comply with conditions of a disbursement can result in immediate cessation of funding, debt recovery proceedings, and exclusion from future funding consideration. Miscellaneous Taxes Act, Chap. 77:01, Section 62(4), Page 30; Section 62A, Page 30; Section 30A(1), (2), Page 30. (Also see Section 30A(4), Page 30 and Section 40(2), Page 18 for general powers/penalties under the Act).
+ The Green Fund Levy shall be levied and paid to the Board (Board of Inland Revenue). The Board is required to pay into the Green Fund the levy received by it within fourteen days from the end of each quarter. For the collection and recovery of the levy, the Board has all the powers it has in relation to income tax under the Income Tax Act. The sources describe who is paid (the Board) and the Board's powers, but do not specify the particular methods (e.g., online, in person, mail) by which companies must make these payments to the Board. Miscellaneous Taxes Act, Chap. 77:01, Section 62(1), Page 30; Section 62(4), Page 30; Section 66(1), Page 32.
                               </>
                             )}
                           </AccordionContent>
@@ -276,26 +277,7 @@ export default function TaxTtPage() {
             </TabsContent>
 
             <TabsContent value="corp-tax" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl text-primary flex items-center">
-                    <Landmark className="mr-2 h-5 w-5" /> Corporation Tax
-                  </CardTitle>
-                  <CardDescription>
-                    The Corporation Tax calculator provides detailed estimation including various income types, deductions, and offsets.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">
-                    This calculator is best viewed on its dedicated page for full functionality and detailed input fields.
-                  </p>
-                  <Button asChild>
-                    <Link href="/calculators/corporation-tax">
-                      Go to Full Corporation Tax Calculator <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <CorporationTaxPage />
             </TabsContent>
 
             <TabsContent value="income-tax" className="mt-6">
